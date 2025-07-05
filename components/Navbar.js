@@ -1,46 +1,98 @@
-import { useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '../context/AuthContext';
+import { auth } from '../firebase/config';
+import { signOut } from 'firebase/auth';
 
-export default function Navbar() {
-  const { user, loading } = useAuth();
+// This is a more robust way to handle the dropdown menu
+const ProfileMenu = () => {
+  const { user } = useAuth();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null); // Used to detect clicks outside the dropdown
 
-  // THE ULTIMATE TEST: This hook ONLY runs when the 'user' object itself changes.
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
+  };
+
+  // This effect handles closing the dropdown when clicking outside of it
   useEffect(() => {
-    console.log("!!! NAVBAR useEffect has DETECTED a CHANGE in the user object !!!");
-    console.log("!!! The new user is:", user);
-  }, [user]); // The [user] part is the key. It makes this a "listener".
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    }
+    // Bind the event listener
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      // Unbind the event listener on clean up
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef]);
 
-  // While the auth state is loading, we render nothing to avoid conflicts.
-  if (loading) {
-    return (
-      <nav className="navbar">
-        <div className="container">
-          <p>Loading User...</p>
+
+  if (!user) return null;
+
+  return (
+    <li className="profile-menu" ref={dropdownRef}>
+      <div onClick={() => setDropdownOpen(!dropdownOpen)} className="profile-icon">
+        <i className="fas fa-user-circle"></i>
+      </div>
+      
+      {dropdownOpen && (
+        <div className="dropdown-menu">
+          <div className="dropdown-header">
+            Signed in as<br />
+            <strong>{user.email}</strong>
+          </div>
+          <Link href="/profile" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
+            My Dashboard
+          </Link>
+          <div className="dropdown-item" onClick={handleLogout}>
+            Logout
+          </div>
         </div>
-      </nav>
-    );
-  }
+      )}
+    </li>
+  );
+};
 
-  // This is the "Bare Metal" render. No complex components.
+
+// The Main Navbar
+export default function Navbar() {
+  const { isLoggedIn, loading } = useAuth();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <nav className="navbar">
-      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#eee', padding: '1rem' }}>
-        <div className="logo-area">
-          <Link href="/">SkillForge Logo Area</Link>
-        </div>
-
-        <div className="auth-status-area" style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
-          {user ? (
-            <div style={{ color: 'green' }}>
-              LOGGED IN as: {user.email}
-            </div>
-          ) : (
-            <div style={{ color: 'red' }}>
-              NOT LOGGED IN
-            </div>
+      <div className="container">
+        {/* We use a simple Link tag now for the logo */}
+        <Link href="/" className="logo">
+          <Image src="/logo.png" alt="SkillForge Logo" width={160} height={40} priority />
+        </Link>
+        
+        <ul className="nav-links">
+          <li><Link href="/#features">Why SkillForge?</Link></li>
+          <li><Link href="/#projects">Projects</Link></li>
+          
+          {/* We keep the robust client-side rendering logic */}
+          {isClient && !loading && (
+            isLoggedIn ? <ProfileMenu /> : (
+              <>
+                <li><Link href="/login">Login</Link></li>
+                <li><Link href="/signup" className="btn btn-primary">Sign Up</Link></li>
+              </>
+            )
           )}
-        </div>
+        </ul>
       </div>
     </nav>
   );
