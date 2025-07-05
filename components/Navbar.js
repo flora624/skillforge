@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useAuth } from '../context/AuthContext';
-import { auth } from '../firebase/config';
+import { useAuth } from '../context/AuthContext'; // Make sure this path is correct
+import { auth } from '../firebase/config'; // Make sure this path is correct
 import { signOut } from 'firebase/auth';
 
 export default function Navbar() {
-  const { user } = useAuth();
+  const { user } = useAuth(); // This hook gets the user object from the AuthContext
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      setDropdownOpen(false); // Close dropdown on logout
+      setDropdownOpen(false);
     } catch (error) {
       console.error("Error signing out: ", error);
     }
@@ -29,7 +29,7 @@ export default function Navbar() {
           <li><Link href="/#features">Why SkillForge?</Link></li>
           <li><Link href="/#projects">Projects</Link></li>
           
-          {/* Conditional rendering: show profile or login buttons */}
+          {/* This is the key logic. It checks if the 'user' object exists. */}
           {user ? (
             <li className="profile-menu">
               <div onClick={() => setDropdownOpen(!dropdownOpen)} className="profile-icon">
