@@ -218,15 +218,21 @@ a { color: inherit; text-decoration: none; }
 
 /* Navbar Profile Icon & Logout Button */
 .profile-icon-link {
-  font-size: 1.8rem;
-  color: var(--grey-color);
-  transition: color 0.2s;
-  /* Add some styling to make it look like other nav items */
+  /* This is now just a container for the SVG */
   display: flex;
   align-items: center;
   height: 100%;
 }
-.profile-icon-link:hover {
+
+.profile-svg-icon {
+  /* This styles the SVG icon itself */
+  width: 28px; /* Control the size */
+  height: 28px;
+  color: var(--grey-color);
+  transition: color 0.2s;
+}
+
+.profile-svg-icon:hover {
   color: var(--primary-color);
 }
 
