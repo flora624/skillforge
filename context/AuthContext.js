@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../firebase/config'; // Make sure this path is correct
+import { auth } from '../firebase/config';
 
 const AuthContext = createContext();
 
@@ -10,31 +10,29 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // NEW boolean flag
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // This function listens for any changes in Firebase's login state
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      // If a user is returned, we set them in our state.
-      // If not, we set the state to null.
       setUser(user);
+      setIsLoggedIn(!!user); // If user exists, this becomes true. If null, becomes false.
       setLoading(false);
+      console.log("Auth State Changed. User Logged In:", !!user); // Debugging line
     });
 
-    // This cleans up the listener when the component unmounts
-    return unsubscribe;
+    return () => unsubscribe(); // Clean up the listener
   }, []);
 
   const value = {
     user,
+    isLoggedIn, // Pass the new flag
     loading,
   };
 
-  // We wait until the loading is false before showing the app
-  // This prevents the "Login" button from flashing briefly on page load
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 }
