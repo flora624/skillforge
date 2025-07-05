@@ -111,3 +111,106 @@ a { color: inherit; text-decoration: none; }
 .form-group input { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; font-family: 'Poppins', sans-serif; }
 .auth-switch { margin-top: 1.5rem; }
 .auth-switch a { color: var(--primary-color); font-weight: 600; text-decoration: none; }
+
+/* --- NEW STYLES FOR PROFILE & DASHBOARD --- */
+
+/* Profile Dropdown in Navbar */
+.profile-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-icon {
+  font-size: 1.8rem; /* Make the icon bigger */
+  color: var(--grey-color);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.profile-icon:hover {
+  color: var(--primary-color);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 50px; /* Position below the navbar */
+  right: 0;
+  background-color: var(--white-color);
+  border-radius: 8px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  width: 220px;
+  z-index: 1001;
+  border: 1px solid #eee;
+  padding: 0.5rem 0;
+}
+
+.dropdown-header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--light-color);
+  color: var(--grey-color);
+  font-size: 0.9rem;
+}
+.dropdown-header strong {
+  color: var(--text-color);
+}
+
+.dropdown-item {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: var(--text-color);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f9fafb;
+}
+
+/* Dashboard Page Styles */
+.dashboard-header {
+  text-align: center;
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--light-color);
+  margin-bottom: 3rem;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+}
+
+.dashboard-content h2 {
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.completed-project-card {
+  background: var(--white-color);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  border: 1px solid #eee;
+}
+
+.completed-project-card h3 {
+  margin-top: 0;
+  color: var(--primary-color);
+}
+
+.no-projects-message {
+  text-align: center;
+  font-size: 1.1rem;
+  padding: 3rem;
+  background-color: var(--white-color);
+  border-radius: 8px;
+}
+.no-projects-message a {
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: underline;
+}
