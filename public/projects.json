@@ -1,0 +1,123 @@
+[
+  {
+    "id": 1,
+    "title": "Build a Responsive Landing Page for a SaaS App",
+    "domain": "Web Development",
+    "difficulty": "Beginner",
+    "problemStatement": "A startup is launching 'ZenFlow,' a new productivity app. They need a compelling, single-page website to explain the product, attract early adopters, and collect email sign-ups before launch.",
+    "objectives": ["Clearly explain what ZenFlow does and its key benefits.", "Capture visitor emails through a sign-up form.", "Be visually appealing and fully responsive on all devices, from mobile to desktop."],
+    "deliverables": ["A complete HTML, CSS, and JavaScript codebase for the landing page.", "A link to the live, deployed page (e.g., on GitHub Pages)."],
+    "skills": ["HTML5", "CSS3", "Responsive Design", "Flexbox/Grid", "JavaScript DOM"],
+    "resources": [
+      { "title": "MDN - Learn HTML", "link": "https://developer.mozilla.org/en-US/docs/Web/HTML" },
+      { "title": "CSS-Tricks - A Guide to Flexbox", "link": "https://css-tricks.com/snippets/css/a-guide-to-flexbox/" },
+      { "title": "Coolors - Color Palette Generator", "link": "https://coolors.co/" },
+      { "title": "Pexels - Free Stock Photos", "link": "https://www.pexels.com/" }
+    ],
+    "solution": {
+      "approach": "1. **Structure with Semantic HTML:** Use `<header>`, `<nav>`, `<main>`, `<section>`, and `<footer>` tags to create a logical document structure. \n2. **Mobile-First CSS:** Start by styling for a small mobile screen. Use a single-column layout. \n3. **Responsive with Media Queries:** Use `min-width` media queries to add complexity for larger screens (e.g., change the layout to two columns on tablets, adjust font sizes). Flexbox is ideal for aligning items in the header and feature sections. \n4. **Interactive Form:** Use JavaScript to handle the form submission. For this project, a simple `alert('Thank you for signing up!')` is sufficient. The key is to prevent the default form submission behavior.",
+      "keyTakeaways": "Understanding the mobile-first workflow is critical for modern web development. This project teaches how to build a layout that works everywhere and provides a solid foundation for more complex website projects."
+    },
+    "resumeText": "Designed and developed a fully responsive landing page for a conceptual SaaS product, focusing on clear UI/UX principles and a mobile-first CSS approach to effectively drive user sign-ups."
+  },
+  {
+    "id": 2,
+    "title": "Analyze E-commerce Customer Behavior",
+    "domain": "Data Analysis",
+    "difficulty": "Intermediate",
+    "problemStatement": "An online retail store, 'StyleSpree,' wants to understand its customers better. They've provided a sales dataset and want to know who their most valuable customers are, what their most popular products are, and when the peak shopping times are.",
+    "objectives": ["Identify the top 10 most valuable customers by total spending.", "Determine the 5 best-selling products by quantity sold.", "Analyze sales trends to find the busiest day of the week and hour of the day."],
+    "deliverables": ["A Jupyter Notebook or R Markdown file with your full, commented analysis.", "A brief summary report (1-2 pages) with key visualizations and recommendations for the marketing team."],
+    "skills": ["Data Cleaning", "Data Aggregation", "Pandas", "Matplotlib/Seaborn", "Time-Series Analysis"],
+    "resources": [
+      { "title": "Download Sales Data (CSV)", "link": "https://gist.githubusercontent.com/u-ways/00c727a975791c1809033a5cbb738734/raw/e8c4516315878d1f7c58852e690f3c64c70d47e2/ecommerce_sales_data.csv" },
+      { "title": "Pandas Documentation", "link": "https://pandas.pydata.org/docs/" },
+      { "title": "Seaborn Visualization Gallery", "link": "https://seaborn.pydata.org/examples/index.html" }
+    ],
+    "solution": {
+      "approach": "1. **Load and Clean Data:** Use Pandas to read the CSV. Check for missing values (`.isnull().sum()`) and handle them. Convert the 'OrderDate' column to a proper datetime format using `pd.to_datetime()`. \n2. **Customer Value:** Group the data by 'CustomerID' and sum the 'Price' to find total spending. Sort the results to find the top 10. \n3. **Product Popularity:** Group by 'SKU' and sum the 'Quantity'. Sort to find the top 5. \n4. **Peak Times:** Extract the day of the week and the hour from the 'OrderDate' column into new columns (`df['DayOfWeek'] = df['OrderDate'].dt.day_name()`). Then, use `groupby()` and `count()` to find the most frequent days and hours. \n5. **Visualize:** Use Matplotlib or Seaborn to create bar charts for top customers and products, and a line chart or heatmap for sales by hour/day.",
+      "keyTakeaways": "This project teaches the fundamental workflow of a data analyst: importing data, cleaning it, performing grouped aggregations to answer specific business questions, and communicating those findings visually."
+    },
+    "resumeText": "Analyzed an e-commerce sales dataset using Python (Pandas) to identify key business insights, including top-performing products and peak shopping hours, presenting findings in a summary report with visualizations (Matplotlib/Seaborn)."
+  },
+  {
+    "id": 3,
+    "title": "Design a Mobile App Onboarding Flow",
+    "domain": "UI/UX Design",
+    "difficulty": "Beginner",
+    "problemStatement": "A new fitness tracking app, 'FitPath,' is experiencing a high user drop-off rate after the initial download. Users are confused and don't complete the setup process. The goal is to design a clear, engaging, and efficient onboarding experience.",
+    "objectives": ["Design a 3-4 screen user onboarding flow that guides users through initial setup.", "Clearly communicate the app's primary value proposition.", "Make the process feel quick, easy, and motivating."],
+    "deliverables": ["Low-fidelity wireframes for the onboarding screens.", "A high-fidelity, clickable prototype (e.g., in Figma) showcasing the complete flow.", "A brief document explaining your design choices."],
+    "skills": ["Wireframing", "Prototyping", "User Flows", "UI Design", "Figma/Adobe XD"],
+    "resources": [
+      { "title": "Figma - Free UI/UX Design Tool", "link": "https://www.figma.com/" },
+      { "title": "Mobbin - Mobile App Design Inspiration", "link": "https://mobbin.com/browse/onboarding" },
+      { "title": "Nielsen Norman Group - Onboarding Best Practices", "link": "https://www.nngroup.com/articles/mobile-app-onboarding/" }
+    ],
+    "solution": {
+      "approach": "1. **Value Proposition First:** The first screen should immediately tell the user the main benefit of the app (e.g., 'Your Personalized Path to Fitness'). \n2. **Progressive Disclosure:** Don't ask for all information at once. Screen 1: Welcome. Screen 2: Ask for their primary goal (lose weight, build muscle). Screen 3: Ask for notification permissions, explaining why it's useful. Use progress indicators (e.g., 'Step 1 of 3') to manage expectations. \n3. **Visuals and Microcopy:** Use inspiring imagery and friendly, encouraging language ('Let's get started!'). Avoid jargon. \n4. **Skip Option:** Always provide a 'Skip for now' option for non-essential steps. \n5. **Prototype:** In Figma, link the screens together using the prototype feature to simulate the user tapping 'Next' and making selections.",
+      "keyTakeaways": "Good onboarding is crucial for user retention. It's about building trust and demonstrating value quickly, not just collecting data. This project emphasizes empathy for the new user's experience."
+    },
+    "resumeText": "Designed a 4-screen user onboarding flow for a conceptual mobile app, creating low-fidelity wireframes and a high-fidelity clickable prototype in Figma to improve user retention and simplify initial setup."
+  },
+  {
+    "id": 4,
+    "title": "Develop a Content Strategy for a Tech Blog",
+    "domain": "Digital Marketing",
+    "difficulty": "Beginner",
+    "problemStatement": "'CodeSphere' is a new blog aiming to help people learn to code. They need a foundational content strategy to attract an audience and build authority in a crowded space.",
+    "objectives": ["Define a specific target audience and 3 primary content pillars (topics).", "Perform basic keyword research to find 5 potential blog post ideas.", "Create a 1-month content calendar outlining post titles, format, and publication dates."],
+    "deliverables": ["A 2-page document outlining the strategy (audience, pillars, keywords).", "A content calendar in a spreadsheet format (e.g., Google Sheets)."],
+    "skills": ["Content Strategy", "SEO", "Keyword Research", "Audience Persona"],
+    "resources": [
+      { "title": "AnswerThePublic - Keyword Idea Generator", "link": "https://answerthepublic.com/" },
+      { "title": "Google Trends - Explore Topic Interest", "link": "https://trends.google.com/trends/" },
+      { "title": "HubSpot - How to Create a Content Strategy", "link": "https://blog.hubspot.com/marketing/content-marketing-strategy" }
+    ],
+    "solution": {
+      "approach": "1. **Niche Down:** Instead of 'learning to code,' target a niche like 'career changers learning web development.' This is more specific. \n2. **Content Pillars:** Choose pillars that support this audience, e.g., 'Beginner JavaScript Tutorials,' 'Career Advice for New Devs,' and 'Project Ideas & Walkthroughs.' \n3. **Keyword Research:** Use a tool like AnswerThePublic. Search for 'learn javascript' and find questions people ask, like 'how long to learn javascript' or 'best javascript projects for beginners.' These are great post ideas. \n4. **Content Calendar:** Create a spreadsheet with columns for: 'Publication Date,' 'Title,' 'Pillar,' 'Format' (e.g., listicle, tutorial, interview), and 'Status' (idea, drafting, published). Plan 2-3 posts per week.",
+      "keyTakeaways": "A successful content strategy isn't about writing what you want; it's about writing what a specific audience needs. Focusing on a niche and answering real questions is the fastest way to build an audience."
+    },
+    "resumeText": "Developed a foundational content strategy for a tech blog, defining a target audience, performing keyword research to generate article ideas, and creating a one-month content calendar to drive organic traffic."
+  },
+  {
+    "id": 5,
+    "title": "Predict Customer Churn with Machine Learning",
+    "domain": "Data Science",
+    "difficulty": "Advanced",
+    "problemStatement": "A telecom company wants to proactively identify customers who are likely to churn (cancel their service). Using a dataset of customer information, your task is to build a machine learning model that can predict churn with a high degree of accuracy.",
+    "objectives": ["Pre-process the data to make it suitable for machine learning (e.g., one-hot encoding).", "Train and evaluate at least two different classification models (e.g., Logistic Regression, Random Forest).", "Determine which model performs better using metrics like Accuracy, Precision, and Recall.", "Identify the most important features that influence churn."],
+    "deliverables": ["A complete, well-commented Jupyter Notebook with your entire workflow.", "A brief report explaining your model choice, its performance, and the top 5 most important features for predicting churn."],
+    "skills": ["Machine Learning", "Scikit-Learn", "Feature Engineering", "Model Evaluation", "Classification"],
+    "resources": [
+      { "title": "Download Telecom Churn Data (CSV)", "link": "https://gist.githubusercontent.com/u-ways/d0257354929a2399042b8265a6e84942/raw/4e27f3299c8515c138804617e4a13c9e64e5295c/telecom_customer_churn.csv" },
+      { "title": "Scikit-Learn Documentation", "link": "https://scikit-learn.org/stable/" },
+      { "title": "Guide to Train/Test Split", "link": "https://realpython.com/train-test-split-python-data/" }
+    ],
+    "solution": {
+      "approach": "1. **Data Preprocessing:** Load the data. Convert categorical variables (like 'gender', 'Contract') into numerical format using Pandas' `get_dummies` (one-hot encoding). The 'TotalCharges' column may have missing values and need to be converted to a numeric type. \n2. **Train-Test Split:** Use Scikit-Learn's `train_test_split` to divide your data into a training set (to build the model) and a testing set (to evaluate it). A common split is 80% train, 20% test. \n3. **Model Training:** Initialize and train a `LogisticRegression` model and a `RandomForestClassifier` on the training data. \n4. **Evaluation:** Use the trained models to make predictions on the test set. Compare these predictions to the actual values using `accuracy_score`, `precision_score`, and `recall_score`. Churn prediction is often a case where Recall is very important (you want to catch as many potential churners as possible). \n5. **Feature Importance:** For the Random Forest model, you can access the `.feature_importances_` attribute to see which columns had the most impact on the prediction (e.g., 'Contract', 'tenure', 'MonthlyCharges').",
+      "keyTakeaways": "This project covers the end-to-end process of a classification task. It highlights that model performance isn't just about accuracy, and that understanding *why* a model makes its predictions (feature importance) is often as valuable as the prediction itself."
+    },
+    "resumeText": "Developed a machine learning model to predict customer churn using Python (Pandas, Scikit-Learn), achieving [Your Accuracy]% accuracy by training and evaluating Logistic Regression and Random Forest classifiers and identifying key predictive features."
+  },
+  {
+    "id": 6,
+    "title": "Create a Brand Identity for a Startup",
+    "domain": "Graphic Design",
+    "difficulty": "Intermediate",
+    "problemStatement": "A new sustainable coffee brand, 'TerraBrew,' needs a complete brand identity. They want to appear modern, eco-friendly, and trustworthy to a young, environmentally-conscious audience.",
+    "objectives": ["Design a unique and memorable logo.", "Select a primary and secondary color palette that reflects the brand's values.", "Choose a modern and readable typography pairing (one for headlines, one for body text).", "Create one sample application of the brand, like a coffee cup mockup."],
+    "deliverables": ["A one-page brand style guide (PDF) showing the logo, colors, and typography.", "The logo in multiple formats (e.g., SVG, PNG).", "One high-quality mockup image."],
+    "skills": ["Logo Design", "Branding", "Color Theory", "Typography", "Adobe Illustrator/Canva"],
+    "resources": [
+      { "title": "Adobe Color - Explore Color Palettes", "link": "https://color.adobe.com/create/color-wheel" },
+      { "title": "Google Fonts - Free Font Library", "link": "https://fonts.google.com/" },
+      { "title": "Behance - Branding Project Inspiration", "link": "https://www.behance.net/search/projects?field=branding" }
+    ],
+    "solution": {
+      "approach": "1. **Mind Mapping:** Start with keywords: 'Earth,' 'coffee bean,' 'sustainable,' 'modern,' 'growth.' Sketch initial ideas combining these concepts (e.g., a coffee bean that is also a leaf). \n2. **Color Palette:** Choose earthy tones like deep greens, browns, and creams. Add a brighter accent color (like a soft orange) for calls to action. Use Adobe Color to ensure the colors are harmonious. \n3. **Typography:** Select a modern, clean sans-serif font for headlines (like Montserrat or Poppins) and a highly readable serif font for body text (like Lora or Merriweather) to create contrast and a professional feel. \n4. **Logo Vectorization:** Create the final logo in a vector program like Adobe Illustrator or a powerful free alternative so it can be scaled to any size without losing quality. \n5. **Style Guide:** Assemble all the elements onto a single, well-organized page. Include hex codes for the colors and font names.",
+      "keyTakeaways": "A strong brand identity is a cohesive system, not just a logo. Every element—color, font, and imagery—works together to communicate the brand's personality and values to its target audience."
+    },
+    "resumeText": "Developed a complete brand identity for a conceptual sustainable coffee brand, designing a logo, a cohesive color palette, and typography standards, and creating a one-page style guide to ensure brand consistency."
+  }
+]
