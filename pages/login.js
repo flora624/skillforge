@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase/config';
-import Navbar from '../components/Navbar'; // <-- IMPORT NAVBAR
+import Navbar from '../components/Navbar';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -17,21 +17,20 @@ export default function Login() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/');
-    } catch (err) => {
+    } catch (err) { // <-- THIS IS THE CORRECTED LINE
       setError(err.message.replace('Firebase: ', ''));
     }
   };
 
   return (
-    <> {/* Use a fragment to wrap multiple elements */}
-      <Navbar /> {/* <-- ADD THE NAVBAR */}
+    <>
+      <Navbar />
       <div className="auth-page">
         <div className="auth-container">
           <div className="auth-box">
             <h2>Welcome Back!</h2>
             <p>Log in to track your projects and build your portfolio.</p>
             <form onSubmit={handleLogin}>
-              {/* ... form content ... */}
               <div className="form-group">
                 <label htmlFor="email">Email</label>
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" />
