@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase/config';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -16,37 +15,24 @@ export async function getStaticProps() {
   return { props: { allProjects } };
 }
 
-export default function Profile({ allProjects }) {
+export default function ProfilePage({ allProjects }) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [completedProjects, setCompletedProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // If the user data is still loading, do nothing.
-    if (loading) {
-      return;
-    }
-    // If the user is not logged in, redirect them to the login page.
+    if (loading) return;
     if (!user) {
       router.push('/login');
       return;
     }
 
-    // Fetch the completed projects for the logged-in user.
     const fetchCompletedProjects = async () => {
-      // 1. Create a query to find all documents in the 'completions' collection
-      //    where the 'userId' field matches the current user's ID.
       const q = query(collection(db, 'completions'), where('userId', '==', user.uid));
-      
       const querySnapshot = await getDocs(q);
-      
-      // 2. Map the results to get the project IDs.
       const completedIds = querySnapshot.docs.map(doc => doc.data().projectId);
-      
-      // 3. Filter the `allProjects` data to get the full details of completed projects.
       const userProjects = allProjects.filter(project => completedIds.includes(project.id));
-      
       setCompletedProjects(userProjects);
       setIsLoading(false);
     };
@@ -55,24 +41,50 @@ export default function Profile({ allProjects }) {
   }, [user, loading, router, allProjects]);
 
   if (loading || isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="loading-container">
+        <Navbar />
+        <p>Loading Profile...</p>
+      </div>
+    );
   }
   
-  if (!user) {
-    return null; // or a "Please login" message
-  }
+  if (!user) return null;
 
   return (
     <>
       <Navbar />
-      <main className="container">
-        <section className="dashboard-header">
-          <h1>My Dashboard</h1>
-          <p>Welcome back, <strong>{user.email}</strong>!</p>
+      <main className="container profile-page-container">
+        
+        {/* --- USER DETAILS SECTION --- */}
+        <section className="profile-details-section">
+          <div className="profile-header">
+            <i className="fas fa-user-circle profile-avatar"></i>
+            <h1>My Profile</h1>
+          </div>
+          <div className="profile-info-card">
+            <h3>Account Details</h3>
+            <div className="info-item">
+              <span className="info-label">Email</span>
+              <span className="info-value">{user.email}</span>
+            </div>
+            <div className="info-item">
+              <span className="info-label">User ID</span>
+              <span className="info-value user-id">{user.uid}</span>
+            </div>
+            <div className="info-item">
+              <span className="info-label">Joined On</span>
+              <span className="info-value">{new Date(user.metadata.creationTime).toLocaleDateString()}</span>
+            </div>
+            {/* You can add a "Change Password" button here in the future */}
+          </div>
         </section>
 
-        <section className="dashboard-content">
-          <h2>Completed Projects</h2>
+        {/* --- DASHBOARD SECTION --- */}
+        <section className="dashboard-section">
+          <h2>Project Dashboard</h2>
+          <p>You have completed <strong>{completedProjects.length}</strong> project{completedProjects.length !== 1 ? 's' : ''}.</p>
+          
           {completedProjects.length > 0 ? (
             <div className="dashboard-grid">
               {completedProjects.map(project => (
@@ -84,9 +96,10 @@ export default function Profile({ allProjects }) {
               ))}
             </div>
           ) : (
-            <p className="no-projects-message">You haven't completed any projects yet. <Link href="/#projects">Get started!</Link></p>
+            <p className="no-projects-message">You haven't completed any projects yet. Start a new one today!</p>
           )}
         </section>
+        
       </main>
     </>
   );

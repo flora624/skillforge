@@ -214,3 +214,118 @@ a { color: inherit; text-decoration: none; }
   font-weight: 600;
   text-decoration: underline;
 }
+/* --- NEW STYLES FOR UNIFIED PROFILE PAGE & NAVBAR --- */
+
+/* Navbar Profile Icon & Logout Button */
+.profile-icon-link {
+  font-size: 1.8rem;
+  color: var(--grey-color);
+  transition: color 0.2s;
+  /* Add some styling to make it look like other nav items */
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+.profile-icon-link:hover {
+  color: var(--primary-color);
+}
+
+.logout-button {
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.logout-button:hover {
+  color: var(--primary-color);
+}
+
+/* Unified Profile Page Layout */
+.profile-page-container {
+  display: grid;
+  grid-template-columns: 300px 1fr; /* Sidebar for profile, main area for dashboard */
+  gap: 3rem;
+  align-items: start;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.profile-avatar {
+  font-size: 4rem;
+  color: var(--primary-color);
+}
+
+.profile-header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.profile-info-card {
+  background: var(--white-color);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  border: 1px solid #eee;
+}
+
+.profile-info-card h3 {
+  margin-top: 0;
+  border-bottom: 1px solid var(--light-color);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.info-label {
+  font-size: 0.8rem;
+  color: var(--grey-color);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.info-value {
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+.info-value.user-id {
+  font-family: monospace;
+  font-size: 0.9rem;
+  word-break: break-all; /* Prevents long IDs from breaking layout */
+}
+
+/* Dashboard Section Styles */
+.dashboard-section h2 {
+  margin-top: 0;
+}
+
+/* Ensure dashboard grid and cards from previous steps are styled */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.completed-project-card {
+  background: var(--white-color);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  border: 1px solid #eee;
+}
+
+.completed-project-card h3 {
+  margin-top: 0;
+  color: var(--primary-color);
+}
