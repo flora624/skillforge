@@ -52,13 +52,11 @@ export default function ProjectPage({ project }) {
       <Navbar />
       <div className="project-page-container">
         <div className="project-page-layout">
-          {/* Left Sidebar */}
+          {/* Left Sidebar - Kept the original style, just added company name */}
           <aside className="milestone-sidebar">
             <h2 className="project-title">{project.title}</h2>
-            <div className="project-meta-info">
-              <span><i className="fas fa-building"></i> Inspired by {getCompanyName(project.problemStatement)}</span>
-              <span className={`tag difficulty-${project.difficulty}`}>{project.difficulty}</span>
-            </div>
+            {/* THIS IS THE ONLY ADDITION TO THE SIDEBAR */}
+            <p className="company-inspiration">Inspired by {getCompanyName(project.problemStatement)}</p>
             <ul>
               {project.milestones.map((milestone, index) => (
                 <li 
@@ -73,14 +71,15 @@ export default function ProjectPage({ project }) {
             </ul>
           </aside>
 
-          {/* Right Main Content */}
+          {/* Right Main Content - Kept the original style, just added problem statement */}
           <main className="milestone-content">
-            <div className="problem-statement-box">
-                <h3><i className="fas fa-bullseye"></i> The Challenge</h3>
+            {/* THIS IS THE ONLY ADDITION TO THE MAIN CONTENT */}
+            <div className="milestone-box problem-statement-header">
+                <h3>The Challenge</h3>
                 <p>{project.problemStatement.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
             </div>
-
-            <hr className="milestone-divider" />
+            
+            <hr className="milestone-divider"/>
 
             <h1>Milestone {activeMilestoneIndex + 1}: {activeMilestone.title}</h1>
 
