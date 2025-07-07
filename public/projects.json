@@ -1,82 +1,123 @@
 [
   {
     "id": 1,
-    "title": "Design an A/B Testing System for Streaming Service Thumbnails",
-    "domain": "System Design & Product",
-    "difficulty": "Advanced",
-    "problemStatement": "Netflix famously discovered that the artwork and thumbnails shown to users have a massive impact on what they choose to watch. They needed a scalable system to A/B test thousands of image variations across millions of users to find the most effective artwork for each title. Your task is to design a simplified version of such a system for a new streaming service.",
-    "objectives": ["Design the data schema for storing titles, image assets, test variants, and user interaction results.", "Create a high-level architectural diagram showing how a user request for a homepage would resolve to show a specific thumbnail variant.", "Define the API endpoint that would record a user's click/play action on a tested thumbnail."],
-    "deliverables": ["A system design document (PDF) explaining your architecture, data models, and API design.", "A sequence diagram illustrating the A/B test serving logic."],
-    "skills": ["System Design", "API Design", "Data Modeling", "A/B Testing", "Product Thinking"],
+    "title": "Build a Responsive Landing Page for a SaaS App",
+    "domain": "Web Development",
+    "difficulty": "Beginner",
+    "problemStatement": "A startup is launching 'ZenFlow,' a new productivity app. They need a compelling, single-page website to explain the product, attract early adopters, and collect email sign-ups before launch.",
+    "objectives": ["Clearly explain what ZenFlow does and its key benefits.", "Capture visitor emails through a sign-up form.", "Be visually appealing and fully responsive on all devices, from mobile to desktop."],
+    "deliverables": ["A complete HTML, CSS, and JavaScript codebase for the landing page.", "A link to the live, deployed page (e.g., on GitHub Pages)."],
+    "skills": ["HTML5", "CSS3", "Responsive Design", "Flexbox/Grid", "JavaScript DOM"],
     "resources": [
-      { "title": "Source: The Netflix Tech Blog on Artwork Personalization", "link": "https://netflixtechblog.com/artwork-personalization-c589f074ad76" },
-      { "title": "System Design Basics: A/B Testing", "link": "https://www.youtube.com/watch?v=fkA9kIqGafA" },
-      { "title": "Miro - Free Diagramming Tool", "link": "https://miro.com/" }
+      { "title": "MDN - Learn HTML", "link": "https://developer.mozilla.org/en-US/docs/Web/HTML" },
+      { "title": "CSS-Tricks - A Guide to Flexbox", "link": "https://css-tricks.com/snippets/css/a-guide-to-flexbox/" },
+      { "title": "Coolors - Color Palette Generator", "link": "https://coolors.co/" },
+      { "title": "Pexels - Free Stock Photos", "link": "https://www.pexels.com/" }
     ],
     "solution": {
-      "approach": "1. **Data Model:** Design tables/collections for `Users`, `Titles`, `Images` (with a foreign key to Title), `AB_Tests` (defining which images are in a test for a title), and `Impressions` (logging which user saw which image and if they clicked). \n2. **Architecture:** A common approach is a microservice architecture. A 'Personalization Service' would be responsible for the logic. When a user requests their homepage, the 'Homepage Service' asks the 'Personalization Service', 'Which image should I show User_123 for Title_ABC?' \n3. **Logic:** The Personalization Service checks if the user is already part of an active test for that title. If so, it serves the same variant. If not, it assigns them to a variant (e.g., randomly, with a 50/50 split) and records the assignment. \n4. **API:** The logging API endpoint could be `POST /v1/events/impression` with a body like `{ userId: '123', imageId: 'xyz', titleId: 'abc', event: 'play' }`.",
-      "keyTakeaways": "This project teaches how to think about scalable, data-driven product features. It's not just about code, but about designing a system that can answer a business question ('which image works best?') reliably and at scale."
+      "approach": "1. **Structure with Semantic HTML:** Use `<header>`, `<nav>`, `<main>`, `<section>`, and `<footer>` tags to create a logical document structure. \n2. **Mobile-First CSS:** Start by styling for a small mobile screen. Use a single-column layout. \n3. **Responsive with Media Queries:** Use `min-width` media queries to add complexity for larger screens (e.g., change the layout to two columns on tablets, adjust font sizes). Flexbox is ideal for aligning items in the header and feature sections. \n4. **Interactive Form:** Use JavaScript to handle the form submission. For this project, a simple `alert('Thank you for signing up!')` is sufficient. The key is to prevent the default form submission behavior.",
+      "keyTakeaways": "Understanding the mobile-first workflow is critical for modern web development. This project teaches how to build a layout that works everywhere and provides a solid foundation for more complex website projects."
     },
-    "resumeText": "Designed a scalable A/B testing system for personalized content, inspired by Netflix's engineering challenges, including data schema design, high-level architecture, and API endpoint definitions."
+    "resumeText": "Designed and developed a fully responsive landing page for a conceptual SaaS product, focusing on clear UI/UX principles and a mobile-first CSS approach to effectively drive user sign-ups."
   },
   {
     "id": 2,
-    "title": "Build a 'Discover' Feature Recommendation Engine",
-    "domain": "Data Science",
-    "difficulty": "Advanced",
-    "problemStatement": "Spotify's 'Discover Weekly' is a legendary feature that introduced millions of users to new music. The core problem was analyzing user listening history to recommend new songs they would love but haven't heard yet. Your task is to build a simplified collaborative filtering recommendation engine using a sample dataset.",
-    "objectives": ["Pre-process a user-item interaction dataset (e.g., user-song plays).", "Build a user-item matrix to represent user preferences.", "Implement a simple collaborative filtering algorithm (e.g., using nearest neighbors or matrix factorization) to generate song recommendations for a given user."],
-    "deliverables": ["A complete, well-commented Jupyter Notebook detailing your data processing, model building, and recommendation logic.", "A function that takes a `userId` and returns a list of 10 recommended `songIds`."],
-    "skills": ["Machine Learning", "Recommendation Systems", "Collaborative Filtering", "Pandas", "Scikit-Learn"],
+    "title": "Analyze E-commerce Customer Behavior",
+    "domain": "Data Analysis",
+    "difficulty": "Intermediate",
+    "problemStatement": "An online retail store, 'StyleSpree,' wants to understand its customers better. They've provided a sales dataset and want to know who their most valuable customers are, what their most popular products are, and when the peak shopping times are.",
+    "objectives": ["Identify the top 10 most valuable customers by total spending.", "Determine the 5 best-selling products by quantity sold.", "Analyze sales trends to find the busiest day of the week and hour of the day."],
+    "deliverables": ["A Jupyter Notebook or R Markdown file with your full, commented analysis.", "A brief summary report (1-2 pages) with key visualizations and recommendations for the marketing team."],
+    "skills": ["Data Cleaning", "Data Aggregation", "Pandas", "Matplotlib/Seaborn", "Time-Series Analysis"],
     "resources": [
-      { "title": "Source: How Spotify's Discover Weekly Works", "link": "https://medium.com/s/story/spotifys-discover-weekly-how-machine-learning-finds-your-new-music-19a41ab76efe" },
-      { "title": "Music Recommendation Dataset (Kaggle)", "link": "https://www.kaggle.com/c/kkbox-music-recommendation-challenge/data" },
-      { "title": "Guide to Collaborative Filtering", "link": "https://realpython.com/build-recommendation-engine-collaborative-filtering/" }
+      { "title": "Download Sales Data (CSV)", "link": "https://gist.githubusercontent.com/u-ways/00c727a975791c1809033a5cbb738734/raw/e8c4516315878d1f7c58852e690f3c64c70d47e2/ecommerce_sales_data.csv" },
+      { "title": "Pandas Documentation", "link": "https://pandas.pydata.org/docs/" },
+      { "title": "Seaborn Visualization Gallery", "link": "https://seaborn.pydata.org/examples/index.html" }
     ],
     "solution": {
-      "approach": "1. **Data Prep:** Load the user-song data. Create a user-item matrix where rows are users, columns are songs, and values are play counts (or 1 for played, 0 for not). This matrix will be very sparse. \n2. **Similarity Model (User-based):** For a target user, calculate a similarity score (e.g., cosine similarity) between them and all other users. Find the 'K' most similar users (their 'nearest neighbors'). \n3. **Recommendation:** Look at the songs that these similar users have listened to but the target user has not. Rank these songs based on how many of the similar users have listened to them, and recommend the top N songs. \n4. **Alternative (Item-based):** An alternative is to calculate the similarity between songs instead of users. If a user likes Song A, recommend songs that are most similar to Song A.",
-      "keyTakeaways": "This project dives into the core of modern personalization. It shows how patterns in data can be used to create a delightful and highly effective user experience, driving engagement and retention."
+      "approach": "1. **Load and Clean Data:** Use Pandas to read the CSV. Check for missing values (`.isnull().sum()`) and handle them. Convert the 'OrderDate' column to a proper datetime format using `pd.to_datetime()`. \n2. **Customer Value:** Group the data by 'CustomerID' and sum the 'Price' to find total spending. Sort the results to find the top 10. \n3. **Product Popularity:** Group by 'SKU' and sum the 'Quantity'. Sort to find the top 5. \n4. **Peak Times:** Extract the day of the week and the hour from the 'OrderDate' column into new columns (`df['DayOfWeek'] = df['OrderDate'].dt.day_name()`). Then, use `groupby()` and `count()` to find the most frequent days and hours. \n5. **Visualize:** Use Matplotlib or Seaborn to create bar charts for top customers and products, and a line chart or heatmap for sales by hour/day.",
+      "keyTakeaways": "This project teaches the fundamental workflow of a data analyst: importing data, cleaning it, performing grouped aggregations to answer specific business questions, and communicating those findings visually."
     },
-    "resumeText": "Developed a collaborative filtering recommendation engine in Python (Pandas, Scikit-Learn) to generate personalized song recommendations, mirroring the principles behind Spotify's 'Discover' features."
+    "resumeText": "Analyzed an e-commerce sales dataset using Python (Pandas) to identify key business insights, including top-performing products and peak shopping hours, presenting findings in a summary report with visualizations (Matplotlib/Seaborn)."
   },
   {
     "id": 3,
-    "title": "Design a Frictionless Developer Checkout Flow",
+    "title": "Design a Mobile App Onboarding Flow",
     "domain": "UI/UX Design",
-    "difficulty": "Intermediate",
-    "problemStatement": "Stripe revolutionized online payments by focusing obsessively on developer experience and creating a simple, elegant, and easy-to-integrate checkout process. Older payment systems were notoriously complex. Your task is to design a modern, frictionless two-page checkout flow for a new payment processor aiming to compete with Stripe.",
-    "objectives": ["Design a checkout form that is intuitive and minimizes user input.", "Design a 'success' page that clearly confirms the transaction and provides necessary details.", "Ensure the design is clean, trustworthy, and visually appealing to build user confidence."],
-    "deliverables": ["High-fidelity mockups for the 'Payment' screen and the 'Confirmation' screen.", "A clickable prototype in Figma or Adobe XD showing the flow from entering payment details to seeing the success message.", "A brief document justifying your design choices (e.g., why you chose a single-column layout)."],
-    "skills": ["UI Design", "UX Design", "Prototyping", "Figma/Adobe XD", "User Empathy"],
+    "difficulty": "Beginner",
+    "problemStatement": "A new fitness tracking app, 'FitPath,' is experiencing a high user drop-off rate after the initial download. Users are confused and don't complete the setup process. The goal is to design a clear, engaging, and efficient onboarding experience.",
+    "objectives": ["Design a 3-4 screen user onboarding flow that guides users through initial setup.", "Clearly communicate the app's primary value proposition.", "Make the process feel quick, easy, and motivating."],
+    "deliverables": ["Low-fidelity wireframes for the onboarding screens.", "A high-fidelity, clickable prototype (e.g., in Figma) showcasing the complete flow.", "A brief document explaining your design choices."],
+    "skills": ["Wireframing", "Prototyping", "User Flows", "UI Design", "Figma/Adobe XD"],
     "resources": [
-      { "title": "Source: Stripe's Design and Documentation (The Gold Standard)", "link": "https://stripe.com/docs/checkout/quickstart" },
-      { "title": "Baymard Institute - Checkout Form Best Practices", "link": "https://baymard.com/blog/checkout-flow-best-practices" },
-      { "title": "Figma - Free UI/UX Design Tool", "link": "https://www.figma.com/" }
+      { "title": "Figma - Free UI/UX Design Tool", "link": "https://www.figma.com/" },
+      { "title": "Mobbin - Mobile App Design Inspiration", "link": "https://mobbin.com/browse/onboarding" },
+      { "title": "Nielsen Norman Group - Onboarding Best Practices", "link": "https://www.nngroup.com/articles/mobile-app-onboarding/" }
     ],
     "solution": {
-      "approach": "1. **Minimize Fields:** Only ask for what is absolutely necessary. Combine 'First Name' and 'Last Name' into a single 'Full Name' field. Use a single 'Card Number' field that automatically detects the card type (Visa, Mastercard, etc.) and formats the input. \n2. **Clear Visual Hierarchy:** Use size, color, and spacing to guide the user's eye to the most important elements, like the 'Pay' button. The price should be the most prominent element on the page. \n3. **Inline Validation:** Provide real-time feedback. If a user enters an invalid credit card number, show a gentle error message immediately, don't wait for them to click 'Pay'. \n4. **Trust Signals:** Include security logos (e.g., a lock icon), clear branding, and professional typography to make the user feel safe providing their payment information.",
-      "keyTakeaways": "This project teaches that great design is about removing friction. By focusing on simplicity, clarity, and user trust, you can turn a typically stressful process (paying for something) into a smooth and positive experience."
+      "approach": "1. **Value Proposition First:** The first screen should immediately tell the user the main benefit of the app (e.g., 'Your Personalized Path to Fitness'). \n2. **Progressive Disclosure:** Don't ask for all information at once. Screen 1: Welcome. Screen 2: Ask for their primary goal (lose weight, build muscle). Screen 3: Ask for notification permissions, explaining why it's useful. Use progress indicators (e.g., 'Step 1 of 3') to manage expectations. \n3. **Visuals and Microcopy:** Use inspiring imagery and friendly, encouraging language ('Let's get started!'). Avoid jargon. \n4. **Skip Option:** Always provide a 'Skip for now' option for non-essential steps. \n5. **Prototype:** In Figma, link the screens together using the prototype feature to simulate the user tapping 'Next' and making selections.",
+      "keyTakeaways": "Good onboarding is crucial for user retention. It's about building trust and demonstrating value quickly, not just collecting data. This project emphasizes empathy for the new user's experience."
     },
-    "resumeText": "Designed a high-fidelity, two-page payment checkout flow focused on minimizing user friction and building trust, applying UX principles inspired by Stripe's industry-leading developer experience."
+    "resumeText": "Designed a 4-screen user onboarding flow for a conceptual mobile app, creating low-fidelity wireframes and a high-fidelity clickable prototype in Figma to improve user retention and simplify initial setup."
   },
   {
     "id": 4,
-    "title": "Develop a Trust & Safety Program for a Marketplace",
-    "domain": "Business Strategy & Marketing",
-    "difficulty": "Intermediate",
-    "problemStatement": "In its early days, Airbnb faced a massive challenge: how to make people trust staying in a stranger's home. They had to build a system of trust from scratch. Your task is to develop a foundational 'Trust & Safety' program for a new peer-to-peer marketplace (e.g., a platform for renting out high-end camera equipment).",
-    "objectives": ["Outline a user verification process.", "Design a two-way review and rating system.", "Propose a 'Host Guarantee' or insurance policy to protect lenders.", "Create a marketing plan to communicate these trust features to new users."],
-    "deliverables": ["A 3-page strategy document (PDF) detailing the verification, review, and guarantee programs.", "A one-page marketing brief outlining the messaging and channels for promoting the trust features."],
-    "skills": ["Business Strategy", "Product Marketing", "User Trust", "Risk Management"],
+    "title": "Develop a Content Strategy for a Tech Blog",
+    "domain": "Digital Marketing",
+    "difficulty": "Beginner",
+    "problemStatement": "'CodeSphere' is a new blog aiming to help people learn to code. They need a foundational content strategy to attract an audience and build authority in a crowded space.",
+    "objectives": ["Define a specific target audience and 3 primary content pillars (topics).", "Perform basic keyword research to find 5 potential blog post ideas.", "Create a 1-month content calendar outlining post titles, format, and publication dates."],
+    "deliverables": ["A 2-page document outlining the strategy (audience, pillars, keywords).", "A content calendar in a spreadsheet format (e.g., Google Sheets)."],
+    "skills": ["Content Strategy", "SEO", "Keyword Research", "Audience Persona"],
     "resources": [
-      { "title": "Source: How Airbnb Designed for Trust", "link": "https://www.fastcompany.com/3043212/how-airbnb-and-eames-democratized-design" },
-      { "title": "HBR - Building a Trust-Based Marketplace", "link": "https://hbr.org/2012/10/the-four-things-you-need-to-b" },
-      { "title": "HubSpot - Creating a Marketing Plan", "link": "https://blog.hubspot.com/marketing/marketing-plan-template-generator" }
+      { "title": "AnswerThePublic - Keyword Idea Generator", "link": "https://answerthepublic.com/" },
+      { "title": "Google Trends - Explore Topic Interest", "link": "https://trends.google.com/trends/" },
+      { "title": "HubSpot - How to Create a Content Strategy", "link": "https://blog.hubspot.com/marketing/content-marketing-strategy" }
     ],
     "solution": {
-      "approach": "1. **Multi-layered Verification:** Propose a system where users can earn a 'Verified' badge. Steps could include email verification (basic), phone number verification, government ID upload (advanced), and optional social media profile linking. \n2. **Two-Way Reviews:** Both the equipment owner (lender) and the renter should review each other after a transaction. This incentivizes good behavior on both sides. Reviews should be 'blind'—neither party sees the other's review until both have submitted theirs, preventing retaliatory feedback. \n3. **The Guarantee:** Propose a simple insurance-like program. E.g., 'The TerraLens Guarantee covers up to $1,000 in damages.' This single feature can overcome a major objection for new lenders. \n4. **Marketing:** The messaging should be central to the brand. Homepage slogan: 'Rent with Confidence.' Marketing emails should highlight the verification process and guarantee. Social proof (testimonials from happy users) should be featured prominently.",
-      "keyTakeaways": "For any marketplace platform, trust is the product. This project teaches how to think systematically about building trust through product features, policies, and marketing, which is essential for facilitating real-world interactions between users."
+      "approach": "1. **Niche Down:** Instead of 'learning to code,' target a niche like 'career changers learning web development.' This is more specific. \n2. **Content Pillars:** Choose pillars that support this audience, e.g., 'Beginner JavaScript Tutorials,' 'Career Advice for New Devs,' and 'Project Ideas & Walkthroughs.' \n3. **Keyword Research:** Use a tool like AnswerThePublic. Search for 'learn javascript' and find questions people ask, like 'how long to learn javascript' or 'best javascript projects for beginners.' These are great post ideas. \n4. **Content Calendar:** Create a spreadsheet with columns for: 'Publication Date,' 'Title,' 'Pillar,' 'Format' (e.g., listicle, tutorial, interview), and 'Status' (idea, drafting, published). Plan 2-3 posts per week.",
+      "keyTakeaways": "A successful content strategy isn't about writing what you want; it's about writing what a specific audience needs. Focusing on a niche and answering real questions is the fastest way to build an audience."
     },
-    "resumeText": "Developed a comprehensive Trust & Safety program for a conceptual peer-to-peer marketplace, outlining strategies for user verification, a two-way review system, and a host guarantee inspired by Airbnb's foundational business challenges."
+    "resumeText": "Developed a foundational content strategy for a tech blog, defining a target audience, performing keyword research to generate article ideas, and creating a one-month content calendar to drive organic traffic."
+  },
+  {
+    "id": 5,
+    "title": "Predict Customer Churn with Machine Learning",
+    "domain": "Data Science",
+    "difficulty": "Advanced",
+    "problemStatement": "A telecom company wants to proactively identify customers who are likely to churn (cancel their service). Using a dataset of customer information, your task is to build a machine learning model that can predict churn with a high degree of accuracy.",
+    "objectives": ["Pre-process the data to make it suitable for machine learning (e.g., one-hot encoding).", "Train and evaluate at least two different classification models (e.g., Logistic Regression, Random Forest).", "Determine which model performs better using metrics like Accuracy, Precision, and Recall.", "Identify the most important features that influence churn."],
+    "deliverables": ["A complete, well-commented Jupyter Notebook with your entire workflow.", "A brief report explaining your model choice, its performance, and the top 5 most important features for predicting churn."],
+    "skills": ["Machine Learning", "Scikit-Learn", "Feature Engineering", "Model Evaluation", "Classification"],
+    "resources": [
+      { "title": "Download Telecom Churn Data (CSV)", "link": "https://gist.githubusercontent.com/u-ways/d0257354929a2399042b8265a6e84942/raw/4e27f3299c8515c138804617e4a13c9e64e5295c/telecom_customer_churn.csv" },
+      { "title": "Scikit-Learn Documentation", "link": "https://scikit-learn.org/stable/" },
+      { "title": "Guide to Train/Test Split", "link": "https://realpython.com/train-test-split-python-data/" }
+    ],
+    "solution": {
+      "approach": "1. **Data Preprocessing:** Load the data. Convert categorical variables (like 'gender', 'Contract') into numerical format using Pandas' `get_dummies` (one-hot encoding). The 'TotalCharges' column may have missing values and need to be converted to a numeric type. \n2. **Train-Test Split:** Use Scikit-Learn's `train_test_split` to divide your data into a training set (to build the model) and a testing set (to evaluate it). A common split is 80% train, 20% test. \n3. **Model Training:** Initialize and train a `LogisticRegression` model and a `RandomForestClassifier` on the training data. \n4. **Evaluation:** Use the trained models to make predictions on the test set. Compare these predictions to the actual values using `accuracy_score`, `precision_score`, and `recall_score`. Churn prediction is often a case where Recall is very important (you want to catch as many potential churners as possible). \n5. **Feature Importance:** For the Random Forest model, you can access the `.feature_importances_` attribute to see which columns had the most impact on the prediction (e.g., 'Contract', 'tenure', 'MonthlyCharges').",
+      "keyTakeaways": "This project covers the end-to-end process of a classification task. It highlights that model performance isn't just about accuracy, and that understanding *why* a model makes its predictions (feature importance) is often as valuable as the prediction itself."
+    },
+    "resumeText": "Developed a machine learning model to predict customer churn using Python (Pandas, Scikit-Learn), achieving [Your Accuracy]% accuracy by training and evaluating Logistic Regression and Random Forest classifiers and identifying key predictive features."
+  },
+  {
+    "id": 6,
+    "title": "Create a Brand Identity for a Startup",
+    "domain": "Graphic Design",
+    "difficulty": "Intermediate",
+    "problemStatement": "A new sustainable coffee brand, 'TerraBrew,' needs a complete brand identity. They want to appear modern, eco-friendly, and trustworthy to a young, environmentally-conscious audience.",
+    "objectives": ["Design a unique and memorable logo.", "Select a primary and secondary color palette that reflects the brand's values.", "Choose a modern and readable typography pairing (one for headlines, one for body text).", "Create one sample application of the brand, like a coffee cup mockup."],
+    "deliverables": ["A one-page brand style guide (PDF) showing the logo, colors, and typography.", "The logo in multiple formats (e.g., SVG, PNG).", "One high-quality mockup image."],
+    "skills": ["Logo Design", "Branding", "Color Theory", "Typography", "Adobe Illustrator/Canva"],
+    "resources": [
+      { "title": "Adobe Color - Explore Color Palettes", "link": "https://color.adobe.com/create/color-wheel" },
+      { "title": "Google Fonts - Free Font Library", "link": "https://fonts.google.com/" },
+      { "title": "Behance - Branding Project Inspiration", "link": "https://www.behance.net/search/projects?field=branding" }
+    ],
+    "solution": {
+      "approach": "1. **Mind Mapping:** Start with keywords: 'Earth,' 'coffee bean,' 'sustainable,' 'modern,' 'growth.' Sketch initial ideas combining these concepts (e.g., a coffee bean that is also a leaf). \n2. **Color Palette:** Choose earthy tones like deep greens, browns, and creams. Add a brighter accent color (like a soft orange) for calls to action. Use Adobe Color to ensure the colors are harmonious. \n3. **Typography:** Select a modern, clean sans-serif font for headlines (like Montserrat or Poppins) and a highly readable serif font for body text (like Lora or Merriweather) to create contrast and a professional feel. \n4. **Logo Vectorization:** Create the final logo in a vector program like Adobe Illustrator or a powerful free alternative so it can be scaled to any size without losing quality. \n5. **Style Guide:** Assemble all the elements onto a single, well-organized page. Include hex codes for the colors and font names.",
+      "keyTakeaways": "A strong brand identity is a cohesive system, not just a logo. Every element—color, font, and imagery—works together to communicate the brand's personality and values to its target audience."
+    },
+    "resumeText": "Developed a complete brand identity for a conceptual sustainable coffee brand, designing a logo, a cohesive color palette, and typography standards, and creating a one-page style guide to ensure brand consistency."
   }
 ]
