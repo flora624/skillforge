@@ -66,12 +66,23 @@ export default function Home({ projects }) {
           <section id="projects" className="projects-section">
               <div className="container">
                   <h2>Weekly Project Drops</h2>
-                  <div id="project-list-container">
-                      {projects.map(project => (
-                        <ProjectCard key={project.id} project={project} />
-                      ))}
-                  </div>
-              </div>
+<div id="project-list-container">
+    {projects.map(project => (
+        <div key={project.id} className="project-card" onClick={() => openModal(project)}>
+            <div className="card-content">
+                <h3>{project.title}</h3>
+                <div className="card-meta">
+                    <span><i className="fas fa-folder"></i> {project.domain}</span>
+                    <span className={`tag difficulty-${project.difficulty}`}>{project.difficulty}</span>
+                </div>
+                {/* THE FIX: We check if problemStatement exists before trying to slice it. */}
+                {project.problemStatement && (
+                    <p>{project.problemStatement.substring(0, 100)}...</p>
+                )}
+            </div>
+        </div>
+    ))}
+</div>
           </section>
 
           {/* --- TESTIMONIALS/REVIEWS SECTION (RESTORED) --- */}
