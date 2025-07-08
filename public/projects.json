@@ -1,175 +1,104 @@
 [
   {
     "id": 1,
-    "title": "Design an A/B Testing System for Thumbnails",
+    "title": "Design Netflix's Thumbnail A/B Testing System",
     "domain": "System Design & Product",
     "difficulty": "Advanced",
-    "problemStatement": "Inspired by Netflix's famous discovery that artwork significantly impacts user choice, your task is to design a scalable system to A/B test thousands of image variations for a new streaming service.",
+    "problemStatement": "Inspired by **Netflix**, whose research proved that thumbnail artwork is a primary driver of user engagement. A single title can have dozens of image variants, and serving the right one to the right user can dramatically increase watch time. The challenge is building a system that can run thousands of these A/B tests simultaneously across millions of users, collect data reliably, and determine the winning artwork. Your task is to design the high-level architecture for this critical system.",
     "skillsGained": ["System Design", "API Design", "Data Modeling", "A/B Testing", "Product Thinking"],
     "milestones": [
       {
         "id": "m1_schema_design",
-        "title": "Milestone 1: Design the Data Schema",
+        "title": "Milestone 1: Design the Database Schema",
         "goal": "Create a logical data model to store all information related to titles, images, tests, and user interactions.",
-        "instructions": "In a document or diagram, define the schema for at least four tables/collections: 'Titles', 'ImageAssets' (linked to a title), 'ActiveTests' (linking multiple image assets to a title), and 'UserImpressions' (to log which user saw which image and if they clicked).",
-        "submissionType": "file",
-        "evaluation": { "type": "manual" }
+        "instructions": "In a document or diagram, propose schemas for at least four key entities: 'Titles', 'ImageAssets' (linked to a title), 'ActiveTests' (linking multiple image assets to a title), and 'UserImpressions' (to log which user saw which image and if they clicked). For each entity, list the critical fields and their data types.",
+        "submissionType": "file"
       },
       {
         "id": "m2_architecture",
-        "title": "Milestone 2: High-Level Architecture",
-        "goal": "Create a diagram illustrating how different parts of the system would communicate to serve a test variant to a user.",
-        "instructions": "Using a tool like Miro or Excalidraw, create a high-level diagram. It should include a 'Client App', a 'Homepage Service', and a 'Personalization Service'. Show the flow of a request from the client to the server to get the correct thumbnail.",
-        "submissionType": "file",
-        "evaluation": { "type": "manual" }
+        "title": "Milestone 2: Illustrate the System Architecture",
+        "goal": "Create a high-level diagram illustrating the flow of data and requests between system components to serve a test variant to a user.",
+        "instructions": "Using a diagramming tool (e.g., Miro, Excalidraw), create an architectural diagram. Your diagram must show a 'Client App' (e.g., a smart TV), a 'Gateway API', a 'Homepage Service', and a dedicated 'Personalization Service'. Use numbered arrows to show the sequence: 1. Client requests homepage. 2. Homepage service gets content list. 3. Homepage service asks Personalization Service for each thumbnail. 4. Personalization Service returns a specific image URL based on the user's test assignment.",
+        "submissionType": "file"
       },
       {
         "id": "m3_api_definition",
         "title": "Milestone 3: Define the Event Logging API",
-        "goal": "Define the technical contract for the API endpoint that will record the results of the A/B test.",
-        "instructions": "Write the definition for a `POST /v1/events/impression` endpoint. Specify the expected request body, including fields like `userId`, `imageId`, `titleId`, and a potential `eventType` (e.g., 'view', 'click', 'play').",
-        "submissionType": "text",
-        "evaluation": { "type": "ai_review" }
+        "goal": "Create the precise technical contract for the API endpoint that will capture the user interaction data needed to evaluate the test's success.",
+        "instructions": "Write the definition for a `POST /v1/events` endpoint. Specify the JSON request body structure precisely. It must include a `userId` (string), `sessionId` (string), `assetId` (string), `eventType` (an enum of 'VIEW' or 'CLICK'), and a `clientTimestamp` (in ISO 8601 format).",
+        "submissionType": "text"
       }
     ],
-    "reflectionQuiz": [
-      { "id": "q1", "question": "Why is it important to serve the same image variant to a user consistently once they are assigned to a test group?", "type": "text_reflection" },
-      { "id": "q2", "question": "What is a potential downside of running thousands of A/B tests simultaneously?", "type": "text_reflection" }
-    ],
-    "resources": [
-      { "title": "Source: The Netflix Tech Blog on Artwork Personalization", "link": "https://netflixtechblog.com/artwork-personalization-c589f074ad76" },
-      { "title": "System Design Basics: A/B Testing", "link": "https://www.youtube.com/watch?v=fkA9kIqGafA" }
-    ],
-    "resumeText": "Designed a scalable A/B testing system for personalized content, inspired by Netflix's engineering challenges, including data schema design, high-level architecture, and API endpoint definitions."
+    "reflectionQuiz": [],
+    "resources": [],
+    "resumeText": "Designed a scalable A/B testing system for personalized content, inspired by Netflix's engineering challenges, including relational data schema design, microservice architecture, and RESTful API definitions."
   },
   {
     "id": 2,
-    "title": "Build a Music Recommendation Engine",
-    "domain": "Data Science",
-    "difficulty": "Advanced",
-    "problemStatement": "Spotify's 'Discover Weekly' is a legendary feature. The core problem is analyzing user listening history to recommend new songs they would love. Your task is to build a simplified collaborative filtering recommendation engine.",
-    "skillsGained": ["Machine Learning", "Recommendation Systems", "Collaborative Filtering", "Pandas", "Scikit-Learn"],
+    "title": "Optimize Web Page for Google's Core Vitals",
+    "domain": "Web Development",
+    "difficulty": "Intermediate",
+    "problemStatement": "Inspired by **Google**, which now uses a set of metrics called Core Web Vitals (LCP, FID, CLS) as a key ranking factor in search results. A poor score not only harms SEO but also leads to a frustrating user experience and higher bounce rates. Your task is to take a sample 'slow' webpage and apply specific, targeted optimization techniques to measurably improve its Core Web Vitals score.",
+    "skillsGained": ["Web Performance", "Core Web Vitals", "Image Optimization", "Lazy Loading", "SEO"],
     "milestones": [
       {
-        "id": "m1_data_prep",
-        "title": "Milestone 1: Data Preparation & User-Item Matrix",
-        "goal": "Process a raw dataset of user listening history into a structured format suitable for machine learning.",
-        "instructions": "Using Pandas, load the provided dataset. Create a user-item utility matrix where rows represent users, columns represent songs, and the values represent the interaction (e.g., play count or a '1' for listened).",
-        "submissionType": "code",
-        "evaluation": { "type": "auto_keyword", "keywords": ["pd.read_csv", "pivot_table", "fillna(0)"] }
+        "id": "m1_auditing",
+        "title": "Milestone 1: Audit and Establish a Baseline",
+        "goal": "Establish a clear, measurable performance baseline by auditing a webpage using professional-grade tools.",
+        "instructions": "Use Google Chrome's built-in Lighthouse tool (found in DevTools). Run a 'Performance' audit on the provided sample page. In a text document, record the initial scores for Performance, Largest Contentful Paint (LCP), and Cumulative Layout Shift (CLS). Take a screenshot of the 'Opportunities' section for your reference.",
+        "submissionType": "text"
       },
       {
-        "id": "m2_similarity_model",
-        "title": "Milestone 2: Implement a Similarity Model",
-        "goal": "Calculate the similarity between users based on their listening habits to find users with similar tastes.",
-        "instructions": "Using a library like Scikit-Learn, apply a similarity metric (e.g., `cosine_similarity`) to your user-item matrix. This will produce a user-user similarity matrix.",
-        "submissionType": "code",
-        "evaluation": { "type": "auto_keyword", "keywords": ["cosine_similarity", "pairwise_distances"] }
+        "id": "m2_optimization",
+        "title": "Milestone 2: Apply Image and Font Optimizations",
+        "goal": "Fix two of the largest and most common performance bottlenecks: unoptimized images and render-blocking fonts.",
+        "instructions": "1. **Image:** Convert the large JPG image on the page to a modern, efficient format like WebP using an online tool. Replace the `<img>` tag's `src` with the new image. 2. **Loading:** Add the `loading=\"lazy\"` attribute to the `<img>` tag. 3. **Fonts:** For the external Google Font `<link>` tag, add `&display=swap` to the end of the `href` URL to prevent font-loading from blocking page rendering.",
+        "submissionType": "code"
       },
       {
-        "id": "m3_generate_recs",
-        "title": "Milestone 3: Generate Recommendations",
-        "goal": "Write a function that takes a user ID and returns a list of recommended songs they haven't heard before.",
-        "instructions": "For a given user, find their most similar 'neighbor' users from the similarity matrix. Identify songs these neighbors have listened to but the target user has not. Rank these songs and return the top 10 recommendations.",
-        "submissionType": "code",
-        "evaluation": { "type": "ai_review" }
+        "id": "m3_report",
+        "title": "Milestone 3: Re-Audit and Report Improvements",
+        "goal": "Quantify the impact of your optimizations and clearly explain the results.",
+        "instructions": "Run the Lighthouse audit again on your modified page. In your submission, create a simple 'Before vs. After' table with the LCP and Performance scores. Below the table, write a short paragraph explaining *why* your changes improved the score, referencing the specific optimizations you made (e.g., 'Lazy loading the image deferred its download until it was needed...').",
+        "submissionType": "link"
       }
     ],
-    "reflectionQuiz": [
-      { "id": "q1", "question": "What is the 'cold start' problem in recommendation systems, and how might you address it?", "type": "text_reflection" },
-      { "id": "q2", "question": "What is the main difference between user-based and item-based collaborative filtering?", "type": "text_reflection" }
-    ],
-    "resources": [
-      { "title": "Source: How Spotify's Discover Weekly Works", "link": "https://medium.com/s/story/spotifys-discover-weekly-how-machine-learning-finds-your-new-music-19a41ab76efe" },
-      { "title": "Music Recommendation Dataset (Kaggle)", "link": "https://www.kaggle.com/c/kkbox-music-recommendation-challenge/data" }
-    ],
-    "resumeText": "Developed a collaborative filtering recommendation engine in Python (Pandas, Scikit-Learn) to generate personalized song recommendations, mirroring the principles behind Spotify's 'Discover' features."
+    "reflectionQuiz": [],
+    "resources": [],
+    "resumeText": "Improved a webpage's Core Web Vitals score by over 30 points by implementing key optimization techniques including image compression (WebP), lazy loading, and non-render-blocking font strategies."
   },
-  {
+    {
     "id": 3,
     "title": "Design a Frictionless Checkout Flow",
     "domain": "UI/UX Design",
     "difficulty": "Intermediate",
-    "problemStatement": "Stripe revolutionized online payments by obsessing over developer experience and creating a simple, elegant checkout. Your task is to design a modern, frictionless two-page checkout flow inspired by this industry-leading standard.",
+    "problemStatement": "Inspired by **Stripe**, which revolutionized online payments by obsessing over a simple, elegant checkout. Your task is to design a modern, frictionless two-page checkout flow inspired by this industry-leading standard.",
     "skillsGained": ["UI Design", "UX Design", "Prototyping", "Figma/Adobe XD", "User Empathy"],
     "milestones": [
       {
         "id": "m1_wireframes",
-        "title": "Milestone 1: Design Low-Fidelity Wireframes",
-        "goal": "Create basic, black-and-white layouts for the Payment and Confirmation screens to focus on structure and content placement.",
-        "instructions": "In Figma, design wireframes for the two key screens. Focus on minimizing the number of input fields (e.g., single 'Full Name' field). Clearly show the price and the primary 'Pay' button. Don't use color.",
-        "submissionType": "file",
-        "evaluation": { "type": "manual" }
+        "title": "Milestone 1: Low-Fidelity Wireframing",
+        "goal": "Create basic, black-and-white layouts for the 'Payment Details' and 'Confirmation' screens to focus on structure and content placement.",
+        "instructions": "In Figma, design wireframes for the two key screens. Focus on minimizing input fields. Ensure the total price and the primary 'Pay' button are most prominent. Arrange fields in a single column.",
+        "submissionType": "file"
       },
       {
         "id": "m2_high_fidelity",
-        "title": "Milestone 2: Create High-Fidelity Mockups",
-        "goal": "Add color, typography, and visual details to your wireframes to create a polished, trustworthy design.",
-        "instructions": "Develop your wireframes into full-color mockups. Choose a simple, professional color palette. Add trust signals like a lock icon next to the pay button. Ensure all text has good contrast and is readable.",
-        "submissionType": "file",
-        "evaluation": { "type": "manual" }
+        "title": "Milestone 2: High-Fidelity Mockups & Trust Signals",
+        "goal": "Add a full visual design system (color, typography, spacing) to your wireframes to create a polished, trustworthy interface.",
+        "instructions": "Develop your wireframes into full-color mockups. Choose a simple, professional color palette. Add trust signals like a lock icon next to the pay button and logos for accepted credit cards.",
+        "submissionType": "file"
       },
       {
         "id": "m3_prototype",
         "title": "Milestone 3: Build a Clickable Prototype",
         "goal": "Link your high-fidelity mockups together to create a working prototype that demonstrates the user's journey.",
         "instructions": "Use Figma's 'Prototype' mode to connect the 'Pay' button on the Payment screen to the Confirmation screen. Add a 'Return to Shop' button on the Confirmation screen. Share the public Figma prototype link.",
-        "submissionType": "text",
-        "evaluation": { "type": "ai_review" }
+        "submissionType": "link"
       }
     ],
-    "reflectionQuiz": [
-      { "id": "q1", "question": "What is a 'trust signal' in UX design, and why is it especially important on a payment page?", "type": "text_reflection" },
-      { "id": "q2", "question": "Why did you choose the layout for your form fields (e.g., single column vs. two columns)?", "type": "text_reflection" }
-    ],
-    "resources": [
-      { "title": "Source: Stripe's Design and Documentation", "link": "https://stripe.com/docs/checkout/quickstart" },
-      { "title": "Baymard Institute - Checkout Form Best Practices", "link": "https://baymard.com/blog/checkout-flow-best-practices" },
-      { "title": "Figma - Free UI/UX Design Tool", "link": "https://www.figma.com/" }
-    ],
+    "reflectionQuiz": [],
+    "resources": [],
     "resumeText": "Designed a high-fidelity, two-page payment checkout flow focused on minimizing user friction and building trust, applying UX principles inspired by Stripe's industry-leading developer experience."
-  },
-  {
-    "id": 4,
-    "title": "Develop a Marketplace Trust & Safety Program",
-    "domain": "Business Strategy",
-    "difficulty": "Intermediate",
-    "problemStatement": "In its early days, Airbnb's biggest challenge was making people trust staying in a stranger's home. Your task is to develop a foundational 'Trust & Safety' program for a new peer-to-peer marketplace (e.g., for renting camera equipment).",
-    "skillsGained": ["Business Strategy", "Product Marketing", "User Trust", "Risk Management"],
-    "milestones": [
-      {
-        "id": "m1_verification",
-        "title": "Milestone 1: Outline the User Verification Process",
-        "goal": "Define a multi-layered process for verifying the identity of users to build a foundation of trust.",
-        "instructions": "In a text document, describe a tiered verification system. Level 1: Email verification. Level 2: Phone number verification. Level 3 (for a 'Verified' badge): Government ID upload. Explain why multiple layers are important.",
-        "submissionType": "text",
-        "evaluation": { "type": "ai_review" }
-      },
-      {
-        "id": "m2_reviews_guarantee",
-        "title": "Milestone 2: Design the Review and Guarantee System",
-        "goal": "Create policies for user reviews and a protection plan for lenders to encourage participation.",
-        "instructions": "Describe a two-way, 'blind' review system (neither party sees the other's review until both submit). Propose a simple 'Host Guarantee' (e.g., '$1,000 coverage for damages') and explain its value.",
-        "submissionType": "text",
-        "evaluation": { "type": "ai_review" }
-      },
-      {
-        "id": "m3_marketing_plan",
-        "title": "Milestone 3: Create a Go-To-Market Message",
-        "goal": "Create a simple marketing brief that communicates these trust features to new users.",
-        "instructions": "Write a homepage slogan (e.g., 'Rent Gear with Confidence.'). Outline the key talking points for an email to new users, focusing on how the verification process and guarantee protect them.",
-        "submissionType": "text",
-        "evaluation": { "type": "ai_review" }
-      }
-    ],
-    "reflectionQuiz": [
-      { "id": "q1", "question": "For a marketplace, is 'Trust' a feature or is it the core product itself? Explain your reasoning.", "type": "text_reflection" },
-      { "id": "q2", "question": "Besides a guarantee, what is another way to reduce risk for lenders on the platform?", "type": "text_reflection" }
-    ],
-    "resources": [
-      { "title": "Source: How Airbnb Designed for Trust", "link": "https://www.fastcompany.com/3043212/how-airbnb-and-eames-democratized-design" },
-      { "title": "HBR - Building a Trust-Based Marketplace", "link": "https://hbr.org/2012/10/the-four-things-you-need-to-b" }
-    ],
-    "resumeText": "Developed a comprehensive Trust & Safety program for a conceptual peer-to-peer marketplace, outlining strategies for user verification, a two-way review system, and a host guarantee inspired by Airbnb's foundational business challenges."
   }
 ]
