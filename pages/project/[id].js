@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Navbar from '../../components/Navbar';
+import { useAuth } from '../../context/AuthContext';
 
 // This function tells Next.js which project pages to pre-build
 export async function getStaticPaths() {
@@ -32,19 +33,49 @@ export async function getStaticProps({ params }) {
 
 
 export default function ProjectPage({ project }) {
+  const { user } = useAuth();
   const [activeMilestoneIndex, setActiveMilestoneIndex] = useState(0);
+  const [completedMilestones, setCompletedMilestones] = useState([]);
   const router = useRouter();
 
   if (router.isFallback) {
     return <div>Loading...</div>;
   }
   
-  const activeMilestone = project.milestones[activeMilestoneIndex];
-
-  // A simple helper function to extract the company name from the problem statement
+  // A simple helper function to extract the company name
   const getCompanyName = (statement) => {
     const match = statement.match(/\*\*(.*?)\*\*/);
     return match ? match[1] : 'Industry';
+  };
+
+  const handleCompleteMilestone = () => {
+    if (!user) {
+      alert("Please log in to save your progress!");
+      return;
+    }
+    
+    // In a real app, you would run the AI check here first.
+    // For this prototype, we'll assume it's correct.
+
+    const newCompleted = [...completedMilestones, activeMilestoneIndex];
+    setCompletedMilestones(newCompleted);
+
+    // Move to the next milestone if it's not the last one
+    if (activeMilestoneIndex < project.milestones.length - 1) {
+      setActiveMilestoneIndex(activeMilestoneIndex + 1);
+    } else {
+      alert("Congratulations! You've completed the project!");
+    }
+  };
+
+  const getMilestoneStatusIcon = (index) => {
+    if (completedMilestones.includes(index)) {
+      return <i className="fas fa-check-circle icon-completed"></i>;
+    }
+    if (index === activeMilestoneIndex) {
+      return <div className="icon-active">{index + 1}</div>;
+    }
+    return <i className="fas fa-circle icon-upcoming"></i>;
   };
 
   return (
@@ -52,10 +83,9 @@ export default function ProjectPage({ project }) {
       <Navbar />
       <div className="project-page-container">
         <div className="project-page-layout">
-          {/* Left Sidebar - Kept the original style, just added company name */}
+          {/* Left Sidebar */}
           <aside className="milestone-sidebar">
             <h2 className="project-title">{project.title}</h2>
-            {/* THIS IS THE ONLY ADDITION TO THE SIDEBAR */}
             <p className="company-inspiration">Inspired by {getCompanyName(project.problemStatement)}</p>
             <ul>
               {project.milestones.map((milestone, index) => (
@@ -71,32 +101,45 @@ export default function ProjectPage({ project }) {
             </ul>
           </aside>
 
-          {/* Right Main Content - Kept the original style, just added problem statement */}
-          <main className="milestone-content">
-            {/* THIS IS THE ONLY ADDITION TO THE MAIN CONTENT */}
-            <div className="milestone-box problem-statement-header">
-                <h3>The Challenge</h3>
-                <p>{project.problemStatement.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
-            </div>
-            
-            <hr className="milestone-divider"/>
+          {/* Right Main Content */}
+          <main className="project-main-content">
+            <header className="project-header">
+              <h1>{project.title}</h1>
+              <p>{project.problemStatement.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
+            </header>
 
-            <h1>Milestone {activeMilestoneIndex + 1}: {activeMilestone.title}</h1>
+            <div className="milestones-container">
+              {project.milestones.map((milestone, index) => (
+                <div key={milestone.id} className={`milestone-card ${activeMilestoneIndex === index ? 'active-card' : ''} ${completedMilestones.includes(index) ? 'completed-card' : ''}`}>
+                  <div className="milestone-card-header" onClick={() => setActiveMilestoneIndex(index)}>
+                    <div className="milestone-header-title">
+                      {getMilestoneStatusIcon(index)}
+                      <h3>{milestone.title}</h3>
+                    </div>
+                    {activeMilestoneIndex !== index && <i className="fas fa-chevron-down"></i>}
+                  </div>
 
-            <div className="milestone-box">
-              <h3>Goal:</h3>
-              <p>{activeMilestone.goal}</p>
-            </div>
-
-            <div className="milestone-box">
-              <h3>Instructions:</h3>
-              <p style={{ whiteSpace: 'pre-wrap' }}>{activeMilestone.instructions}</p>
-            </div>
-
-            <div className="milestone-box submission-box">
-              <h3>Your Submission</h3>
-              <textarea placeholder="Paste your code, summary, or link here..."></textarea>
-              <button className="btn btn-primary">Submit Milestone</button>
+                  {activeMilestoneIndex === index && (
+                    <div className="milestone-card-body">
+                      <div className="milestone-box">
+                        <h4>Goal</h4>
+                        <p>{milestone.goal}</p>
+                      </div>
+                      <div className="milestone-box">
+                        <h4>Step-by-Step Instructions</h4>
+                        <p style={{ whiteSpace: 'pre-wrap' }}>{milestone.instructions}</p>
+                      </div>
+                      <div className="milestone-box submission-box">
+                        <h4>Your Submission</h4>
+                        <textarea placeholder="Paste your code, summary, or link here..."></textarea>
+                        <button className="btn btn-secondary btn-large" onClick={handleCompleteMilestone}>
+                          Complete & Continue <i className="fas fa-arrow-right"></i>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </main>
         </div>
