@@ -53,7 +53,9 @@ export default function Profile({ allProjects }) {
     return <div className="loading-screen">Loading Dashboard...</div>;
   }
 
+  // --- THIS IS THE CORRECTED SHARE FUNCTION ---
   const handleShare = (userId, projectId) => {
+    // We construct the correct URL for our new share page
     const shareableLink = `${window.location.origin}/share/${userId}/${projectId}`;
     navigator.clipboard.writeText(shareableLink);
     alert('Shareable link copied to clipboard!');

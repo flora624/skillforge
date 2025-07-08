@@ -31,7 +31,6 @@ export default function ProjectPage({ project }) {
     const [isLoading, setIsLoading] = useState(true);
     const [isCompleted, setIsCompleted] = useState(false);
     
-    // State for the submission inputs
     const [submissionText, setSubmissionText] = useState('');
     const [submissionFile, setSubmissionFile] = useState(null);
 
@@ -73,12 +72,10 @@ export default function ProjectPage({ project }) {
         }
     };
 
-    // NEW: Function to handle clicking any milestone in the sidebar
     const handleMilestoneSelect = (index) => {
-        // Allow navigation only if project is not yet completed
         if (!isCompleted) {
             setActiveMilestoneIndex(index);
-            saveProgress(index); // Save progress even when going backward
+            saveProgress(index);
         }
     };
 
@@ -90,36 +87,58 @@ export default function ProjectPage({ project }) {
         }
     };
 
+    // --- THIS IS THE CORRECTED SUBMISSION FUNCTION ---
     const handleFinalSubmit = async () => {
         if (!user) return alert("Please log in to submit.");
         
-        // This part would be expanded to handle file uploads to Firebase Storage
-        if(submissionFile) {
-            alert("File submission logic would go here. For now, we'll mark as complete.");
+        let finalSubmissionSummary = submissionText;
+        if (submissionFile) {
+            // In a real app, you would upload the file to Firebase Storage here and get a URL.
+            // For now, we'll just use the file name as a placeholder summary.
+            finalSubmissionSummary = `File submitted: ${submissionFile.name}. Notes: ${submissionText}`;
         }
-        
-        if (submissionText.trim().length < 20) return alert("Please provide a valid URL or a more detailed summary (at least 20 characters).");
+
+        if (finalSubmissionSummary.trim().length < 20) {
+            return alert("Please provide a valid URL, file, or a more detailed summary (at least 20 characters).");
+        }
 
         setIsLoading(true);
-        // In a real app, AI validation and file upload would happen here.
-        // For this prototype, we'll simulate a correct verdict.
-        const verdict = 'Correct';
-        setAiResult({ verdict });
+        setAiResult(null); // Reset previous AI result
 
-        if (verdict === 'Correct') {
-            const completionRef = doc(db, "completions", `${user.uid}_${project.id}`);
-            await setDoc(completionRef, {
-                userId: user.uid,
-                projectId: project.id,
-                projectTitle: project.title,
-                submissionSummary: submissionText, // This would be a URL for file uploads
-                completedAt: new Date()
+        try {
+            const response = await fetch('/api/validate-answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    studentSummary: finalSubmissionSummary,
+                    originalSolution: project.milestones.map(m => m.goal).join(' '),
+                }),
             });
-            const progressRef = doc(db, "progress", `${user.uid}_${project.id}`);
-            await deleteDoc(progressRef);
-            setIsCompleted(true);
+            const data = await response.json();
+            setAiResult(data); // Set the AI result to show it in the UI
+
+            // Only save as "completed" if the AI verdict is correct
+            if (data.verdict === 'Correct') {
+                const completionRef = doc(db, "completions", `${user.uid}_${project.id}`);
+                await setDoc(completionRef, {
+                    userId: user.uid,
+                    projectId: project.id,
+                    projectTitle: project.title,
+                    submissionSummary: finalSubmissionSummary,
+                    completedAt: new Date()
+                });
+
+                const progressRef = doc(db, "progress", `${user.uid}_${project.id}`);
+                await deleteDoc(progressRef);
+                
+                setIsCompleted(true);
+            }
+        } catch (error) {
+            console.error("Error submitting project:", error);
+            alert("An error occurred while submitting. Please try again.");
+        } finally {
+            setIsLoading(false);
         }
-        setIsLoading(false);
     };
 
     if (isLoading) {
@@ -128,8 +147,6 @@ export default function ProjectPage({ project }) {
     
     const activeMilestone = project.milestones[activeMilestoneIndex];
     const isLastMilestone = activeMilestoneIndex === project.milestones.length - 1;
-    
-    // Determine the submission type for the final milestone
     const finalSubmissionType = project.milestones[project.milestones.length - 1].submissionType || 'text';
 
     return (
@@ -138,21 +155,16 @@ export default function ProjectPage({ project }) {
             <div className="project-page-container">
                 <div className="project-header">
                     <h1>{project.title}</h1>
-                    <p>{project.problemStatement.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
+                    <p dangerouslySetInnerHTML={{ __html: project.problemStatement.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
                 </div>
                 <div className="project-page-layout">
                     <aside className="milestone-sidebar">
                         <h2 className="sidebar-title">Milestones</h2>
                         <ul>
                             {project.milestones.map((milestone, index) => (
-                                <li 
-                                    key={milestone.id} 
-                                    className={`milestone-item ${index < activeMilestoneIndex || isCompleted ? 'completed' : ''} ${index === activeMilestoneIndex ? 'active' : ''}`}
-                                    onClick={() => handleMilestoneSelect(index)} // <-- NEW CLICK HANDLER
-                                >
-                                    <div className="milestone-marker">
-                                        {index < activeMilestoneIndex || isCompleted ? <i className="fas fa-check"></i> : index + 1}
-                                    </div>
+                                <li key={milestone.id} className={`milestone-item ${index < activeMilestoneIndex || isCompleted ? 'completed' : ''} ${index === activeMilestoneIndex ? 'active' : ''}`}
+                                    onClick={() => handleMilestoneSelect(index)}>
+                                    <div className="milestone-marker">{index < activeMilestoneIndex || isCompleted ? <i className="fas fa-check"></i> : index + 1}</div>
                                     <span>{milestone.title}</span>
                                 </li>
                             ))}
@@ -161,78 +173,62 @@ export default function ProjectPage({ project }) {
 
                     <main className="project-main-content">
                         <div className="milestone-card active-card">
-                            <div className="milestone-card-header">
-                                <div className="milestone-header-title"><h3>{activeMilestone.title}</h3></div>
-                            </div>
+                            <div className="milestone-card-header"><div className="milestone-header-title"><h3>{activeMilestone.title}</h3></div></div>
                             <div className="milestone-card-body">
-                                <div className="milestone-box">
-                                    <h4>Goal</h4>
-                                    <p>{activeMilestone.goal}</p>
-                                </div>
-                                <div className="milestone-box">
-                                    <h4>Step-by-Step Instructions</h4>
-                                    <p style={{ whiteSpace: 'pre-wrap' }}>{activeMilestone.instructions}</p>
-                                </div>
+                                <div className="milestone-box"><h4>Goal</h4><p>{activeMilestone.goal}</p></div>
+                                <div className="milestone-box"><h4>Step-by-Step Instructions</h4><p style={{ whiteSpace: 'pre-wrap' }}>{activeMilestone.instructions}</p></div>
                                 
-                                {/* Conditional UI for last milestone vs. others */}
                                 {isLastMilestone ? (
                                     isCompleted ? (
-                                        <div className="milestone-box submission-box">
-                                            <h4>Your Completed Submission</h4>
-                                            <p className="completed-submission-text">{submissionText}</p>
-                                        </div>
+                                        <>
+                                            <div className="milestone-box submission-box">
+                                                <h4>Your Completed Submission</h4>
+                                                <p className="completed-submission-text">{submissionText}</p>
+                                            </div>
+                                            <div className="resume-box">
+                                                <h3><i className="fas fa-id-card"></i> Add to Your Resume</h3>
+                                                <p>Congratulations! Copy this text for your resume or LinkedIn.</p>
+                                                <div className="resume-text-content">{project.resumeText}</div>
+                                            </div>
+                                        </>
                                     ) : (
                                         <div className="milestone-box submission-box">
                                             <h4>Final Submission & AI Review</h4>
-                                            
-                                            {/* NEW: Smart Submission UI */}
+                                            {/* Smart Submission UI */}
                                             {finalSubmissionType === 'file' ? (
                                                 <div className="submission-input-group">
                                                     <p>This project requires a file submission (e.g., PDF, ZIP, image).</p>
                                                     <input type="file" onChange={(e) => setSubmissionFile(e.target.files[0])} />
-                                                    <textarea 
-                                                        placeholder="Add any notes about your submission here..."
-                                                        value={submissionText}
-                                                        onChange={(e) => setSubmissionText(e.target.value)}
-                                                    />
+                                                    <textarea placeholder="Add any notes about your submission here..." value={submissionText} onChange={(e) => setSubmissionText(e.target.value)}/>
                                                 </div>
                                             ) : finalSubmissionType === 'link' ? (
                                                 <div className="submission-input-group">
                                                     <p>This project requires a URL submission (e.g., GitHub repo, live website, Figma prototype).</p>
-                                                    <input 
-                                                        type="url"
-                                                        placeholder="https://github.com/your-username/project"
-                                                        value={submissionText}
-                                                        onChange={(e) => setSubmissionText(e.target.value)}
-                                                    />
+                                                    <input type="url" placeholder="https://github.com/your-username/project" value={submissionText} onChange={(e) => setSubmissionText(e.target.value)} />
                                                 </div>
                                             ) : (
                                                 <div className="submission-input-group">
                                                      <p>Summarize your complete approach and how you achieved the project goals.</p>
-                                                     <textarea 
-                                                        placeholder="e.g., I designed the system by first modeling the data schemas..." 
-                                                        value={submissionText}
-                                                        onChange={(e) => setSubmissionText(e.target.value)}
-                                                    />
+                                                     <textarea placeholder="e.g., I designed the system by first modeling the data schemas..." value={submissionText} onChange={(e) => setSubmissionText(e.target.value)} />
                                                 </div>
                                             )}
-
-                                            <button className="btn btn-secondary btn-large" onClick={handleFinalSubmit} disabled={isLoading}>
-                                                {isLoading ? 'Submitting...' : 'Submit Project'}
-                                            </button>
+                                            <button className="btn btn-secondary btn-large" onClick={handleFinalSubmit} disabled={isLoading}>{isLoading ? 'Submitting...' : 'Submit Project'}</button>
                                             {aiResult && (
-                                                <div className={`verdict-box verdict-${aiResult.verdict.toLowerCase()}`}>
-                                                    <strong>AI Verdict: {aiResult.verdict}</strong>
-                                                </div>
+                                                <>
+                                                    <div className={`verdict-box verdict-${aiResult.verdict.toLowerCase()}`}><strong>AI Verdict: {aiResult.verdict}</strong></div>
+                                                    {aiResult.verdict === 'Correct' && (
+                                                        <div className="resume-box">
+                                                            <h3><i className="fas fa-id-card"></i> Add to Your Resume</h3>
+                                                            <p>Congratulations! Copy this text for your resume or LinkedIn.</p>
+                                                            <div className="resume-text-content">{project.resumeText}</div>
+                                                        </div>
+                                                    )}
+                                                </>
                                             )}
                                         </div>
                                     )
                                 ) : (
-                                    <div className="milestone-navigation">
-                                        <button className="btn btn-primary" onClick={handleNextMilestone}>
-                                            Next Milestone <i className="fas fa-arrow-right"></i>
-                                        </button>
-                                    </div>
+                                    <div className="milestone-navigation"><button className="btn btn-primary" onClick={handleNextMilestone}>Next Milestone <i className="fas fa-arrow-right"></i></button></div>
                                 )}
                             </div>
                         </div>

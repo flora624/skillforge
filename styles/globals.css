@@ -680,3 +680,60 @@ a { color: inherit; text-decoration: none; }
     border-radius: 5px;
     font-family: 'Poppins', sans-serif;
 }
+/* --- STYLES FOR SHARE PAGE --- */
+.share-page-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 4rem 1.5rem;
+  background-color: var(--light-color);
+  min-height: calc(100vh - 70px);
+}
+.share-card {
+  background-color: var(--white-color);
+  border-radius: 8px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 800px;
+  overflow: hidden;
+}
+.share-header {
+  background-color: var(--dark-color);
+  color: var(--white-color);
+  padding: 2rem;
+  text-align: center;
+}
+.share-header h1 {
+  margin: 0;
+  color: var(--white-color);
+}
+.share-header p {
+  margin: 0.5rem 0 0 0;
+  opacity: 0.8;
+}
+.share-content {
+  padding: 2rem;
+}
+.share-content h3 {
+  margin: 0 0 1rem 0;
+}
+.submission-text {
+  background-color: #f9f9f9;
+  border-left: 4px solid var(--primary-color);
+  padding: 1rem;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  color: var(--text-color);
+}
+.share-footer {
+  padding: 1.5rem 2rem;
+  background-color: #f9f9f9;
+  border-top: 1px solid var(--light-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--grey-color);
+}
+.share-footer p {
+  margin: 0;
+}
