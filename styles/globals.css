@@ -440,200 +440,6 @@ a { color: inherit; text-decoration: none; }
   font-family: monospace;
   margin-bottom: 1rem;
 }
-/* --- NEW, REDESIGNED PROJECT PAGE STYLES --- */
-
-.project-page-container {
-  background-color: var(--light-color);
-  min-height: calc(100vh - 70px); /* 70px is approx navbar height */
-}
-
-.project-page-layout {
-  display: flex;
-  gap: 2rem;
-  align-items: flex-start;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem;
-}
-
-/* Sidebar Styles */
-.milestone-sidebar {
-  flex: 0 0 320px;
-  background: var(--white-color);
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-  position: sticky;
-  top: 100px;
-}
-
-.project-title {
-  font-size: 1.5rem;
-  margin-top: 0;
-  color: var(--dark-color);
-}
-
-.company-inspiration {
-  font-size: 0.9rem;
-  color: var(--grey-color);
-  padding-bottom: 1rem;
-  margin-top: -0.5rem;
-  border-bottom: 1px solid var(--light-color);
-}
-
-.milestone-sidebar ul {
-  list-style: none;
-  padding: 0;
-  margin: 1rem 0 0 0;
-}
-
-.milestone-item {
-  display: flex;
-  align-items: center;
-  padding: 0.8rem;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background-color 0.2s;
-  color: var(--text-color);
-  font-weight: 500;
-  border-left: 4px solid transparent;
-}
-
-.milestone-item:hover {
-  background-color: #f9fafb;
-}
-
-.milestone-item.active {
-  background-color: #e9f2fd;
-  color: var(--primary-color);
-  font-weight: 600;
-  border-left: 4px solid var(--primary-color);
-}
-
-.milestone-marker {
-  display: none; /* We are using new icons instead */
-}
-
-
-/* Main Content Styles */
-.project-main-content {
-  flex-grow: 1;
-}
-
-.project-header {
-  background: var(--white-color);
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-  margin-bottom: 2rem;
-}
-
-.project-header h1 {
-  margin-top: 0;
-}
-
-.project-header p {
-  font-size: 1.1rem;
-  line-height: 1.8;
-  color: var(--grey-color);
-}
-
-.project-header strong {
-  color: var(--primary-color);
-}
-
-.milestones-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.milestone-card {
-  background: var(--white-color);
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-  transition: all 0.3s ease;
-  overflow: hidden;
-  border: 1px solid #eee;
-}
-
-.milestone-card.active-card {
-  box-shadow: 0 8px 30px rgba(74, 144, 226, 0.2);
-  border-color: var(--primary-color);
-}
-
-.milestone-card.completed-card {
-  opacity: 0.7;
-}
-.milestone-card.completed-card .milestone-card-header {
-  background-color: #f9fafb;
-}
-
-.milestone-card-header {
-  padding: 1rem 1.5rem;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.milestone-header-title {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.milestone-header-title h3 {
-  margin: 0;
-  font-size: 1.2rem;
-}
-
-.milestone-card-body {
-  padding: 0 1.5rem 1.5rem 1.5rem;
-  border-top: 1px solid var(--light-color);
-}
-
-.milestone-box {
-  margin-top: 1.5rem;
-}
-
-.milestone-box h4 {
-  margin-top: 0;
-  color: var(--dark-color);
-  font-size: 1.1rem;
-}
-
-.milestone-box p {
-  color: var(--grey-color);
-}
-
-.submission-box {
-  background-color: #fdfdfd;
-  border: 1px solid #f0f0f0;
-  padding: 1.5rem;
-  border-radius: 6px;
-}
-
-.submission-box textarea {
-  width: 100%;
-  min-height: 150px;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-family: 'Poppins', sans-serif;
-  margin-bottom: 1rem;
-  resize: vertical;
-}
-
-.submission-box .btn i {
-  margin-left: 0.5rem;
-  transition: transform 0.2s ease;
-}
-
-.submission-box .btn:hover i {
-  transform: translateX(5px);
-}
-
 /* Icon Styles */
 .icon-completed {
   color: var(--success-text);
@@ -679,4 +485,176 @@ a { color: inherit; text-decoration: none; }
   border: none;
   border-top: 1px dashed var(--light-color);
   margin: 2rem 0;
+}
+/* --- FINAL STYLES FOR STATEFUL PROJECT & DASHBOARD --- */
+
+.loading-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.5rem;
+  color: var(--grey-color);
+}
+
+/* Updated Project Page Styles */
+.project-page-container {
+  background-color: var(--light-color);
+  min-height: calc(100vh - 70px);
+}
+.project-header {
+  background: var(--white-color);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  max-width: 1400px;
+  margin: 2rem auto 0 auto;
+  padding: 2rem 1.5rem;
+}
+.project-header h1 { margin-top: 0; }
+.project-header p { font-size: 1.1rem; line-height: 1.8; color: var(--grey-color); }
+.project-header strong { color: var(--primary-color); }
+
+.project-page-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.milestone-sidebar {
+  flex: 0 0 320px;
+  background: var(--white-color);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  position: sticky;
+  top: 100px;
+}
+.sidebar-title { font-size: 1.5rem; margin: 0 0 1rem 0; }
+.milestone-sidebar ul { list-style: none; padding: 0; margin: 0; }
+.milestone-item {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem;
+  border-radius: 6px;
+  color: var(--text-color);
+  font-weight: 500;
+  border-left: 4px solid transparent;
+}
+.milestone-item.active {
+  background-color: #e9f2fd;
+  color: var(--primary-color);
+  font-weight: 600;
+  border-left: 4px solid var(--primary-color);
+}
+.milestone-item.completed { color: var(--grey-color); }
+.milestone-marker {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-right: 1rem;
+  background-color: var(--light-color);
+  color: var(--grey-color);
+}
+.milestone-item.active .milestone-marker {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+}
+.milestone-item.completed .milestone-marker {
+  background-color: var(--success-text);
+  color: var(--white-color);
+}
+
+.project-main-content {
+  flex-grow: 1;
+}
+.milestone-card {
+  background: var(--white-color);
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  overflow: hidden;
+  border: 1px solid #eee;
+}
+.milestone-card.active-card {
+  box-shadow: 0 8px 30px rgba(74, 144, 226, 0.2);
+  border-color: var(--primary-color);
+}
+.milestone-card-header { padding: 1rem 1.5rem; }
+.milestone-header-title h3 { margin: 0; font-size: 1.5rem; }
+.milestone-card-body { padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--light-color); }
+.milestone-box { margin-top: 1.5rem; }
+.milestone-box h4 { margin-top: 0; color: var(--dark-color); font-size: 1.1rem; }
+.milestone-box p { color: var(--grey-color); }
+.milestone-navigation { text-align: right; margin-top: 2rem; }
+.milestone-navigation .btn i { margin-left: 0.5rem; }
+
+.submission-box {
+  background-color: #fdfdfd;
+  border: 1px solid #f0f0f0;
+  padding: 1.5rem;
+  border-radius: 6px;
+  margin-top: 2rem;
+}
+.submission-box textarea { width: 100%; min-height: 150px; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; font-family: 'Poppins', sans-serif; margin-bottom: 1rem; resize: vertical; }
+
+/* Dashboard Styles */
+.dashboard-header {
+  text-align: center;
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--light-color);
+  margin-bottom: 3rem;
+}
+.dashboard-header h1 { margin: 0; }
+.dashboard-content h2 { text-align: left; margin-bottom: 2rem; }
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+.project-card-resume {
+  background: var(--white-color);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  border: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.project-card-resume:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.08); }
+.project-card-resume h3 { margin: 0 0 0.5rem 0; color: var(--primary-color); }
+.project-card-resume p { margin: 0 0 1.5rem 0; color: var(--grey-color); }
+.project-card-completed {
+  background: var(--white-color);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  border-left: 5px solid var(--success-text);
+  display: flex;
+  flex-direction: column;
+}
+.project-card-completed h3 { margin: 0 0 1rem 0; }
+.completed-submission-text {
+  font-style: italic;
+  color: var(--grey-color);
+  flex-grow: 1;
+  border-left: 3px solid var(--light-color);
+  padding-left: 1rem;
+  margin: 0 0 1.5rem 0;
+}
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
 }
