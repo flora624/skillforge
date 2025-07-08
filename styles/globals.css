@@ -440,42 +440,222 @@ a { color: inherit; text-decoration: none; }
   font-family: monospace;
   margin-bottom: 1rem;
 }
-/* --- FINAL STYLES FOR PROJECT PAGE --- */
+/* --- NEW, REDESIGNED PROJECT PAGE STYLES --- */
 
-.project-meta-info {
+.project-page-container {
+  background-color: var(--light-color);
+  min-height: calc(100vh - 70px); /* 70px is approx navbar height */
+}
+
+.project-page-layout {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid var(--light-color);
-  font-size: 0.9rem;
-  color: var(--grey-color);
-}
-.project-meta-info i {
-  margin-right: 0.5rem;
-  color: var(--primary-color);
+  gap: 2rem;
+  align-items: flex-start;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
 }
 
-.problem-statement-box {
+/* Sidebar Styles */
+.milestone-sidebar {
+  flex: 0 0 320px;
   background: var(--white-color);
   padding: 1.5rem;
   border-radius: 8px;
-  margin-bottom: 2rem;
-  border: 1px solid var(--light-color);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  position: sticky;
+  top: 100px;
 }
-.problem-statement-box h3 {
+
+.project-title {
+  font-size: 1.5rem;
   margin-top: 0;
   color: var(--dark-color);
 }
-.problem-statement-box strong {
+
+.company-inspiration {
+  font-size: 0.9rem;
+  color: var(--grey-color);
+  padding-bottom: 1rem;
+  margin-top: -0.5rem;
+  border-bottom: 1px solid var(--light-color);
+}
+
+.milestone-sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0 0;
+}
+
+.milestone-item {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+  color: var(--text-color);
+  font-weight: 500;
+  border-left: 4px solid transparent;
+}
+
+.milestone-item:hover {
+  background-color: #f9fafb;
+}
+
+.milestone-item.active {
+  background-color: #e9f2fd;
+  color: var(--primary-color);
+  font-weight: 600;
+  border-left: 4px solid var(--primary-color);
+}
+
+.milestone-marker {
+  display: none; /* We are using new icons instead */
+}
+
+
+/* Main Content Styles */
+.project-main-content {
+  flex-grow: 1;
+}
+
+.project-header {
+  background: var(--white-color);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
+}
+
+.project-header h1 {
+  margin-top: 0;
+}
+
+.project-header p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: var(--grey-color);
+}
+
+.project-header strong {
   color: var(--primary-color);
 }
 
-.milestone-divider {
-  border: none;
-  border-top: 1px dashed var(--light-color);
-  margin: 2rem 0;
+.milestones-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.milestone-card {
+  background: var(--white-color);
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  border: 1px solid #eee;
+}
+
+.milestone-card.active-card {
+  box-shadow: 0 8px 30px rgba(74, 144, 226, 0.2);
+  border-color: var(--primary-color);
+}
+
+.milestone-card.completed-card {
+  opacity: 0.7;
+}
+.milestone-card.completed-card .milestone-card-header {
+  background-color: #f9fafb;
+}
+
+.milestone-card-header {
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.milestone-header-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.milestone-header-title h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.milestone-card-body {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  border-top: 1px solid var(--light-color);
+}
+
+.milestone-box {
+  margin-top: 1.5rem;
+}
+
+.milestone-box h4 {
+  margin-top: 0;
+  color: var(--dark-color);
+  font-size: 1.1rem;
+}
+
+.milestone-box p {
+  color: var(--grey-color);
+}
+
+.submission-box {
+  background-color: #fdfdfd;
+  border: 1px solid #f0f0f0;
+  padding: 1.5rem;
+  border-radius: 6px;
+}
+
+.submission-box textarea {
+  width: 100%;
+  min-height: 150px;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-family: 'Poppins', sans-serif;
+  margin-bottom: 1rem;
+  resize: vertical;
+}
+
+.submission-box .btn i {
+  margin-left: 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+.submission-box .btn:hover i {
+  transform: translateX(5px);
+}
+
+/* Icon Styles */
+.icon-completed {
+  color: var(--success-text);
+  font-size: 1.5rem;
+}
+
+.icon-active {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  font-weight: 700;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.icon-upcoming {
+  color: #ccc;
+  font-size: 1.5rem;
 }
 /* --- MINIMAL STYLES FOR PROJECT PAGE ADDITIONS --- */
 
