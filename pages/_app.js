@@ -4,13 +4,15 @@ import Head from 'next/head';
 
 function MyApp({ Component, pageProps }) {
   return (
+    // This <AuthProvider> is the "main power switch".
+    // It MUST wrap the <Component /> for the login state to work globally.
     <AuthProvider>
       <Head>
-        <meta name="google-adsense-account" content="ca-pub-6379719724029640"></meta>
         <title>SkillForge - Build Your Career Portfolio</title>
-        <meta name="description" content="Tackle real-world problems from every career domain. Build a portfolio that gets you hired." />
+        <meta name="description" content="Tackle real-world problems inspired by top tech companies. Build a portfolio that gets you hired." />
+        {/* The Font Awesome script for icons */}
+        <script src="https://kit.fontawesome.com/3a4339b972.js" crossOrigin="anonymous" async></script>
       </Head>
-      {/* The failing Font Awesome script has been REMOVED */}
       <Component {...pageProps} />
     </AuthProvider>
   );
