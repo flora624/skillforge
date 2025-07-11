@@ -13,16 +13,12 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log(">> DIAGNOSTIC: AuthProvider useEffect is running.");
-    
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      // THIS IS THE MOST CRITICAL LOG. It tells us what Firebase thinks.
-      console.log(">> DIAGNOSTIC: onAuthStateChanged triggered. User object:", user);
-      
       setUser(user);
       setLoading(false);
     });
 
+    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
 
@@ -33,7 +29,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 }

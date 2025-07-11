@@ -1,11 +1,10 @@
-import { AuthProvider } from '../context/AuthContext';
+import { AuthProvider } from '../context/AuthContext'; // <-- Make sure this is imported
 import '../styles/globals.css';
 import Head from 'next/head';
 
 function MyApp({ Component, pageProps }) {
-  console.log(">> DIAGNOSTIC: _app.js is rendering. AuthProvider should be active.");
-  
   return (
+    // The AuthProvider MUST wrap the entire application
     <AuthProvider>
       <Head>
         <title>SkillForge - Build Your Career Portfolio</title>
