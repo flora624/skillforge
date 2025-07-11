@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
 import Link from 'next/link';
 
-// This function correctly reads all projects, which we need for slicing
+// This function correctly reads all projects
 export async function getStaticProps() {
   const path = require('path');
   const fs = require('fs');
@@ -11,7 +11,6 @@ export async function getStaticProps() {
   const projects = JSON.parse(jsonData);
   return { props: { projects } };
 }
-
 
 export default function Home({ projects }) {
   const router = useRouter();
@@ -63,11 +62,16 @@ export default function Home({ projects }) {
               <div className="container">
                   <h2>Featured Projects</h2>
                   <div id="project-list-container">
-                    {/* We map over the sliced array, not the full one */}
                     {featuredProjects.map(project => (
                         <div key={project.id} className="project-card" onClick={() => handleProjectClick(project.id)}>
                             <div className="card-content">
                                 <h3>{project.title}</h3>
+
+                                {/* THIS IS THE CORRECTED PART THAT WAS MISSING */}
+                                {project.problemStatement && (
+                                    <p>{project.problemStatement.substring(0, 100)}...</p>
+                                )}
+                                
                                 <div className="card-meta">
                                     <span><i className="fas fa-folder"></i> {project.domain}</span>
                                     <span className={`tag difficulty-${project.difficulty}`}>{project.difficulty}</span>
@@ -77,7 +81,6 @@ export default function Home({ projects }) {
                     ))}
                   </div>
                   
-                  {/* NEW "Explore More" Button Container */}
                   <div className="explore-button-container">
                     <Link href="/explore" className="btn btn-primary btn-large">
                       Explore All Projects <i className="fas fa-arrow-right"></i>
