@@ -6,7 +6,7 @@ import { auth } from '../firebase/config';
 import { signOut } from 'firebase/auth';
 
 export default function Navbar() {
-  const { user } = useAuth(); // This hook gets the user state
+  const { user, loading } = useAuth(); // Get both user and loading state
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -27,10 +27,11 @@ export default function Navbar() {
         
         <ul className="nav-links">
           <li><Link href="/#features">Why SkillForge?</Link></li>
-          <li><Link href="/explore">Explore</Link></li> {/* Changed from #projects to the explore page */}
+          <li><Link href="/explore">Explore</Link></li>
           
-          {/* This is the logic that decides what to show */}
-          {user ? (
+          {/* While loading, show nothing. This prevents flicker. */}
+          {loading ? null : user ? (
+            // If not loading and user exists, show profile
             <li className="profile-menu">
               <div onClick={() => setDropdownOpen(!dropdownOpen)} className="profile-icon">
                 <i className="fas fa-user-circle"></i>
@@ -52,6 +53,7 @@ export default function Navbar() {
               )}
             </li>
           ) : (
+            // If not loading and no user, show login buttons
             <>
               <li><Link href="/login">Login</Link></li>
               <li><Link href="/signup" className="btn btn-primary">Sign Up</Link></li>
