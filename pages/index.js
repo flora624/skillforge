@@ -4,19 +4,26 @@ import Navbar from '../components/Navbar';
 // This is the component for a single project card
 // It now correctly links to the dynamic project workspace page
 function ProjectCard({ project }) {
+  // Defensive checks to prevent crashes
+  if (!project || !project.id) return null;
+  const title = project.title || "Untitled Project";
+  const domain = project.domain || "N/A";
+  const difficulty = project.difficulty || "Beginner";
+  const problemStatement = project.problemStatement || "";
+  const skillsGained = project.skillsGained || [];
+
   return (
     <Link href={`/project/${project.id}`} className="project-card-link">
       <div className="project-card">
         <div className="card-content">
-            <h3>{project.title}</h3>
+            <h3>{title}</h3>
             <div className="card-meta">
-                {/* Font Awesome icons might not work if you removed the script, so we use text/emoji */}
-                <span>📁 {project.domain}</span>
-                <span className={`tag difficulty-${project.difficulty}`}>{project.difficulty}</span>
+                <span>📁 {domain}</span>
+                <span className={`tag difficulty-${difficulty}`}>{difficulty}</span>
             </div>
-            <p>{project.problemStatement.substring(0, 100)}...</p>
+            <p>{problemStatement.substring(0, 100)}...</p>
             <div className="skills-gained-preview">
-              <strong>Skills:</strong> {project.skillsGained.slice(0, 3).join(', ')}...
+              <strong>Skills:</strong> {skillsGained.slice(0, 3).join(', ')}...
             </div>
         </div>
       </div>
@@ -27,11 +34,14 @@ function ProjectCard({ project }) {
 
 // This is the main Homepage component
 export default function Home({ projects }) {
+  // EDIT 1: Limit the projects
+  const featuredProjects = Array.isArray(projects) ? projects.slice(0, 3) : [];
+
   return (
     <>
       <Navbar />
       
-      {/* --- HERO SECTION (RESTORED) --- */}
+      {/* --- HERO SECTION --- */}
       <header className="hero-section">
           <div className="container">
               <h1>Turn Theory into Tangible Skills</h1>
@@ -41,7 +51,7 @@ export default function Home({ projects }) {
       </header>
 
       <main>
-          {/* --- FEATURES/PERKS SECTION (RESTORED) --- */}
+          {/* --- FEATURES/PERKS SECTION --- */}
           <section id="features" className="features-section">
               <div className="container">
                   <h2>The SkillForge Advantage</h2>
@@ -62,19 +72,28 @@ export default function Home({ projects }) {
               </div>
           </section>
 
-          {/* --- PROJECTS SECTION (AS BEFORE) --- */}
+          {/* --- PROJECTS SECTION --- */}
           <section id="projects" className="projects-section">
               <div className="container">
                   <h2>Weekly Project Drops</h2>
                   <div id="project-list-container">
-                      {projects.map(project => (
+                      {/* EDIT 2: Use the limited list */}
+                      {featuredProjects.map(project => (
                         <ProjectCard key={project.id} project={project} />
                       ))}
                   </div>
+
+                  {/* EDIT 3: Add the button */}
+                  <div className="explore-button-container">
+                    <Link href="/explore" className="btn btn-primary btn-large">
+                      Explore All Projects <i className="fas fa-arrow-right"></i>
+                    </Link>
+                  </div>
+
               </div>
           </section>
 
-          {/* --- TESTIMONIALS/REVIEWS SECTION (RESTORED) --- */}
+          {/* --- TESTIMONIALS/REVIEWS SECTION --- */}
           <section className="testimonials-section">
             <div className="container">
                 <h2>What Our Students Say</h2>
@@ -96,7 +115,7 @@ export default function Home({ projects }) {
         </section>
       </main>
 
-      {/* --- FOOTER (RESTORED) --- */}
+      {/* --- FOOTER --- */}
       <footer className="footer">
           <div className="container">
               <p>© 2024 SkillForge. All Rights Reserved.</p>
@@ -111,8 +130,8 @@ export async function getStaticProps() {
   const path = require('path');
   const fs = require('fs');
   const filePath = path.join(process.cwd(), 'public', 'projects.json');
-  const jsonData = fs.readFileSync(filePath);
-  const projects = JSON.parse(jsonData);
+  const jsonData = fs.readFileSync(filePath, 'utf8');
+  const projects = JSON.parse(jsonData) || [];
   return {
     props: {
       projects
