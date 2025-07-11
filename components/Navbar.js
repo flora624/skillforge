@@ -27,7 +27,7 @@ export default function Navbar() {
       <div className="container">
         {/* The Logo */}
         <Link href="/" className="logo">
-          <div style={{ width: '50px', height: '50px', position: 'relative' }}>
+          <div style={{ width: '80px', height: '80px', position: 'relative' }}>
   <Image
     src="/logo.png"
     alt="SkillFroge Logo"
