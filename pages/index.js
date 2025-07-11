@@ -1,8 +1,8 @@
-import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
 import Link from 'next/link';
+import ProjectCard from '../components/ProjectCard'; // <-- IMPORT THE NEW COMPONENT
 
-// This function correctly reads all projects and is now stable
+// This function remains the same
 export async function getStaticProps() {
   const path = require('path');
   const fs = require('fs');
@@ -13,13 +13,6 @@ export async function getStaticProps() {
 }
 
 export default function Home({ projects }) {
-  const router = useRouter();
-
-  const handleProjectClick = (projectId) => {
-    router.push(`/project/${projectId}`);
-  };
-  
-  // This defensive check ensures it never crashes
   const featuredProjects = Array.isArray(projects) ? projects.slice(0, 3) : [];
 
   return (
@@ -52,7 +45,7 @@ export default function Home({ projects }) {
                       <div className="feature-card">
                           <i className="fas fa-rocket"></i>
                           <h3>Career-Focused Solutions</h3>
-                          <p>Understand the 'why' behind solutions and get resume-ready text to showcase your work.</p>
+                          <p>Get pre-written resume points and showcase your work to accelerate your job search.</p>
                       </div>
                   </div>
               </div>
@@ -62,38 +55,17 @@ export default function Home({ projects }) {
               <div className="container">
                   <h2>Featured Projects</h2>
                   <div id="project-list-container">
-                    {/* --- Using our "Bulletproof" Mapping Logic --- */}
-                    {featuredProjects.map(project => {
-                      if (!project || !project.id) {
-                        return null; // Skip any malformed project data
-                      }
-
-                      return (
-                        <div key={project.id} className="project-card" onClick={() => handleProjectClick(project.id)}>
-                            <div className="card-content">
-                                <h3>{project.title || "Untitled Project"}</h3>
-                                
-                                {project.problemStatement && (
-                                    <p>{project.problemStatement.substring(0, 100)}...</p>
-                                )}
-                                
-                                <div className="card-meta">
-                                    <span><i className="fas fa-folder"></i> {project.domain || "N/A"}</span>
-                                    <span className={`tag difficulty-${project.difficulty || 'Beginner'}`}>{project.difficulty || "Beginner"}</span>
-                                </div>
-                            </div>
-                        </div>
-                      );
-                    })}
+                    {/* --- THIS IS THE NEW, SIMPLIFIED MAPPING LOGIC --- */}
+                    {featuredProjects.map(project => (
+                      <ProjectCard key={project.id} project={project} />
+                    ))}
                   </div>
                   
-                  {/* The "Explore More" Button */}
                   <div className="explore-button-container">
                     <Link href="/explore" className="btn btn-primary btn-large">
                       Explore All Projects <i className="fas fa-arrow-right"></i>
                     </Link>
                   </div>
-
               </div>
           </section>
 

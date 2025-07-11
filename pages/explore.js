@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
+import ProjectCard from '../components/ProjectCard'; // <-- IMPORT THE NEW COMPONENT
 
-// Fetch all projects at build time, just like the homepage
+// This function remains the same
 export async function getStaticProps() {
   const path = require('path');
   const fs = require('fs');
@@ -13,28 +13,19 @@ export async function getStaticProps() {
 }
 
 export default function ExplorePage({ projects }) {
-  const router = useRouter();
-  
-  // State for our filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDomain, setSelectedDomain] = useState('All');
   const [selectedDifficulty, setSelectedDifficulty] = useState('All');
 
-  // Dynamically get unique domains for the filter dropdown
   const domains = ['All', ...new Set(projects.map(p => p.domain))];
   const difficulties = ['All', 'Beginner', 'Intermediate', 'Advanced'];
 
-  // Filter logic
   const filteredProjects = projects.filter(project => {
     const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesDomain = selectedDomain === 'All' || project.domain === selectedDomain;
     const matchesDifficulty = selectedDifficulty === 'All' || project.difficulty === selectedDifficulty;
     return matchesSearch && matchesDomain && matchesDifficulty;
   });
-
-  const handleProjectClick = (projectId) => {
-    router.push(`/project/${projectId}`);
-  };
 
   return (
     <>
@@ -72,16 +63,9 @@ export default function ExplorePage({ projects }) {
         <section className="projects-section">
           <div id="project-list-container">
             {filteredProjects.length > 0 ? (
+              // --- THIS IS THE NEW, SIMPLIFIED MAPPING LOGIC ---
               filteredProjects.map(project => (
-                <div key={project.id} className="project-card" onClick={() => handleProjectClick(project.id)}>
-                  <div className="card-content">
-                    <h3>{project.title}</h3>
-                    <div className="card-meta">
-                      <span><i className="fas fa-folder"></i> {project.domain}</span>
-                      <span className={`tag difficulty-${project.difficulty}`}>{project.difficulty}</span>
-                    </div>
-                  </div>
-                </div>
+                <ProjectCard key={project.id} project={project} />
               ))
             ) : (
               <p className="no-projects-message">No projects match your filters. Try a different search!</p>
