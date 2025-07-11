@@ -8,7 +8,8 @@ export async function getStaticProps() {
   const fs = require('fs');
   const filePath = path.join(process.cwd(), 'public', 'projects.json');
   const jsonData = fs.readFileSync(filePath);
-  const projects = JSON.parse(jsonData);
+  // We add a check here to make sure projects is always an array
+  const projects = JSON.parse(jsonData) || []; 
   return { props: { projects } };
 }
 
@@ -19,8 +20,8 @@ export default function Home({ projects }) {
     router.push(`/project/${projectId}`);
   };
   
-  // We only want to show the first 3 projects on the homepage
-  const featuredProjects = projects.slice(0, 3);
+  // We add a check here to ensure projects is an array before slicing
+  const featuredProjects = Array.isArray(projects) ? projects.slice(0, 3) : [];
 
   return (
     <>
@@ -52,7 +53,7 @@ export default function Home({ projects }) {
                       <div className="feature-card">
                           <i className="fas fa-rocket"></i>
                           <h3>Career-Focused Solutions</h3>
-                          <p>Understand the 'why' behind solutions and get resume-ready text to showcase your work.</p>
+                          <p>Get pre-written resume points and showcase your work to accelerate your job search.</p>
                       </div>
                   </div>
               </div>
@@ -62,23 +63,30 @@ export default function Home({ projects }) {
               <div className="container">
                   <h2>Featured Projects</h2>
                   <div id="project-list-container">
-                    {featuredProjects.map(project => (
+                    {/* --- THIS IS THE BULLETPROOF MAPPING LOGIC --- */}
+                    {featuredProjects && featuredProjects.map(project => {
+                      // If for any reason a project is null or missing a key, we skip it
+                      if (!project || !project.id) {
+                        return null;
+                      }
+
+                      return (
                         <div key={project.id} className="project-card" onClick={() => handleProjectClick(project.id)}>
                             <div className="card-content">
-                                <h3>{project.title}</h3>
-
-                                {/* THIS IS THE CORRECTED PART THAT WAS MISSING */}
+                                <h3>{project.title || "Untitled Project"}</h3>
+                                
                                 {project.problemStatement && (
                                     <p>{project.problemStatement.substring(0, 100)}...</p>
                                 )}
                                 
                                 <div className="card-meta">
-                                    <span><i className="fas fa-folder"></i> {project.domain}</span>
-                                    <span className={`tag difficulty-${project.difficulty}`}>{project.difficulty}</span>
+                                    <span><i className="fas fa-folder"></i> {project.domain || "N/A"}</span>
+                                    <span className={`tag difficulty-${project.difficulty || 'Beginner'}`}>{project.difficulty || "Beginner"}</span>
                                 </div>
                             </div>
                         </div>
-                    ))}
+                      );
+                    })}
                   </div>
                   
                   <div className="explore-button-container">
