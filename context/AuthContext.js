@@ -2,38 +2,39 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../firebase/config';
 
+// 1. Create the context
 const AuthContext = createContext();
 
+// 2. Create a custom hook to easily use the context
 export function useAuth() {
   return useContext(AuthContext);
 }
 
+// 3. Create the Provider component that will wrap our app
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
+  // This useEffect hook listens to Firebase for any authentication changes
   useEffect(() => {
-    console.log(">> DIAGNOSTIC: AuthProvider useEffect is running.");
-    
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      // THIS IS THE MOST CRITICAL LOG. It tells us what Firebase thinks.
-      console.log(">> DIAGNOSTIC: onAuthStateChanged triggered. User object:", user);
-      
-      setUser(user);
-      setLoading(false);
+    // onAuthStateChanged returns an 'unsubscribe' function.
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      // When the state changes, we update our user state.
+      // This will be the user object if logged in, or null if logged out.
+      setUser(currentUser);
     });
 
-    return unsubscribe;
-  }, []);
+    // When the component unmounts, we clean up the listener.
+    return () => unsubscribe();
+  }, []); // The empty array means this effect runs only once.
 
+  // The value provided to all children components
   const value = {
     user,
-    loading,
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 }
