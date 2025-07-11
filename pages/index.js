@@ -76,11 +76,6 @@ export default function Home({ projects }) {
               </div>
           </section>
 
-          <div id="project-list-container">
-  {featuredProjects.map(project => (
-    <ProjectCard key={project.id} project={project} />
-  ))}
-</div>
 
 <div className="explore-button-container">
   <Link href="/explore" className="btn btn-primary btn-large">
