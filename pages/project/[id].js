@@ -5,22 +5,22 @@ import { useAuth } from '../../context/AuthContext';
 import { db } from '../../firebase/config';
 import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 
-// Static generation functions (getStaticPaths, getStaticProps) remain the same...
 export async function getStaticPaths() {
     const path = require('path');
     const fs = require('fs');
     const filePath = path.join(process.cwd(), 'public', 'projects.json');
-    const jsonData = fs.readFileSync(filePath);
-    const projects = JSON.parse(jsonData);
+    const jsonData = fs.readFileSync(filePath, 'utf8');
+    const projects = JSON.parse(jsonData) || [];
     const paths = projects.map(project => ({ params: { id: project.id.toString() } }));
     return { paths, fallback: false };
 }
+
 export async function getStaticProps({ params }) {
     const path = require('path');
     const fs = require('fs');
     const filePath = path.join(process.cwd(), 'public', 'projects.json');
-    const jsonData = fs.readFileSync(filePath);
-    const projects = JSON.parse(jsonData);
+    const jsonData = fs.readFileSync(filePath, 'utf8');
+    const projects = JSON.parse(jsonData) || [];
     const project = projects.find(p => p.id.toString() === params.id);
     return { props: { project } };
 }
@@ -33,11 +33,11 @@ export default function ProjectPage({ project }) {
     
     const [submissionText, setSubmissionText] = useState('');
     const [submissionFile, setSubmissionFile] = useState(null);
-
     const [aiResult, setAiResult] = useState(null);
     const router = useRouter();
 
     useEffect(() => {
+        if(!project) return;
         const loadProgress = async () => {
             if (!user) {
                 setIsLoading(false);
@@ -59,10 +59,10 @@ export default function ProjectPage({ project }) {
             setIsLoading(false);
         };
         loadProgress();
-    }, [user, project.id]);
+    }, [user, project]);
 
     const saveProgress = async (newIndex) => {
-        if (user) {
+        if (user && project) {
             const progressRef = doc(db, "progress", `${user.uid}_${project.id}`);
             await setDoc(progressRef, {
                 userId: user.uid,
@@ -87,24 +87,17 @@ export default function ProjectPage({ project }) {
         }
     };
 
-    // --- THIS IS THE CORRECTED SUBMISSION FUNCTION ---
     const handleFinalSubmit = async () => {
         if (!user) return alert("Please log in to submit.");
-        
         let finalSubmissionSummary = submissionText;
         if (submissionFile) {
-            // In a real app, you would upload the file to Firebase Storage here and get a URL.
-            // For now, we'll just use the file name as a placeholder summary.
             finalSubmissionSummary = `File submitted: ${submissionFile.name}. Notes: ${submissionText}`;
         }
-
         if (finalSubmissionSummary.trim().length < 20) {
             return alert("Please provide a valid URL, file, or a more detailed summary (at least 20 characters).");
         }
-
         setIsLoading(true);
-        setAiResult(null); // Reset previous AI result
-
+        setAiResult(null);
         try {
             const response = await fetch('/api/validate-answer', {
                 method: 'POST',
@@ -115,9 +108,7 @@ export default function ProjectPage({ project }) {
                 }),
             });
             const data = await response.json();
-            setAiResult(data); // Set the AI result to show it in the UI
-
-            // Only save as "completed" if the AI verdict is correct
+            setAiResult(data);
             if (data.verdict === 'Correct') {
                 const completionRef = doc(db, "completions", `${user.uid}_${project.id}`);
                 await setDoc(completionRef, {
@@ -127,10 +118,8 @@ export default function ProjectPage({ project }) {
                     submissionSummary: finalSubmissionSummary,
                     completedAt: new Date()
                 });
-
                 const progressRef = doc(db, "progress", `${user.uid}_${project.id}`);
                 await deleteDoc(progressRef);
-                
                 setIsCompleted(true);
             }
         } catch (error) {
@@ -141,13 +130,13 @@ export default function ProjectPage({ project }) {
         }
     };
 
-    if (isLoading) {
+    if (isLoading || !project) {
         return <div className="loading-screen">Loading Project...</div>;
     }
     
     const activeMilestone = project.milestones[activeMilestoneIndex];
     const isLastMilestone = activeMilestoneIndex === project.milestones.length - 1;
-    const finalSubmissionType = project.milestones[project.milestones.length - 1].submissionType || 'text';
+    const finalSubmissionType = project.milestones[project.milestones.length - 1]?.submissionType || 'text';
 
     return (
         <>
@@ -181,10 +170,7 @@ export default function ProjectPage({ project }) {
                                 {isLastMilestone ? (
                                     isCompleted ? (
                                         <>
-                                            <div className="milestone-box submission-box">
-                                                <h4>Your Completed Submission</h4>
-                                                <p className="completed-submission-text">{submissionText}</p>
-                                            </div>
+                                            <div className="milestone-box submission-box"><h4>Your Completed Submission</h4><p className="completed-submission-text">{submissionText}</p></div>
                                             <div className="resume-box">
                                                 <h3><i className="fas fa-id-card"></i> Add to Your Resume</h3>
                                                 <p>Congratulations! Copy this text for your resume or LinkedIn.</p>
@@ -194,23 +180,12 @@ export default function ProjectPage({ project }) {
                                     ) : (
                                         <div className="milestone-box submission-box">
                                             <h4>Final Submission & AI Review</h4>
-                                            {/* Smart Submission UI */}
                                             {finalSubmissionType === 'file' ? (
-                                                <div className="submission-input-group">
-                                                    <p>This project requires a file submission (e.g., PDF, ZIP, image).</p>
-                                                    <input type="file" onChange={(e) => setSubmissionFile(e.target.files[0])} />
-                                                    <textarea placeholder="Add any notes about your submission here..." value={submissionText} onChange={(e) => setSubmissionText(e.target.value)}/>
-                                                </div>
+                                                <div className="submission-input-group"><p>This project requires a file submission (e.g., PDF, ZIP, image).</p><input type="file" onChange={(e) => setSubmissionFile(e.target.files[0])} /><textarea placeholder="Add any notes about your submission here..." value={submissionText} onChange={(e) => setSubmissionText(e.target.value)}/></div>
                                             ) : finalSubmissionType === 'link' ? (
-                                                <div className="submission-input-group">
-                                                    <p>This project requires a URL submission (e.g., GitHub repo, live website, Figma prototype).</p>
-                                                    <input type="url" placeholder="https://github.com/your-username/project" value={submissionText} onChange={(e) => setSubmissionText(e.target.value)} />
-                                                </div>
+                                                <div className="submission-input-group"><p>This project requires a URL submission (e.g., GitHub repo, live website, Figma prototype).</p><input type="url" placeholder="https://github.com/your-username/project" value={submissionText} onChange={(e) => setSubmissionText(e.target.value)} /></div>
                                             ) : (
-                                                <div className="submission-input-group">
-                                                     <p>Summarize your complete approach and how you achieved the project goals.</p>
-                                                     <textarea placeholder="e.g., I designed the system by first modeling the data schemas..." value={submissionText} onChange={(e) => setSubmissionText(e.target.value)} />
-                                                </div>
+                                                <div className="submission-input-group"><p>Summarize your complete approach and how you achieved the project goals.</p><textarea placeholder="e.g., I designed the system by first modeling the data schemas..." value={submissionText} onChange={(e) => setSubmissionText(e.target.value)} /></div>
                                             )}
                                             <button className="btn btn-secondary btn-large" onClick={handleFinalSubmit} disabled={isLoading}>{isLoading ? 'Submitting...' : 'Submit Project'}</button>
                                             {aiResult && (

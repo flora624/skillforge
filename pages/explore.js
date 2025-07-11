@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Navbar from '../components/Navbar';
 import ProjectCard from '../components/ProjectCard';
 
-// This function remains the same
 export async function getStaticProps() {
   const path = require('path');
   const fs = require('fs');
@@ -17,12 +16,13 @@ export default function ExplorePage({ projects }) {
   const [selectedDomain, setSelectedDomain] = useState('All');
   const [selectedDifficulty, setSelectedDifficulty] = useState('All');
 
-  // Defensive check for unique domains
-  const domains = ['All', ...new Set((projects || []).map(p => p.domain).filter(Boolean))];
+  const safeProjects = Array.isArray(projects) ? projects : [];
+
+  const domains = ['All', ...new Set(safeProjects.map(p => p.domain).filter(Boolean))];
   const difficulties = ['All', 'Beginner', 'Intermediate', 'Advanced'];
 
-  const filteredProjects = (projects || []).filter(project => {
-    // Check if project and title exist before calling toLowerCase
+  const filteredProjects = safeProjects.filter(project => {
+    if (!project || !project.title) return false;
     const title = project.title || '';
     const matchesSearch = title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesDomain = selectedDomain === 'All' || project.domain === selectedDomain;
@@ -52,8 +52,6 @@ export default function ExplorePage({ projects }) {
           <div className="filter-group">
             <label htmlFor="domain-filter">Domain</label>
             <select id="domain-filter" value={selectedDomain} onChange={(e) => setSelectedDomain(e.target.value)}>
-              {/* THIS IS THE FIX. We wrap the options in a fragment <>...</> but it's not strictly necessary. 
-                  The main fix is ensuring domains is always an array. */}
               {domains.map(domain => <option key={domain} value={domain}>{domain}</option>)}
             </select>
           </div>
