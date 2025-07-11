@@ -809,3 +809,17 @@ a { color: inherit; text-decoration: none; }
   width: 80px; /* Approx width of login buttons */
   height: 38px;
 }
+@media (max-width: 768px) {
+  .project-card {
+    width: 90% !important;
+    margin: 10px auto;
+  }
+
+  .navbar {
+    flex-direction: column;
+  }
+
+  .logo {
+    max-width: 120px;
+  }
+}
