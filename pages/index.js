@@ -71,11 +71,6 @@ export default function Home({ projects }) {
                         <ProjectCard key={project.id} project={project} />
                       ))}
                   </div>
-                  <div className="explore-button-container">
-                    <Link href="/explore" className="btn btn-primary btn-large">
-                      Explore All Projects <i className="fas fa-arrow-right"></i>
-                    </Link>
-                  </div>
               </div>
           </section>
 
