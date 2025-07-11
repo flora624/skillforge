@@ -1,30 +1,37 @@
 import Link from 'next/link';
 import Navbar from '../components/Navbar';
-import ProjectCard from '../components/ProjectCard'; // <-- We now import the clean component
 
-// This server-side part is correct and remains the same
-export async function getStaticProps() {
-  const path = require('path');
-  const fs = require('fs');
-  const filePath = path.join(process.cwd(), 'public', 'projects.json');
-  const jsonData = fs.readFileSync(filePath, 'utf8');
-  const projects = JSON.parse(jsonData) || [];
-  return {
-    props: {
-      projects
-    }
-  };
+// This is the component for a single project card
+// It now correctly links to the dynamic project workspace page
+function ProjectCard({ project }) {
+  return (
+    <Link href={`/project/${project.id}`} className="project-card-link">
+      <div className="project-card">
+        <div className="card-content">
+            <h3>{project.title}</h3>
+            <div className="card-meta">
+                {/* Font Awesome icons might not work if you removed the script, so we use text/emoji */}
+                <span>📁 {project.domain}</span>
+                <span className={`tag difficulty-${project.difficulty}`}>{project.difficulty}</span>
+            </div>
+            <p>{project.problemStatement.substring(0, 100)}...</p>
+            <div className="skills-gained-preview">
+              <strong>Skills:</strong> {project.skillsGained.slice(0, 3).join(', ')}...
+            </div>
+        </div>
+      </div>
+    </Link>
+  );
 }
+
 
 // This is the main Homepage component
 export default function Home({ projects }) {
-  // We only show the first 3 projects
-  const featuredProjects = Array.isArray(projects) ? projects.slice(0, 3) : [];
-
   return (
     <>
       <Navbar />
       
+      {/* --- HERO SECTION (RESTORED) --- */}
       <header className="hero-section">
           <div className="container">
               <h1>Turn Theory into Tangible Skills</h1>
@@ -34,6 +41,7 @@ export default function Home({ projects }) {
       </header>
 
       <main>
+          {/* --- FEATURES/PERKS SECTION (RESTORED) --- */}
           <section id="features" className="features-section">
               <div className="container">
                   <h2>The SkillForge Advantage</h2>
@@ -54,25 +62,26 @@ export default function Home({ projects }) {
               </div>
           </section>
 
+          {/* --- PROJECTS SECTION (AS BEFORE) --- */}
           <section id="projects" className="projects-section">
               <div className="container">
-                  <h2>Featured Projects</h2>
+                  <h2>Weekly Project Drops</h2>
                   <div id="project-list-container">
-                      {/* We use our clean, imported ProjectCard component */}
-                      {featuredProjects.map(project => (
+                      {projects.map(project => (
                         <ProjectCard key={project.id} project={project} />
                       ))}
-                  </div>
+                   </div>
 
-                  {/* The "Explore More" button */}
-                  <div className="explore-button-container">
-                    <Link href="/explore" className="btn btn-primary btn-large">
-                      Explore All Projects <i className="fas fa-arrow-right"></i>
-                    </Link>
-                  </div>
-              </div>
-          </section>
+    {/* -- Explore More Projects Button -- */}
+    <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+      <Link href="/explore">
+        <a className="btn btn-primary">Explore More Projects</a>
+      </Link>
+    </div>
+  </div>
+</section>
 
+          {/* --- TESTIMONIALS/REVIEWS SECTION (RESTORED) --- */}
           <section className="testimonials-section">
             <div className="container">
                 <h2>What Our Students Say</h2>
@@ -94,11 +103,26 @@ export default function Home({ projects }) {
         </section>
       </main>
 
+      {/* --- FOOTER (RESTORED) --- */}
       <footer className="footer">
           <div className="container">
               <p>© 2024 SkillForge. All Rights Reserved.</p>
           </div>
       </footer>
     </>
-  );
+  )
+}
+
+// This server-side part remains the same
+export async function getStaticProps() {
+  const path = require('path');
+  const fs = require('fs');
+  const filePath = path.join(process.cwd(), 'public', 'projects.json');
+  const jsonData = fs.readFileSync(filePath);
+  const projects = JSON.parse(jsonData);
+  return {
+    props: {
+      projects
+    }
+  }
 }
