@@ -24,6 +24,7 @@ export default function Login() {
 
   return (
     <>
+      <Navbar />
       <div className="auth-page">
         <div className="auth-container">
           <div className="auth-box">

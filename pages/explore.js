@@ -33,6 +33,7 @@ export default function ExplorePage({ projects }) {
 
   return (
     <>
+    <Navbar />
       <main className="container">
         <section className="explore-header">
           <h1>Explore All Projects</h1>
