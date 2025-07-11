@@ -148,7 +148,6 @@ export default function ProjectPage({ project }) {
 
     return (
         <>
-            <Navbar />
             <div className="project-page-container">
                 <div className="project-header">
                     <h1>{project.title}</h1>

@@ -62,7 +62,6 @@ export default function Profile({ allProjects }) {
 
   return (
     <>
-      <Navbar />
       <main className="container">
         <section className="dashboard-header">
           <h1>My Dashboard</h1>
