@@ -10,8 +10,8 @@ export async function getStaticProps() {
   const path = require('path');
   const fs = require('fs');
   const filePath = path.join(process.cwd(), 'public', 'projects.json');
-  const jsonData = fs.readFileSync(filePath, 'utf8');
-  const allProjects = JSON.parse(jsonData) || [];
+  const jsonData = fs.readFileSync(filePath);
+  const allProjects = JSON.parse(jsonData);
   return { props: { allProjects } };
 }
 
@@ -40,8 +40,7 @@ export default function Profile({ allProjects }) {
       const progressQuery = query(collection(db, 'progress'), where('userId', '==', user.uid));
       const progressSnap = await getDocs(progressQuery);
       const inProgressIds = progressSnap.docs.map(doc => doc.data().projectId);
-      const safeAllProjects = Array.isArray(allProjects) ? allProjects : [];
-      const inProgressData = safeAllProjects.filter(project => project && inProgressIds.includes(project.id));
+      const inProgressData = allProjects.filter(project => inProgressIds.includes(project.id));
       setInProgressProjects(inProgressData);
 
       setIsLoading(false);
@@ -54,7 +53,9 @@ export default function Profile({ allProjects }) {
     return <div className="loading-screen">Loading Dashboard...</div>;
   }
 
+  // --- THIS IS THE CORRECTED SHARE FUNCTION ---
   const handleShare = (userId, projectId) => {
+    // We construct the correct URL for our new share page
     const shareableLink = `${window.location.origin}/share/${userId}/${projectId}`;
     navigator.clipboard.writeText(shareableLink);
     alert('Shareable link copied to clipboard!');
@@ -66,7 +67,7 @@ export default function Profile({ allProjects }) {
       <main className="container">
         <section className="dashboard-header">
           <h1>My Dashboard</h1>
-          <p>Welcome back, <strong>{user?.email || 'User'}</strong>!</p>
+          <p>Welcome back, <strong>{user.email}</strong>!</p>
         </section>
 
         <section className="dashboard-content">
@@ -74,13 +75,11 @@ export default function Profile({ allProjects }) {
           {inProgressProjects.length > 0 ? (
             <div className="dashboard-grid">
               {inProgressProjects.map(project => (
-                <Link href={`/project/${project.id}`} key={project.id} passHref>
-                  <div className="project-card-resume">
-                    <h3>{project.title}</h3>
-                    <p>{project.domain}</p>
-                    <div className="btn btn-primary">Resume Project</div>
-                  </div>
-                </Link>
+                <div key={project.id} className="project-card-resume" onClick={() => router.push(`/project/${project.id}`)}>
+                  <h3>{project.title}</h3>
+                  <p>{project.domain}</p>
+                  <button className="btn btn-primary">Resume Project</button>
+                </div>
               ))}
             </div>
           ) : (
@@ -95,12 +94,10 @@ export default function Profile({ allProjects }) {
               {completedProjects.map(project => (
                 <div key={project.id} className="project-card-completed">
                   <h3>{project.projectTitle}</h3>
-                  <p className="completed-submission-text">"{project.submissionSummary?.substring(0, 120) || ''}..."</p>
+                  <p className="completed-submission-text">"{project.submissionSummary.substring(0, 120)}..."</p>
                   <div className="card-actions">
                     <button className="btn" onClick={() => handleShare(user.uid, project.id)}>Share</button>
-                    <Link href={`/project/${project.id}`} passHref>
-                      <div className="btn btn-secondary">View</div>
-                    </Link>
+                    <button className="btn btn-secondary" onClick={() => router.push(`/project/${project.id}`)}>View</button>
                   </div>
                 </div>
               ))}
