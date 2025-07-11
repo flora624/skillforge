@@ -810,26 +810,81 @@ a { color: inherit; text-decoration: none; }
   height: 38px;
 }
 /* Mobile-first responsive base */
+/* ===== Mobile Responsive Overrides ===== */
 @media (max-width: 768px) {
+  /* Base adjustments */
   html {
-    font-size: 14px; /* Slightly smaller base font for mobile */
+    font-size: 15px; /* Slightly smaller base font */
   }
-  
+
   .container {
-    padding: 0 1rem; /* Reduce side padding on mobile */
+    padding: 0 1rem; /* Tighter container padding */
   }
-  
+
+  /* Simplified navbar */
+  .navbar .container {
+    padding: 0.75rem 1rem; /* Compact navbar */
+  }
+
+  .navbar .logo {
+    font-size: 1.3rem; /* Slightly smaller logo */
+    margin-right: auto; /* Keeps logo left, pushes nav right */
+  }
+
+  /* Hide all nav items except profile icon */
+  .nav-links li:not(:last-child) {
+    display: none;
+  }
+
+  /* Ensure profile icon remains visible */
+  .profile-svg-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  /* Adjust dropdown positioning */
+  .dropdown-menu {
+    right: 1rem;
+    width: calc(100% - 2rem);
+  }
+
+  /* Section spacing */
   section {
-    padding: 2rem 0; /* Reduce section padding on mobile */
+    padding: 2rem 0;
   }
-  
+
+  /* Headers */
   h1 {
-    font-size: 2rem !important; /* Smaller headings */
+    font-size: 2rem !important;
   }
-  
   h2 {
     font-size: 1.75rem !important;
     margin-bottom: 1.5rem !important;
+  }
+
+  /* Hero section */
+  .hero-section {
+    padding: 3rem 0;
+  }
+  .hero-section h1 {
+    font-size: 2.2rem !important;
+  }
+  .hero-section .subtitle {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+
+  /* Single-column grids */
+  #project-list-container,
+  .dashboard-grid,
+  .features-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+
+  /* Auth pages */
+  .auth-box {
+    padding: 1.5rem;
   }
 }
 /* In globals.css */
@@ -926,7 +981,7 @@ a { color: inherit; text-decoration: none; }
   .auth-container {
     padding: 1rem;
   }
-  
+    
   .auth-box {
     padding: 1.5rem;
   }
