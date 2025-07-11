@@ -31,7 +31,9 @@ export default function Navbar() {
           <svg
           viewBox="0 0 24 24"
           position="fixed"
-          ></svg>
+          >
+            
+          </svg>
         </Link>
         
         {/* The Main Navigation Links */}
