@@ -804,3 +804,8 @@ a { color: inherit; text-decoration: none; }
 .project-card .card-meta {
   margin-top: auto; /* Pushes meta to the bottom */
 }
+/* Placeholder for Navbar while auth is loading */
+.nav-placeholder {
+  width: 80px; /* Approx width of login buttons */
+  height: 38px;
+}

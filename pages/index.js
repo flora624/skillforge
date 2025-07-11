@@ -2,7 +2,6 @@ import Navbar from '../components/Navbar';
 import Link from 'next/link';
 import ProjectCard from '../components/ProjectCard';
 
-// This function is stable and correct.
 export async function getStaticProps() {
   const path = require('path');
   const fs = require('fs');
@@ -13,15 +12,11 @@ export async function getStaticProps() {
 }
 
 export default function Home({ projects }) {
-  // This logic is stable and correct.
   const featuredProjects = Array.isArray(projects) ? projects.slice(0, 3) : [];
 
   return (
     <>
-      {/* RESTORING THE NAVBAR (This brings back Login/Signup/Profile) */}
       <Navbar />
-      
-      {/* RESTORING THE HERO HEADER */}
       <header className="hero-section">
           <div className="container">
               <h1>Turn Theory into Tangible Skills</h1>
@@ -29,9 +24,7 @@ export default function Home({ projects }) {
               <a href="#projects" className="btn btn-large btn-secondary">Browse Featured Projects</a>
           </div>
       </header>
-
       <main>
-          {/* RESTORING THE FEATURES / "ABOUT" SECTION */}
           <section id="features" className="features-section">
               <div className="container">
                   <h2>The SkillForge Advantage</h2>
@@ -54,8 +47,6 @@ export default function Home({ projects }) {
                   </div>
               </div>
           </section>
-
-          {/* This is the section we fixed */}
           <section id="projects" className="projects-section">
               <div className="container">
                   <h2>Featured Projects</h2>
@@ -66,7 +57,6 @@ export default function Home({ projects }) {
                       </Link>
                     ))}
                   </div>
-                  
                   <div className="explore-button-container">
                     <Link href="/explore" passHref>
                       <div className="btn btn-primary btn-large">
@@ -76,8 +66,6 @@ export default function Home({ projects }) {
                   </div>
               </div>
           </section>
-
-          {/* RESTORING THE TESTIMONIALS / "REVIEW" SECTION */}
           <section className="testimonials-section">
             <div className="container">
                 <h2>What Our Students Say</h2>
@@ -98,13 +86,11 @@ export default function Home({ projects }) {
             </div>
         </section>
       </main>
-
-      {/* RESTORING THE FOOTER */}
       <footer className="footer">
           <div className="container">
               <p>© 2024 SkillForge. All Rights Reserved.</p>
           </div>
       </footer>
     </>
-  )
+  );
 }
