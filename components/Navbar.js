@@ -27,7 +27,11 @@ export default function Navbar() {
       <div className="container">
         {/* The Logo */}
         <Link href="/" className="logo">
-          <Image src="/logo.png" alt="SkillForge Logo" width={80} height={40} position={false} priority />
+          <Image src="/logo.png" alt="SkillForge Logo" width={80} height={40} priority />
+          <svg
+          viewBox="0 0 24 24"
+          position="fixed"
+          ></svg>
         </Link>
         
         {/* The Main Navigation Links */}
