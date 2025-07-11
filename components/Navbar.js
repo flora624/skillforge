@@ -6,8 +6,11 @@ import { auth } from '../firebase/config';
 import { signOut } from 'firebase/auth';
 
 export default function Navbar() {
-  const { user, loading } = useAuth(); // Get both user and loading state
+  const { user } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  // THIS LOG TELLS US WHAT THE NAVBAR SEES.
+  console.log(">> DIAGNOSTIC: Navbar component is rendering. User from useAuth():", user);
 
   const handleLogout = async () => {
     try {
@@ -31,16 +34,12 @@ export default function Navbar() {
           <li><Link href="/#features">Why SkillForge?</Link></li>
           <li><Link href="/#projects">Projects</Link></li>
           
-          {/* --- THIS IS THE CRITICAL LOGIC --- */}
-          {loading ? (
-            // While checking auth, show a placeholder or nothing
-            <li><div className="nav-placeholder"></div></li>
-          ) : user ? (
-            // If check is done AND user exists, show profile
+          {user ? (
             <li className="profile-menu">
               <div onClick={() => setDropdownOpen(!dropdownOpen)} className="profile-icon">
                 <i className="fas fa-user-circle"></i>
               </div>
+              
               {dropdownOpen && (
                 <div className="dropdown-menu">
                   <div className="dropdown-header">
@@ -53,7 +52,6 @@ export default function Navbar() {
               )}
             </li>
           ) : (
-            // If check is done AND no user, show login buttons
             <>
               <li><Link href="/login">Login</Link></li>
               <li><Link href="/signup" passHref><div className="btn btn-primary">Sign Up</div></Link></li>
