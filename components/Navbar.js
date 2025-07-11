@@ -27,13 +27,15 @@ export default function Navbar() {
       <div className="container">
         {/* The Logo */}
         <Link href="/" className="logo">
-          <Image src="/logo.png" alt="SkillForge Logo" width={80} height={40} priority />
-          <svg
-          viewBox="0 0 24 24"
-          position="fixed"
-          >
-            
-          </svg>
+          <div style={{ width: '50px', height: '50px', position: 'relative' }}>
+  <Image
+    src="/logo.png"
+    alt="SkillFroge Logo"
+    fill
+    priority
+    style={{ objectFit: 'contain' }}
+  />
+</div>
         </Link>
         
         {/* The Main Navigation Links */}
