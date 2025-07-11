@@ -1,35 +1,34 @@
-import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 export default function ProjectCard({ project }) {
-  const router = useRouter();
-
-  // The "gatekeeper". If the project data is bad, it renders nothing.
+  // Defensive checks to prevent any crashes from bad data
   if (!project || !project.id) {
-    return null;
+    return null; // Render nothing if the project data is invalid
   }
 
-  const handleProjectClick = () => {
-    if (project && project.id) {
-      router.push(`/project/${project.id}`);
-    }
-  };
-
-  // Defensive variables with fallbacks
+  // Provide default fallbacks for every piece of data
   const title = project.title || "Untitled Project";
-  const problemStatement = project.problemStatement || "No description available.";
   const domain = project.domain || "N/A";
   const difficulty = project.difficulty || "Beginner";
+  const problemStatement = project.problemStatement || "No description available.";
+  const skillsGained = project.skillsGained || [];
 
   return (
-    <div className="project-card" onClick={handleProjectClick}>
-      <div className="card-content">
-        <h3>{title}</h3>
-        <p>{problemStatement.substring(0, 100)}...</p>
-        <div className="card-meta">
+    // The Link component MUST have an `href` and should wrap the entire card
+    <Link href={`/project/${project.id}`} legacyBehavior>
+      <a className="project-card">
+        <div className="card-content">
+          <h3>{title}</h3>
+          <p>{problemStatement.substring(0, 100)}...</p>
+          <div className="skills-gained-preview">
+            <strong>Skills:</strong> {skillsGained.slice(0, 3).join(', ')}...
+          </div>
+          <div className="card-meta">
             <span><i className="fas fa-folder"></i> {domain}</span>
             <span className={`tag difficulty-${difficulty}`}>{difficulty}</span>
+          </div>
         </div>
-      </div>
-    </div>
+      </a>
+    </Link>
   );
 }
