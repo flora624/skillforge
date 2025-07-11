@@ -40,7 +40,8 @@ export default function Profile({ allProjects }) {
       const progressQuery = query(collection(db, 'progress'), where('userId', '==', user.uid));
       const progressSnap = await getDocs(progressQuery);
       const inProgressIds = progressSnap.docs.map(doc => doc.data().projectId);
-      const inProgressData = allProjects.filter(project => inProgressIds.includes(project.id));
+      const safeAllProjects = Array.isArray(allProjects) ? allProjects : [];
+      const inProgressData = safeAllProjects.filter(project => project && inProgressIds.includes(project.id));
       setInProgressProjects(inProgressData);
 
       setIsLoading(false);
@@ -65,7 +66,7 @@ export default function Profile({ allProjects }) {
       <main className="container">
         <section className="dashboard-header">
           <h1>My Dashboard</h1>
-          <p>Welcome back, <strong>{user.email}</strong>!</p>
+          <p>Welcome back, <strong>{user?.email || 'User'}</strong>!</p>
         </section>
 
         <section className="dashboard-content">
@@ -94,7 +95,7 @@ export default function Profile({ allProjects }) {
               {completedProjects.map(project => (
                 <div key={project.id} className="project-card-completed">
                   <h3>{project.projectTitle}</h3>
-                  <p className="completed-submission-text">"{project.submissionSummary.substring(0, 120)}..."</p>
+                  <p className="completed-submission-text">"{project.submissionSummary?.substring(0, 120) || ''}..."</p>
                   <div className="card-actions">
                     <button className="btn" onClick={() => handleShare(user.uid, project.id)}>Share</button>
                     <Link href={`/project/${project.id}`} passHref>
