@@ -12,6 +12,268 @@
     --success-text: #2ecc71;
 }
 
+/* --- Base Styles --- */
+html, body {
+    padding: 0;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f9fafb;
+    color: var(--text-color);
+    line-height: 1.7;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* --- Typography --- */
+h1, h2, h3 {
+    color: var(--dark-color);
+    font-weight: 600;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* --- Utility Classes --- */
+.hidden {
+    display: none;
+}
+
+.error-message {
+    color: var(--danger-color);
+    font-size: 0.9rem;
+    text-align: center;
+    padding-top: 10px;
+}
+
+/* --- Layout --- */
+section {
+    padding: 4rem 0;
+}
+
+section h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-top: 0;
+    margin-bottom: 3rem;
+}
+
+/* --- Navbar --- */
+.navbar {
+    background: var(--white-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li {
+    margin-left: 1.5rem;
+}
+
+.nav-links a {
+    font-weight: 500;
+    transition: color 0.2s;
+    cursor: pointer;
+}
+
+.nav-links a:hover {
+    color: var(--primary-color);
+}
+
+/* --- Profile Dropdown --- */
+.profile-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-icon-link {
+    display: flex;
+    align-items: center;
+}
+
+.profile-svg-icon {
+    width: 28px;
+    height: 28px;
+    color: var(--grey-color);
+    transition: color 0.2s;
+}
+
+.profile-svg-icon:hover {
+    color: var(--primary-color);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: var(--white-color);
+    border-radius: 8px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    width: 220px;
+    z-index: 1001;
+    border: 1px solid #eee;
+    padding: 0.5rem 0;
+}
+
+/* --- Buttons --- */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    font-weight: 600;
+    display: inline-block;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--white-color);
+}
+
+.btn-primary:hover {
+    background-color: #357ABD;
+}
+
+/* --- Hero Section --- */
+.hero-section {
+    background: var(--dark-color);
+    color: var(--white-color);
+    text-align: center;
+    padding: 6rem 0;
+}
+
+.hero-section h1 {
+    font-size: 3.5rem;
+    color: var(--white-color);
+    margin-bottom: 1rem;
+}
+
+/* --- Cards --- */
+.project-card {
+    background: var(--white-color);
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+    html {
+        font-size: 15px;
+    }
+
+    .container {
+        padding: 0 1rem;
+    }
+
+    /* Simplified Navbar */
+    .navbar .container {
+        padding: 0.75rem 1rem;
+    }
+
+    .navbar .logo {
+        font-size: 1.3rem;
+        margin-right: auto;
+    }
+
+    /* Hide all nav items except profile */
+    .nav-links li:not(:last-child) {
+        display: none;
+    }
+
+    /* Adjust profile icon */
+    .profile-svg-icon {
+        width: 26px;
+        height: 26px;
+    }
+
+    /* Section adjustments */
+    section {
+        padding: 2rem 0;
+    }
+
+    section h2 {
+        font-size: 1.75rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+
+    /* Hero adjustments */
+    .hero-section {
+        padding: 3rem 0;
+    }
+
+    .hero-section h1 {
+        font-size: 2.2rem !important;
+    }
+
+    /* Single column layouts */
+    #project-list-container,
+    .dashboard-grid,
+    .features-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem;
+    }
+
+    /* Dropdown positioning */
+    .dropdown-menu {
+        right: 1rem;
+        width: calc(100% - 2rem);
+    }
+}
+
+/* --- All other existing styles remain unchanged below this line --- */
+/* ... (rest of your original CSS) ... */
+/* --- Global Styles & Variables --- */
+:root {
+    --primary-color: #4A90E2;
+    --secondary-color: #50E3C2;
+    --dark-color: #2c3e50;
+    --light-color: #ecf0f1;
+    --white-color: #ffffff;
+    --text-color: #34495e;
+    --grey-color: #95a5a6;
+    --danger-color: #e74c3c;
+    --success-bg: #eafaf1;
+    --success-text: #2ecc71;
+}
+
 html, body {
   padding: 0;
   margin: 0;
