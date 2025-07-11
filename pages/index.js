@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import ProjectCard from '../components/ProjectCard';
 import Navbar from '../components/Navbar';
 
 // This is the component for a single project card
