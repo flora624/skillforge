@@ -11,8 +11,8 @@ export async function getStaticPaths() {
     const filePath = path.join(process.cwd(), 'public', 'projects.json');
     const jsonData = fs.readFileSync(filePath, 'utf8');
     const projects = JSON.parse(jsonData) || [];
-    const paths = projects.map(project => ({ params: { id: project.id.toString() } }));
-    return { paths, fallback: false };
+    const paths = projects.map(project => (project && project.id ? { params: { id: project.id.toString() } } : null)).filter(Boolean);
+    return { paths, fallback: 'blocking' };
 }
 
 export async function getStaticProps({ params }) {
@@ -21,7 +21,12 @@ export async function getStaticProps({ params }) {
     const filePath = path.join(process.cwd(), 'public', 'projects.json');
     const jsonData = fs.readFileSync(filePath, 'utf8');
     const projects = JSON.parse(jsonData) || [];
-    const project = projects.find(p => p.id.toString() === params.id);
+    const project = projects.find(p => p && p.id.toString() === params.id) || null;
+    
+    if (!project) {
+        return { notFound: true };
+    }
+    
     return { props: { project } };
 }
 
@@ -37,7 +42,10 @@ export default function ProjectPage({ project }) {
     const router = useRouter();
 
     useEffect(() => {
-        if(!project) return;
+        if(!project) {
+            setIsLoading(false);
+            return;
+        }
         const loadProgress = async () => {
             if (!user) {
                 setIsLoading(false);
