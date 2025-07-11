@@ -14,20 +14,20 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  // This useEffect hook listens to Firebase for any authentication changes
+  // This hook listens to Firebase for any authentication changes
   useEffect(() => {
-    // onAuthStateChanged returns an 'unsubscribe' function.
+    // onAuthStateChanged returns an 'unsubscribe' function to prevent memory leaks
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       // When the state changes, we update our user state.
       // This will be the user object if logged in, or null if logged out.
       setUser(currentUser);
     });
 
-    // When the component unmounts, we clean up the listener.
+    // When the component unmounts, we clean up the listener
     return () => unsubscribe();
-  }, []); // The empty array means this effect runs only once.
+  }, []); // The empty array means this effect runs only once when the app loads
 
-  // The value provided to all children components
+  // The value provided to all children components is just the user object
   const value = {
     user,
   };
