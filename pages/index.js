@@ -2,6 +2,7 @@ import Navbar from '../components/Navbar';
 import Link from 'next/link';
 import ProjectCard from '../components/ProjectCard';
 
+// This function is stable and correct.
 export async function getStaticProps() {
   const path = require('path');
   const fs = require('fs');
@@ -12,40 +13,98 @@ export async function getStaticProps() {
 }
 
 export default function Home({ projects }) {
+  // This logic is stable and correct.
   const featuredProjects = Array.isArray(projects) ? projects.slice(0, 3) : [];
 
   return (
     <>
+      {/* RESTORING THE NAVBAR (This brings back Login/Signup/Profile) */}
       <Navbar />
+      
+      {/* RESTORING THE HERO HEADER */}
       <header className="hero-section">
-        {/* ... header content ... */}
-      </header>
-      <main>
-        {/* ... features and testimonials sections ... */}
-        <section id="projects" className="projects-section">
           <div className="container">
-            <h2>Featured Projects</h2>
-            <div id="project-list-container">
-              {featuredProjects.map(project => (
-                // We wrap the ProjectCard in a Link here
-                <Link key={project.id} href={`/project/${project.id}`} passHref>
-                  <ProjectCard project={project} />
-                </Link>
-              ))}
-            </div>
-            <div className="explore-button-container">
-              <Link href="/explore" passHref>
-                <div className="btn btn-primary btn-large">
-                  Explore All Projects <i className="fas fa-arrow-right"></i>
-                </div>
-              </Link>
-            </div>
+              <h1>Turn Theory into Tangible Skills</h1>
+              <p className="subtitle">Tackle real-world problems inspired by top tech companies. Build a portfolio that gets you hired.</p>
+              <a href="#projects" className="btn btn-large btn-secondary">Browse Featured Projects</a>
           </div>
+      </header>
+
+      <main>
+          {/* RESTORING THE FEATURES / "ABOUT" SECTION */}
+          <section id="features" className="features-section">
+              <div className="container">
+                  <h2>The SkillForge Advantage</h2>
+                  <div className="features-grid">
+                      <div className="feature-card">
+                          <i className="fas fa-industry"></i>
+                          <h3>Industry-Sourced Problems</h3>
+                          <p>Projects are inspired by real challenges from top company engineering blogs and case studies.</p>
+                      </div>
+                      <div className="feature-card">
+                          <i className="fas fa-file-alt"></i>
+                          <h3>Portfolio-Ready</h3>
+                          <p>Every completed project is a polished piece for your portfolio, ready to impress recruiters.</p>
+                      </div>
+                      <div className="feature-card">
+                          <i className="fas fa-rocket"></i>
+                          <h3>Career-Focused Solutions</h3>
+                          <p>Get pre-written resume points and showcase your work to accelerate your job search.</p>
+                      </div>
+                  </div>
+              </div>
+          </section>
+
+          {/* This is the section we fixed */}
+          <section id="projects" className="projects-section">
+              <div className="container">
+                  <h2>Featured Projects</h2>
+                  <div id="project-list-container">
+                    {featuredProjects.map(project => (
+                      <Link key={project.id} href={`/project/${project.id}`} passHref>
+                        <ProjectCard project={project} />
+                      </Link>
+                    ))}
+                  </div>
+                  
+                  <div className="explore-button-container">
+                    <Link href="/explore" passHref>
+                      <div className="btn btn-primary btn-large">
+                        Explore All Projects <i className="fas fa-arrow-right"></i>
+                      </div>
+                    </Link>
+                  </div>
+              </div>
+          </section>
+
+          {/* RESTORING THE TESTIMONIALS / "REVIEW" SECTION */}
+          <section className="testimonials-section">
+            <div className="container">
+                <h2>What Our Students Say</h2>
+                <div className="testimonials-grid">
+                    <div className="testimonial-card">
+                        <p>"Solving a problem inspired by a Netflix tech blog post was a game-changer for my resume. It was the main talking point in my interviews."</p>
+                        <div className="testimonial-author">- Sarah J., System Designer</div>
+                    </div>
+                    <div className="testimonial-card">
+                        <p>"The Stripe-inspired checkout design project gave me a concrete UX portfolio piece that immediately demonstrated my skills to potential employers."</p>
+                        <div className="testimonial-author">- Michael B., UX/UI Designer</div>
+                    </div>
+                     <div className="testimonial-card">
+                        <p>"Instead of a generic project, I got to tackle a recommendation engine problem similar to Spotify's. This is an incredible learning experience."</p>
+                        <div className="testimonial-author">- Chloe L., Aspiring Data Scientist</div>
+                    </div>
+                </div>
+            </div>
         </section>
       </main>
+
+      {/* RESTORING THE FOOTER */}
       <footer className="footer">
-        {/* ... footer content ... */}
+          <div className="container">
+              <p>© 2024 SkillForge. All Rights Reserved.</p>
+          </div>
       </footer>
     </>
-  );
+  )
 }
