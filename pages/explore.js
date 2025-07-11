@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import Navbar from '../components/Navbar';
-import ProjectCard from '../components/ProjectCard';
-import Link from 'next/link';
+import ProjectCard from '../components/ProjectCard'; // It uses our new component
 
 export async function getStaticProps() {
   const path = require('path');
@@ -17,15 +16,13 @@ export default function ExplorePage({ projects }) {
   const [selectedDomain, setSelectedDomain] = useState('All');
   const [selectedDifficulty, setSelectedDifficulty] = useState('All');
 
-  const safeProjects = Array.isArray(projects) ? projects : [];
-
+  const safeProjects = projects || [];
   const domains = ['All', ...new Set(safeProjects.map(p => p.domain).filter(Boolean))];
   const difficulties = ['All', 'Beginner', 'Intermediate', 'Advanced'];
 
   const filteredProjects = safeProjects.filter(project => {
     if (!project || !project.title) return false;
-    const title = project.title || '';
-    const matchesSearch = title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesDomain = selectedDomain === 'All' || project.domain === selectedDomain;
     const matchesDifficulty = selectedDifficulty === 'All' || project.difficulty === selectedDifficulty;
     return matchesSearch && matchesDomain && matchesDifficulty;
@@ -33,7 +30,7 @@ export default function ExplorePage({ projects }) {
 
   return (
     <>
-    <Navbar />
+      <Navbar />
       <main className="container">
         <section className="explore-header">
           <h1>Explore All Projects</h1>
@@ -68,9 +65,7 @@ export default function ExplorePage({ projects }) {
           <div id="project-list-container">
             {filteredProjects.length > 0 ? (
               filteredProjects.map(project => (
-                <Link key={project.id} href={`/project/${project.id}`} passHref>
-                  <ProjectCard project={project} />
-                </Link>
+                <ProjectCard key={project.id} project={project} />
               ))
             ) : (
               <p className="no-projects-message">No projects match your filters. Try a different search!</p>

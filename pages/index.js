@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import ProjectCard from '../components/ProjectCard';
+import Link from 'next/link';
 import Navbar from '../components/Navbar';
 
 // This is the component for a single project card
@@ -73,6 +75,18 @@ export default function Home({ projects }) {
                   </div>
               </div>
           </section>
+
+          <div id="project-list-container">
+  {featuredProjects.map(project => (
+    <ProjectCard key={project.id} project={project} />
+  ))}
+</div>
+
+<div className="explore-button-container">
+  <Link href="/explore" className="btn btn-primary btn-large">
+    Explore All Projects <i className="fas fa-arrow-right"></i>
+  </Link>
+</div>
 
           {/* --- TESTIMONIALS/REVIEWS SECTION (RESTORED) --- */}
           <section className="testimonials-section">
