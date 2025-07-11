@@ -9,6 +9,9 @@ export default function Navbar() {
   const { user } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  // THIS LOG TELLS US WHAT THE NAVBAR SEES.
+  console.log(">> DIAGNOSTIC: Navbar component is rendering. User from useAuth():", user);
+
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -21,9 +24,8 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="container">
-        {/* CORRECTED LINK STRUCTURE */}
         <Link href="/" passHref>
-          <div className="logo">
+          <div className="logo" style={{cursor: 'pointer'}}>
             <Image src="/logo.png" alt="SkillForge Logo" width={160} height={40} priority />
           </div>
         </Link>

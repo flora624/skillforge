@@ -10,29 +10,30 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // NEW boolean flag
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log(">> DIAGNOSTIC: AuthProvider useEffect is running.");
+    
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      // THIS IS THE MOST CRITICAL LOG. It tells us what Firebase thinks.
+      console.log(">> DIAGNOSTIC: onAuthStateChanged triggered. User object:", user);
+      
       setUser(user);
-      setIsLoggedIn(!!user); // If user exists, this becomes true. If null, becomes false.
       setLoading(false);
-      console.log("Auth State Changed. User Logged In:", !!user); // Debugging line
     });
 
-    return () => unsubscribe(); // Clean up the listener
+    return unsubscribe;
   }, []);
 
   const value = {
     user,
-    isLoggedIn, // Pass the new flag
     loading,
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 }
