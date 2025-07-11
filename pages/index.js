@@ -1,104 +1,40 @@
-import Navbar from '../components/Navbar';
-import Link from 'next/link';
-import ProjectCard from '../components/ProjectCard'; // We will use our safe component
-
-// This function is now confirmed to work correctly.
+// This function will read the real project file.
 export async function getStaticProps() {
+  console.log(">> STEP 1: Starting getStaticProps.");
   const path = require('path');
   const fs = require('fs');
   const filePath = path.join(process.cwd(), 'public', 'projects.json');
-  const jsonData = fs.readFileSync(filePath, 'utf8');
-  const projects = JSON.parse(jsonData) || [];
-  return { props: { projects } };
+
+  try {
+    const jsonData = fs.readFileSync(filePath, 'utf8');
+    const projects = JSON.parse(jsonData) || [];
+    console.log(`>> STEP 1: Successfully read and parsed ${projects.length} projects.`);
+    return { props: { projects } };
+  } catch (error) {
+    console.error(">> STEP 1 ERROR:", error);
+    return { props: { projects: [] } };
+  }
 }
 
+// This is the simplest possible component to display the result.
 export default function Home({ projects }) {
-  // Defensive check, just in case.
-  const featuredProjects = Array.isArray(projects) ? projects.slice(0, 3) : [];
+  console.log(">> STEP 1: Home component received props. Project count:", projects ? projects.length : "undefined");
 
   return (
-    <>
-      <Navbar />
-      
-      <header className="hero-section">
-          <div className="container">
-              <h1>Turn Theory into Tangible Skills</h1>
-              <p className="subtitle">Tackle real-world problems inspired by top tech companies. Build a portfolio that gets you hired.</p>
-              <a href="#projects" className="btn btn-large btn-secondary">Browse Featured Projects</a>
-          </div>
-      </header>
-
-      <main>
-          <section id="features" className="features-section">
-              <div className="container">
-                  <h2>The SkillForge Advantage</h2>
-                  <div className="features-grid">
-                      <div className="feature-card">
-                          <i className="fas fa-industry"></i>
-                          <h3>Industry-Sourced Problems</h3>
-                          <p>Projects are inspired by real challenges from top company engineering blogs and case studies.</p>
-                      </div>
-                      <div className="feature-card">
-                          <i className="fas fa-file-alt"></i>
-                          <h3>Portfolio-Ready</h3>
-                          <p>Every completed project is a polished piece for your portfolio, ready to impress recruiters.</p>
-                      </div>
-                      <div className="feature-card">
-                          <i className="fas fa-rocket"></i>
-                          <h3>Career-Focused Solutions</h3>
-                          <p>Get pre-written resume points and showcase your work to accelerate your job search.</p>
-                      </div>
-                  </div>
-              </div>
-          </section>
-
-          <section id="projects" className="projects-section">
-              <div className="container">
-                  <h2>Featured Projects</h2>
-                  <div id="project-list-container">
-                    {/* 
-                      This is the key. We are now using our isolated, safe ProjectCard component.
-                      This prevents any rendering errors from happening inside the Home component itself.
-                    */}
-                    {featuredProjects.map(project => (
-                      <ProjectCard key={project.id} project={project} />
-                    ))}
-                  </div>
-                  
-                  <div className="explore-button-container">
-                    <Link href="/explore" className="btn btn-primary btn-large">
-                      Explore All Projects <i className="fas fa-arrow-right"></i>
-                    </Link>
-                  </div>
-              </div>
-          </section>
-
-          <section className="testimonials-section">
-            <div className="container">
-                <h2>What Our Students Say</h2>
-                <div className="testimonials-grid">
-                    <div className="testimonial-card">
-                        <p>"Solving a problem inspired by a Netflix tech blog post was a game-changer for my resume. It was the main talking point in my interviews."</p>
-                        <div className="testimonial-author">- Sarah J., System Designer</div>
-                    </div>
-                    <div className="testimonial-card">
-                        <p>"The Stripe-inspired checkout design project gave me a concrete UX portfolio piece that immediately demonstrated my skills to potential employers."</p>
-                        <div className="testimonial-author">- Michael B., UX/UI Designer</div>
-                    </div>
-                     <div className="testimonial-card">
-                        <p>"Instead of a generic project, I got to tackle a recommendation engine problem similar to Spotify's. This is an incredible learning experience."</p>
-                        <div className="testimonial-author">- Chloe L., Aspiring Data Scientist</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-      </main>
-
-      <footer className="footer">
-          <div className="container">
-              <p>© 2024 SkillForge. All Rights Reserved.</p>
-          </div>
-      </footer>
-    </>
-  )
+    <div style={{ padding: '50px', fontFamily: 'sans-serif', textAlign: 'center' }}>
+      <h1>Step 1: Baseline Test</h1>
+      <p>This page tests if the application can successfully read and parse `projects.json` during the build.</p>
+      <hr />
+      <h2>Data Check:</h2>
+      {projects && Array.isArray(projects) && projects.length > 0 ? (
+        <p style={{ color: 'green', fontWeight: 'bold' }}>
+          SUCCESS: Deployed and successfully received {projects.length} projects from the JSON file.
+        </p>
+      ) : (
+        <p style={{ color: 'red', fontWeight: 'bold' }}>
+          FAILURE: Could not load projects from JSON file. Check build logs.
+        </p>
+      )}
+    </div>
+  );
 }
