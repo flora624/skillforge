@@ -16,7 +16,6 @@ export default function Home({ projects }) {
 
   return (
     <>
-      <Navbar />
       <header className="hero-section">
           <div className="container">
               <h1>Turn Theory into Tangible Skills</h1>
