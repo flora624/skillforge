@@ -17,45 +17,35 @@ export default function Home({ projects }) {
   return (
     <>
       <Navbar />
-      
       <header className="hero-section">
-          {/* ...omitting for brevity... */}
+        {/* ... header content ... */}
       </header>
-
       <main>
-          <section id="features" className="features-section">
-              {/* ...omitting for brevity... */}
-          </section>
-
-          <section id="projects" className="projects-section">
-              <div className="container">
-                  <h2>Featured Projects</h2>
-                  <div id="project-list-container">
-                    {featuredProjects.map(project => (
-                      <ProjectCard key={project.id} project={project} />
-                    ))}
-                  </div>
-                  
-                  {/* --- THIS IS THE CORRECTED LINK STRUCTURE --- */}
-                  <div className="explore-button-container">
-                    <Link href="/explore" passHref>
-                      <div className="btn btn-primary btn-large">
-                        Explore All Projects <i className="fas fa-arrow-right"></i>
-                      </div>
-                    </Link>
-                  </div>
-
-              </div>
-          </section>
-
-          <section className="testimonials-section">
-             {/* ...omitting for brevity... */}
-          </section>
+        {/* ... features and testimonials sections ... */}
+        <section id="projects" className="projects-section">
+          <div className="container">
+            <h2>Featured Projects</h2>
+            <div id="project-list-container">
+              {featuredProjects.map(project => (
+                // We wrap the ProjectCard in a Link here
+                <Link key={project.id} href={`/project/${project.id}`} passHref>
+                  <ProjectCard project={project} />
+                </Link>
+              ))}
+            </div>
+            <div className="explore-button-container">
+              <Link href="/explore" passHref>
+                <div className="btn btn-primary btn-large">
+                  Explore All Projects <i className="fas fa-arrow-right"></i>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
-
       <footer className="footer">
-          {/* ...omitting for brevity... */}
+        {/* ... footer content ... */}
       </footer>
     </>
-  )
+  );
 }

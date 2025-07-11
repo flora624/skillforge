@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Navbar from '../components/Navbar';
 import ProjectCard from '../components/ProjectCard';
+import Link from 'next/link'; // Import Link
 
 export async function getStaticProps() {
   const path = require('path');
@@ -40,34 +41,17 @@ export default function ExplorePage({ projects }) {
         </section>
 
         <section className="filter-container">
-          <div className="filter-group">
-            <input 
-              type="text" 
-              placeholder="Search by project title..."
-              className="search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="filter-group">
-            <label htmlFor="domain-filter">Domain</label>
-            <select id="domain-filter" value={selectedDomain} onChange={(e) => setSelectedDomain(e.target.value)}>
-              {domains.map(domain => <option key={domain} value={domain}>{domain}</option>)}
-            </select>
-          </div>
-          <div className="filter-group">
-            <label htmlFor="difficulty-filter">Difficulty</label>
-            <select id="difficulty-filter" value={selectedDifficulty} onChange={(e) => setSelectedDifficulty(e.target.value)}>
-               {difficulties.map(diff => <option key={diff} value={diff}>{diff}</option>)}
-            </select>
-          </div>
+          {/* ... filter inputs ... */}
         </section>
 
         <section className="projects-section">
           <div id="project-list-container">
             {filteredProjects.length > 0 ? (
               filteredProjects.map(project => (
-                <ProjectCard key={project.id} project={project} />
+                // We wrap the ProjectCard in a Link here as well
+                <Link key={project.id} href={`/project/${project.id}`} passHref>
+                  <ProjectCard project={project} />
+                </Link>
               ))
             ) : (
               <p className="no-projects-message">No projects match your filters. Try a different search!</p>
