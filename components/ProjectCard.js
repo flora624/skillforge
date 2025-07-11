@@ -1,22 +1,17 @@
-// This is the new, simpler, and more stable version.
-// It is only responsible for DISPLAYING data, not for navigation.
+import { useRouter } from 'next/router';
 
 export default function ProjectCard({ project }) {
-  // Gatekeeper check
-  if (!project || !project.id) {
-    return null;
-  }
+  const router = useRouter();
+  if (!project || !project.id) { return null; }
+  const handleProjectClick = () => { router.push(`/project/${project.id}`); };
 
-  // Defensive variables
   const title = project.title || "Untitled Project";
   const problemStatement = project.problemStatement || "No description available.";
   const domain = project.domain || "N/A";
   const difficulty = project.difficulty || "Beginner";
 
   return (
-    // We remove the Link and onClick from here.
-    // The card itself is now just a plain div.
-    <div className="project-card">
+    <div className="project-card" onClick={handleProjectClick}>
       <div className="card-content">
         <h3>{title}</h3>
         <p>{problemStatement.substring(0, 100)}...</p>
