@@ -88,15 +88,15 @@ export default function Home({ projects }) {
                 <div className="testimonials-grid">
                     <div className="testimonial-card">
                         <p>"SkillForge gave me the confidence to apply for my first developer job. The milestone-based project was the centerpiece of my portfolio."</p>
-                        <div className="testimonial-author">- Sarah J., Frontend Developer</div>
+                        <div className="testimonial-author">- Uday Soni, Frontend Developer</div>
                     </div>
                     <div className="testimonial-card">
                         <p>"As a marketing student, the content strategy project was invaluable. It helped me talk intelligently about real-world execution in my interviews."</p>
-                        <div className="testimonial-author">- Michael B., Marketing Coordinator</div>
+                        <div className="testimonial-author">- Abhay Yadav, Marketing Coordinator</div>
                     </div>
                      <div className="testimonial-card">
                         <p>"I finally understood what 'data analysis' actually meant after completing the milestones. It's so much better than just getting the final solution."</p>
-                        <div className="testimonial-author">- Chloe L., Aspiring Data Analyst</div>
+                        <div className="testimonial-author">- Aryan Soni, Aspiring Data Analyst</div>
                     </div>
                 </div>
             </div>
