@@ -1,25 +1,29 @@
-import Navbar from '../components/Navbar'; // We are adding this back
+import Navbar from '../components/Navbar';
 import Link from 'next/link';
+import ProjectCard from '../components/ProjectCard'; // We need this component
 
 // This function is confirmed to be working.
 export async function getStaticProps() {
-  console.log(">> STEP 2: getStaticProps is running.");
+  console.log(">> STEP 3: getStaticProps is running.");
   const path = require('path');
   const fs = require('fs');
   const filePath = path.join(process.cwd(), 'public', 'projects.json');
   try {
     const jsonData = fs.readFileSync(filePath, 'utf8');
     const projects = JSON.parse(jsonData) || [];
-    console.log(`>> STEP 2: Successfully read and parsed ${projects.length} projects.`);
+    console.log(`>> STEP 3: Successfully read and parsed ${projects.length} projects.`);
     return { props: { projects } };
   } catch (error) {
-    console.error(">> STEP 2 ERROR:", error);
+    console.error(">> STEP 3 ERROR:", error);
     return { props: { projects: [] } };
   }
 }
 
 export default function Home({ projects }) {
-  console.log(">> STEP 2: Home component received props. Project count:", projects ? projects.length : "undefined");
+  console.log(">> STEP 3: Home component received props. Project count:", projects ? projects.length : "undefined");
+  
+  // This defensive check is important.
+  const featuredProjects = Array.isArray(projects) ? projects.slice(0, 3) : [];
 
   return (
     <>
@@ -38,12 +42,19 @@ export default function Home({ projects }) {
               <div className="container">
                   <h2>Featured Projects</h2>
                   
-                  {/* We are NOT rendering the project cards yet. Just a placeholder. */}
-                  <div style={{ padding: '20px', border: '2px dashed #ccc', textAlign: 'center' }}>
-                    <p style={{ color: 'green', fontWeight: 'bold' }}>Step 2 Test: Page layout and Navbar rendered successfully.</p>
-                    <p>Next step is to render the project cards here.</p>
+                  {/* --- This is the block we are testing now --- */}
+                  <div id="project-list-container">
+                    {featuredProjects.map(project => (
+                      <ProjectCard key={project.id} project={project} />
+                    ))}
                   </div>
                   
+                  {/* Adding the explore button back */}
+                  <div className="explore-button-container">
+                    <Link href="/explore" className="btn btn-primary btn-large">
+                      Explore All Projects <i className="fas fa-arrow-right"></i>
+                    </Link>
+                  </div>
               </div>
           </section>
       </main>
