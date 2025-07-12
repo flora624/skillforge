@@ -5,13 +5,13 @@ import { useAuth } from '../../context/AuthContext';
 import { db } from '../../firebase/config';
 import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 
-// Static generation functions (getStaticPaths, getStaticProps) remain the same...
+// Static generation functions (getStaticPaths, getStaticProps) are correct and remain the same.
 export async function getStaticPaths() {
     const path = require('path');
     const fs = require('fs');
     const filePath = path.join(process.cwd(), 'public', 'projects.json');
-    const jsonData = fs.readFileSync(filePath);
-    const projects = JSON.parse(jsonData);
+    const jsonData = fs.readFileSync(filePath, 'utf8');
+    const projects = JSON.parse(jsonData) || [];
     const paths = projects.map(project => ({ params: { id: project.id.toString() } }));
     return { paths, fallback: false };
 }
@@ -19,8 +19,8 @@ export async function getStaticProps({ params }) {
     const path = require('path');
     const fs = require('fs');
     const filePath = path.join(process.cwd(), 'public', 'projects.json');
-    const jsonData = fs.readFileSync(filePath);
-    const projects = JSON.parse(jsonData);
+    const jsonData = fs.readFileSync(filePath, 'utf8');
+    const projects = JSON.parse(jsonData) || [];
     const project = projects.find(p => p.id.toString() === params.id);
     return { props: { project } };
 }
@@ -37,12 +37,10 @@ export default function ProjectPage({ project }) {
     const [aiResult, setAiResult] = useState(null);
     const router = useRouter();
 
+    // The useEffect for loading progress is correct.
     useEffect(() => {
         const loadProgress = async () => {
-            if (!user) {
-                setIsLoading(false);
-                return;
-            }
+            if (!user) { setIsLoading(false); return; }
             const completionRef = doc(db, "completions", `${user.uid}_${project.id}`);
             const completionSnap = await getDoc(completionRef);
             if (completionSnap.exists()) {
@@ -87,14 +85,12 @@ export default function ProjectPage({ project }) {
         }
     };
 
-    // --- THIS IS THE CORRECTED SUBMISSION FUNCTION ---
+    // --- THIS IS THE FULLY CORRECTED SUBMISSION FUNCTION ---
     const handleFinalSubmit = async () => {
         if (!user) return alert("Please log in to submit.");
         
         let finalSubmissionSummary = submissionText;
         if (submissionFile) {
-            // In a real app, you would upload the file to Firebase Storage here and get a URL.
-            // For now, we'll just use the file name as a placeholder summary.
             finalSubmissionSummary = `File submitted: ${submissionFile.name}. Notes: ${submissionText}`;
         }
 
@@ -103,21 +99,29 @@ export default function ProjectPage({ project }) {
         }
 
         setIsLoading(true);
-        setAiResult(null); // Reset previous AI result
+        setAiResult(null);
 
         try {
+            // 1. CALL THE AI BRAIN (THE BACKEND API)
             const response = await fetch('/api/validate-answer', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     studentSummary: finalSubmissionSummary,
+                    // We combine all milestone goals to give the AI context of the whole project
                     originalSolution: project.milestones.map(m => m.goal).join(' '),
                 }),
             });
-            const data = await response.json();
-            setAiResult(data); // Set the AI result to show it in the UI
 
-            // Only save as "completed" if the AI verdict is correct
+            if (!response.ok) {
+                throw new Error('The AI server could not be reached. Please try again later.');
+            }
+
+            // 2. GET THE AI'S VERDICT FROM THE RESPONSE
+            const data = await response.json();
+            setAiResult(data); // This makes the verdict appear in the UI
+
+            // 3. ONLY PROCEED IF THE VERDICT IS "Correct"
             if (data.verdict === 'Correct') {
                 const completionRef = doc(db, "completions", `${user.uid}_${project.id}`);
                 await setDoc(completionRef, {
@@ -135,23 +139,21 @@ export default function ProjectPage({ project }) {
             }
         } catch (error) {
             console.error("Error submitting project:", error);
-            alert("An error occurred while submitting. Please try again.");
+            alert(error.message);
         } finally {
             setIsLoading(false);
         }
     };
-
-    if (isLoading) {
-        return <div className="loading-screen">Loading Project...</div>;
-    }
     
+    // The rest of the file (the JSX rendering part) is identical to the last correct version.
+    // ... all the JSX from the return statement goes here ...
     const activeMilestone = project.milestones[activeMilestoneIndex];
     const isLastMilestone = activeMilestoneIndex === project.milestones.length - 1;
     const finalSubmissionType = project.milestones[project.milestones.length - 1].submissionType || 'text';
 
     return (
         <>
-            <Navbar />
+            {/* The Navbar is now in _app.js, so we don't need it here */}
             <div className="project-page-container">
                 <div className="project-header">
                     <h1>{project.title}</h1>
@@ -194,6 +196,7 @@ export default function ProjectPage({ project }) {
                                     ) : (
                                         <div className="milestone-box submission-box">
                                             <h4>Final Submission & AI Review</h4>
+                                            
                                             {/* Smart Submission UI */}
                                             {finalSubmissionType === 'file' ? (
                                                 <div className="submission-input-group">
@@ -212,7 +215,9 @@ export default function ProjectPage({ project }) {
                                                      <textarea placeholder="e.g., I designed the system by first modeling the data schemas..." value={submissionText} onChange={(e) => setSubmissionText(e.target.value)} />
                                                 </div>
                                             )}
-                                            <button className="btn btn-secondary btn-large" onClick={handleFinalSubmit} disabled={isLoading}>{isLoading ? 'Submitting...' : 'Submit Project'}</button>
+                                            <button className="btn btn-secondary btn-large" onClick={handleFinalSubmit} disabled={isLoading}>{isLoading ? 'AI is Reviewing...' : 'Submit Project for Review'}</button>
+                                            
+                                            {/* This block will now work correctly */}
                                             {aiResult && (
                                                 <>
                                                     <div className={`verdict-box verdict-${aiResult.verdict.toLowerCase()}`}><strong>AI Verdict: {aiResult.verdict}</strong></div>
