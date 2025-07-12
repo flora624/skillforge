@@ -96,7 +96,7 @@ a { color: inherit; text-decoration: none; }
   color: var(--primary-color);
   border-color: var(--primary-color) !important;
 }
-}
+
 .btn-large { font-size: 1.1rem; padding: 1rem 2rem; border-width: 2px; }
 .btn-block { display: block; width: 100%; border-width: 2px; }
 .hero-section { background: var(--dark-color); color: var(--white-color); text-align: center; padding: 6rem 0; }
