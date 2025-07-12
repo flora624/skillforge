@@ -1,24 +1,15 @@
-/* Force gradient background for Login/Signup buttons in navbar */
-.nav-links > li > .btn-secondary {
-  background: linear-gradient(90deg, #4A90E2, #50E3C2) !important;
-  color: #fff !important;
-  border: 2px solid #4A90E2 !important;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(74,144,226,0.07);
-  font-weight: 600;
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
-}
-/* Force gradient background for navbar action buttons */
+/* ENFORCE PERMANENT GRADIENT FOR NAVBAR ACTION BUTTONS (LOGIN, SIGNUP, LOGOUT) */
+.nav-links > li > .btn-secondary,
 .nav-links .btn-secondary,
 .nav-links .btn-text,
 .nav-links .logout-button {
   background: linear-gradient(90deg, #4A90E2, #50E3C2) !important;
   color: #fff !important;
   border: 2px solid #4A90E2 !important;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(74,144,226,0.07);
-  font-weight: 600;
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(74,144,226,0.07) !important;
+  font-weight: 600 !important;
+  transition: background 0.2s, border-color 0.2s, color 0.2s !important;
 }
 /* --- Global Styles & Variables --- */
 :root {
@@ -159,28 +150,18 @@ a { color: inherit; text-decoration: none; }
 /* Secondary Button - Gradient with blue border */
 
 
+/* Remove default .btn-secondary background to avoid override */
 .btn-secondary {
-  background: linear-gradient(90deg, #4A90E2, #50E3C2);
-  color: #fff;
-  border: 2px solid #4A90E2 !important;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(74,144,226,0.07);
-  font-weight: 600;
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  background: none;
+  color: inherit;
 }
 
 /* Text Button - Gray border */
 
-.btn-text,
+/* Remove default .logout-button background to avoid override */
 .logout-button {
-  background: linear-gradient(90deg, #4A90E2, #50E3C2) !important;
-  color: #fff !important;
-  border: 2px solid #4A90E2 !important;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(74,144,226,0.07);
-  font-weight: 600;
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  background: none;
+  color: inherit;
 }
 
 /* Hover States */
