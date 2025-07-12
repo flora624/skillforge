@@ -41,36 +41,62 @@ a { color: inherit; text-decoration: none; }
 .nav-links a { font-weight: 500; transition: color 0.2s; cursor: pointer; }
 .nav-links a:hover { color: var(--primary-color); }
 .nav-links .btn-primary {
-  border-color: var(--white-color);
+  border-color: var(--primary-color); /* Solid border for nav primary button */
 }
 .nav-links .btn-primary:hover {
-  border-color: #357ABD;
+  border-color: #357ABD; /* Darker border on hover */
 }
-.btn { padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; display: inline-block; border:  2px solid transparent; cursor: pointer; transition: all 0.3s ease; text-align: center;}
-.btn-primary { background-color: var(--primary-color); color: var(--white-color);  border-color: var(--primary-color); }
-.btn-primary:hover { background-color: #357ABD; border-color: #357ABD; }
-.btn-secondary { background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)); color: var(--white-color);  border-color: var(--primary-color); }
-.btn-secondary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-color: var(--secondary-color); }
-.btn-large { font-size: 1.1rem; padding: 1rem 2rem; border-width: 2px; }
-.btn-block { display: block; width: 100%; border-width: 2px; }
-.hero-section { background: var(--dark-color); color: var(--white-color); text-align: center; padding: 6rem 0; }
-.hero-section h1 { font-size: 3.5rem; color: var(--white-color); margin-bottom: 1rem; }
-.hero-section .subtitle { font-size: 1.25rem; color: var(--light-color); max-width: 700px; margin: 0 auto 2rem auto; }
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-block;
+  border: 2px solid var(--primary-color); /* Changed from transparent to primary color */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
 
-/* This is the new style for text links that should act like buttons */
+.btn-primary { 
+  background-color: var(--primary-color); 
+  color: var(--white-color);
+  border-color: var(--primary-color); /* Solid border matching bg color */
+}
+.btn-primary:hover { 
+  background-color: #357ABD; 
+  border-color: #357ABD; /* Darker border on hover */
+}
+
+.btn-secondary { 
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)); 
+  color: var(--white-color);
+  border-color: var(--primary-color); /* Solid border matching gradient start */
+}
+.btn-secondary:hover { 
+  transform: translateY(-2px); 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border-color: var(--secondary-color); /* Border shifts to secondary color */
+}
+
+/* Text-style buttons */
 .btn-text {
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-weight: 600;
   transition: all 0.2s ease;
-   border: 2px solid var(--light-color);
+  border: 2px solid var(--light-color); /* Visible light gray border */
 }
 .btn-text:hover {
   background-color: var(--light-color);
   color: var(--primary-color);
-   border-color: var(--primary-color);
+  border-color: var(--primary-color); /* Changes to primary color on hover */
 }
-/* END OF NEW BLOCK */
+.btn-large { font-size: 1.1rem; padding: 1rem 2rem; border-width: 2px; }
+.btn-block { display: block; width: 100%; border-width: 2px; }
+.hero-section { background: var(--dark-color); color: var(--white-color); text-align: center; padding: 6rem 0; }
+.hero-section h1 { font-size: 3.5rem; color: var(--white-color); margin-bottom: 1rem; }
+.hero-section .subtitle { font-size: 1.25rem; color: var(--light-color); max-width: 700px; margin: 0 auto 2rem auto; }
 
 /* --- Features Section --- */
 .features-section { background: var(--white-color); }
@@ -322,12 +348,14 @@ a { color: inherit; text-decoration: none; }
 .logout-button {
   font-weight: 500;
   cursor: pointer;
-  transition: color 0.2s;
-  border: 2px solid var(--light-color);
+  transition: all 0.2s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 2px solid var(--light-color); /* Visible light gray border */
 }
 .logout-button:hover {
   color: var(--primary-color);
-   border-color: var(--primary-color);
+  border-color: var(--primary-color); /* Changes to primary color on hover */
 }
 
 /* Unified Profile Page Layout */
