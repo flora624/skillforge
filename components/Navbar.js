@@ -82,11 +82,11 @@ export default function Navbar() {
                 </li>
                 {/* --- END OF SVG ICON LINK --- */}
                 
-                <li><a onClick={handleLogout} className="logout-button">Logout</a></li>
+                <li><a onClick={handleLogout} className="btn btn-text logout-button">Logout</a></li>
               </>
             ) : (
               <>
-                <li><Link href="/login">Login</Link></li>
+                <li><Link href="/login" className="btn btn-text">Login</Link></li>
                 <li><Link href="/signup" className="btn btn-primary">Sign Up</Link></li>
                 <li><Link href="/explore" className={`btn-text ${router.pathname === '/explore' ? 'active-link' : ''}`}>Explore</Link></li>
               </>
