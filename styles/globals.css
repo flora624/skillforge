@@ -69,7 +69,7 @@ header {
 .nav__links li a {
   font-family: "Montserrat", sans-serif;
   font-weight: 500;
-  color: #edf0f1;
+  color: #000000;
   text-decoration: none;
   font-size: 1.08rem;
   transition: color 0.3s;
