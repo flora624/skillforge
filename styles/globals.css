@@ -83,25 +83,32 @@ header {
   background: rgba(0,188,212,0.08);
 }
 
-.cta {
-  padding: 9px 25px;
-  background: linear-gradient(90deg, #4A90E2, #50E3C2);
-  color: #000000 !important;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  font-family: "Montserrat", sans-serif;
-  font-weight: 600;
-  font-size: 1.08rem;
-  box-shadow: 0 2px 8px rgba(74,144,226,0.07);
-  margin-left: 10px;
-  transition: background 0.3s, box-shadow 0.3s;
+
+/* --- Permanent Gradient for Navbar Action Buttons (Desktop & Mobile) --- */
+.cta,
+.btn-secondary,
+.btn-text,
+.logout-button {
+  background: linear-gradient(90deg, #4A90E2, #50E3C2) !important;
+  color: #fff !important;
+  border: 2px solid #4A90E2 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(74,144,226,0.07) !important;
+  font-weight: 600 !important;
+  transition: background 0.2s, border-color 0.2s, color 0.2s !important;
+  padding: 0.5rem 1.25rem !important;
+  min-width: 60px;
+  text-align: center;
   display: inline-block;
 }
 
-.cta:hover {
-  background: linear-gradient(90deg, #50E3C2, #4A90E2);
-  box-shadow: 0 4px 16px rgba(74,144,226,0.15);
+.cta:hover,
+.btn-secondary:hover,
+.btn-text:hover,
+.logout-button:hover {
+  background: linear-gradient(90deg, #50E3C2, #4A90E2) !important;
+  box-shadow: 0 4px 12px rgba(74,144,226,0.15) !important;
+  color: #fff !important;
 }
 
 .menu {
@@ -137,7 +144,7 @@ header {
     min-width: 60px;
     text-align: center;
     margin: 0;
-    color: #fff !important;
+    color: #000000 !important;
     background: linear-gradient(90deg, #4A90E2, #50E3C2);
     border: none;
     display: block;
