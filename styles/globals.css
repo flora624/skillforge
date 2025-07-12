@@ -1077,3 +1077,12 @@ a { color: inherit; text-decoration: none; }
 .google-signin-btn:hover {
   background-color: #f9fafb;
 }
+/* Default padding for all pages */
+section {
+  padding: 4rem 0;
+}
+
+/* Reduced padding for login and signup */
+.auth-wrapper section {
+  padding: 0rem 0;
+}

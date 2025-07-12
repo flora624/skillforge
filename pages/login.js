@@ -26,6 +26,7 @@ export default function Login() {
   return (
     <>
       <Navbar />
+      <section>
       <div className="auth-page">
         <div className="auth-container">
           <div className="auth-box">
@@ -50,6 +51,7 @@ export default function Login() {
           </div>
         </div>
       </div>
+      </section>
     </>
   );
 }

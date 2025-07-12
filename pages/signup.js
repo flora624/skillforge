@@ -30,6 +30,7 @@ export default function SignUp() {
   return (
     <> {/* Use a fragment to wrap multiple elements */}
       <Navbar /> {/* <-- ADD THE NAVBAR */}
+      <section>
       <div className="auth-page">
         <div className="auth-container">
           <div className="auth-box">
@@ -55,6 +56,7 @@ export default function SignUp() {
           </div>
         </div>
       </div>
+      </section>
     </>
   );
 }
