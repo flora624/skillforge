@@ -1,7 +1,7 @@
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth, db } from "./firebase";
+import { GoogleAuthProvider, signInWithPopup } from "AuthContext.js";
+import { auth, db } from "config.js";
 import { toast } from "react-toastify";
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc } from "config.js";
 
 function SignInwithGoogle() {
   function googleLogin() {
