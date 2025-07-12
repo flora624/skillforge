@@ -63,9 +63,9 @@ a { color: inherit; text-decoration: none; }
 }
 
 .nav-links a:hover {
-  background-color: blue;
-  border-color: var(--primary-color);
-  color: var(--primary-color);
+  background: linear-gradient(90deg, #4a90e2, #50e3c2);
+    color: #fff;
+    border-color: #4a90e2 !important;
 }
 
 .nav-links .btn-primary {
