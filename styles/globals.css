@@ -85,7 +85,9 @@ a { color: inherit; text-decoration: none; }
   cursor: pointer;
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  /* No border by default */
+  background: transparent;
+  color: inherit;
+  border: none;
 }
 
 .nav-action {
@@ -163,7 +165,8 @@ a { color: inherit; text-decoration: none; }
 /* Text Button - Gray border */
 
 .btn-text,
-.logout-button {
+.logout-button,
+.nav-links .btn-secondary {
   background: linear-gradient(90deg, #4A90E2, #50E3C2);
   color: #fff;
   border: 2px solid #4A90E2 !important;
