@@ -1,3 +1,7 @@
+/* TEMPORARY DEBUG - REMOVE LATER */
+* {
+  box-shadow: 0 0 0 1px red !important;
+}
 /* --- Global Styles & Variables --- */
 :root {
     --primary-color: #4A90E2;
