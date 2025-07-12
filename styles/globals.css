@@ -1,7 +1,3 @@
-/* TEMPORARY DEBUG - REMOVE LATER */
-* {
-  box-shadow: 0 0 0 1px red !important;
-}
 /* --- Global Styles & Variables --- */
 :root {
     --primary-color: #4A90E2;
@@ -55,50 +51,51 @@ a { color: inherit; text-decoration: none; }
   border-radius: 8px;
   font-weight: 600;
   display: inline-block;
-  border: 2px solid; /* Key change - removed 'transparent' */
+  border: 2px solid; /* No color set here */
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: center;
   text-decoration: none;
+  box-sizing: border-box; /* Critical for border consistency */
 }
 
-/* Primary Buttons */
+/* --- Primary Button --- */
 .btn-primary {
   background-color: var(--primary-color);
   color: var(--white-color);
-  border-color: var(--primary-color) !important; /* Force border */
+  border-color: var(--dark-color); /* Dark border for contrast */
 }
 
 .btn-primary:hover {
   background-color: #357ABD;
-  border-color: #357ABD !important;
+  border-color: #2c3e50; /* Slightly darker border */
 }
 
-/* Secondary Buttons */
+/* --- Secondary Button --- */
 .btn-secondary {
   background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
   color: var(--white-color);
-  border-color: var(--primary-color) !important;
+  border-color: var(--primary-color); /* Match gradient start */
 }
 
 .btn-secondary:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  border-color: var(--secondary-color) !important;
+  border-color: var(--secondary-color); /* Match gradient end */
 }
 
-/* Text Buttons */
+/* --- Text Button --- */
 .btn-text {
   background: transparent;
   color: var(--text-color);
-  border: 2px solid var(--light-color) !important;
+  border: 2px solid var(--grey-color); /* Visible gray border */
   padding: 0.5rem 1rem;
 }
 
 .btn-text:hover {
   background-color: var(--light-color);
   color: var(--primary-color);
-  border-color: var(--primary-color) !important;
+  border-color: var(--primary-color); /* Blue border on hover */
 }
 
 .btn-large { font-size: 1.1rem; padding: 1rem 2rem; border-width: 2px; }
@@ -358,14 +355,14 @@ a { color: inherit; text-decoration: none; }
   font-weight: 500;
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  border: 2px solid var(--light-color) !important;
+  border: 2px solid var(--grey-color); /* Matching text button */
   background: transparent;
   color: var(--text-color);
 }
 
 .logout-button:hover {
   color: var(--primary-color);
-  border-color: var(--primary-color) !important;
+  border-color: var(--primary-color);
   background-color: var(--light-color);
 }
 
