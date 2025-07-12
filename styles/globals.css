@@ -111,7 +111,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 
-.nav-links .btn-secondary,
+
 .btn-secondary {
   background: linear-gradient(90deg, #4A90E2, #50E3C2);
   color: #fff;
@@ -121,7 +121,6 @@ a { color: inherit; text-decoration: none; }
   font-weight: 600;
   transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
-.nav-links .btn-secondary:hover,
 .btn-secondary:hover {
   background: linear-gradient(90deg, #50E3C2, #4A90E2);
   color: #fff;
@@ -178,11 +177,6 @@ a { color: inherit; text-decoration: none; }
 
 /* Hover States */
 .btn-primary:hover { border-color: #1a2636 !important; }
-.btn-secondary:hover {
-  background: #eaf3fb;
-  color: #4A90E2;
-  border-color: #50E3C2 !important;
-}
 .btn-text:hover,
 .logout-button:hover {
   background: linear-gradient(90deg, #50E3C2, #4A90E2);
