@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import SignInWithGoogle from '../components/SignInWithGoogle';
 import { auth } from '../firebase/config';
 import Navbar from '../components/Navbar'; // <-- IMPORT NAVBAR
 
@@ -47,6 +48,9 @@ export default function SignUp() {
               {error && <p className="error-message">{error}</p>}
               <button type="submit" className="btn btn-primary btn-block">Create Account</button>
             </form>
+
+            <SignInWithGoogle />
+            
             <p className="auth-switch">Already have an account? <Link href="/login">Log In</Link></p>
           </div>
         </div>
