@@ -1034,18 +1034,7 @@ a { color: inherit; text-decoration: none; }
 
 /* This media query targets tablets and mobile phones (768px and down) */
 @media (max-width: 768px) {
-
-
-  /* --- General Adjustments --- */
-  section {
-    padding: 2rem 0; /* Reduce padding on sections */
-  }
-  .container {
-    padding: 0 1rem; /* Reduce side padding for the main container */
-  }
-  h1 { font-size: 2.5rem; } /* Smaller main heading */
-  h2 { font-size: 1.8rem; } /* Smaller section headings */
-
+  /* ...existing code... */
   /* --- Navbar for Mobile --- */
   .navbar {
     padding: 0.5rem 0;
@@ -1104,6 +1093,25 @@ a { color: inherit; text-decoration: none; }
     text-align: center;
     display: block;
   }
+  /* Force permanent gradient for navbar action buttons on mobile */
+  .nav-links > li > .btn-secondary,
+  .nav-links .btn-secondary,
+  .nav-links .btn-text,
+  .nav-links .logout-button {
+    background: linear-gradient(90deg, #4A90E2, #50E3C2) !important;
+    color: #fff !important;
+    border: 2px solid #4A90E2 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 8px rgba(74,144,226,0.07);
+    font-weight: 600;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
+  /* Remove background for nav links except action buttons */
+  .nav-links a:not(.btn-secondary):not(.btn-primary):not(.btn-text):not(.logout-button) {
+    background: transparent !important;
+    color: inherit !important;
+    border: none !important;
+  }
   .profile-menu {
     position: absolute;
     top: 0.5rem;
@@ -1117,67 +1125,7 @@ a { color: inherit; text-decoration: none; }
   .navbar.navbar--hidden {
     transform: translateY(-110%);
   }
-
-
-  /* --- Hero Section for Mobile --- */
-  .hero-section {
-    padding: 4rem 1rem; /* Less vertical padding */
-  }
-  .hero-section .subtitle {
-    font-size: 1.1rem;
-  }
-
-
-  /* --- Grids for Mobile (Features, Projects, Testimonials) --- */
-  .features-grid,
-  #project-list-container,
-  .testimonials-grid,
-  .dashboard-grid {
-    /* Change all grids to a single column layout */
-    grid-template-columns: 1fr;
-  }
-
-
-  /* --- Filter Container for Mobile --- */
-  .filter-container {
-    flex-direction: column; /* Stack filters vertically */
-    gap: 1rem;
-  }
-  
-
-  /* --- Project Page for Mobile --- */
-  .project-page-layout {
-    flex-direction: column; /* Stack sidebar and main content vertically */
-  }
-  .milestone-sidebar {
-    position: static; /* Unstick the sidebar on mobile */
-    width: 100%;
-    margin-bottom: 2rem;
-  }
-
-
-  /* --- Auth Pages for Mobile --- */
-  .auth-container {
-    padding: 1rem;
-  }
-  .auth-box {
-    padding: 1.5rem;
-  }
-  
-
-  /* --- Share Page for Mobile --- */
-  .share-page-container {
-    padding: 2rem 1rem;
-  }
-  .share-header, .share-content, .share-footer {
-    padding: 1.5rem;
-  }
-  .share-footer {
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
-  }
-
+  /* ...existing code... */
 }
 
 /* Specific fix for very small phones */
