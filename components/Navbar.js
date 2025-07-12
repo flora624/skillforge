@@ -86,8 +86,8 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <li><Link href="/login" className="nav-action btn-secondary ">Login</Link></li>
-<li><Link href="/signup" className="nav-action btn-secondary ">Signup</Link></li>
+                <li><Link href="/login" className="nav-action nav-links btn-secondary">Login</Link></li>
+                <li><Link href="/signup" className="nav-action nav-links btn-secondary">Signup</Link></li>
               </>
             )
           )}
