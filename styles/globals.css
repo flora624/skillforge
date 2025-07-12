@@ -1088,3 +1088,49 @@ a { color: inherit; text-decoration: none; }
   border-color: var(--primary-color) !important;
   background-color: var(--light-color) !important;
 }
+/* 1. BASE BORDER RENDERING */
+.navbar [class*="btn"] {
+  position: relative;
+  border: 2px solid var(--primary-color) !important;
+  box-shadow: none !important;
+}
+
+/* 2. PSEUDO-ELEMENT BORDER FALLBACK */
+.navbar [class*="btn"]::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid var(--primary-color);
+  border-radius: 10px; /* Slightly larger than button radius */
+  pointer-events: none;
+}
+
+/* 3. BOX-SHADOW BORDER FALLBACK */
+.navbar [class*="btn"] {
+  box-shadow: 0 0 0 2px var(--primary-color) inset;
+}
+
+/* 4. OUTLINE FALLBACK (for keyboard navigation) */
+.navbar [class*="btn"]:focus-visible {
+  outline: 2px solid var(--primary-color) !important;
+  outline-offset: 2px;
+}
+
+/* SPECIFIC BUTTON TYPES */
+.navbar .btn-primary {
+  --border-color: var(--white-color) !important;
+}
+
+.navbar .btn-text,
+.navbar .logout-button {
+  --border-color: var(--light-color) !important;
+}
+
+/* FORCE RENDER TEST */
+.navbar * {
+  transform: translateZ(0); /* Force hardware acceleration */
+  backface-visibility: visible !important;
+}

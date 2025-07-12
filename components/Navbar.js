@@ -70,7 +70,18 @@ export default function Navbar() {
             ) : (
               <>
                 <li><Link href="/login">Login</Link></li>
-                <li><Link href="/signup" className="btn btn-primary">Sign Up</Link></li>
+                <li><Link 
+  href="/signup" 
+  className="btn btn-primary"
+  data-border-version="v4"
+  style={{
+    '--border-color': 'white',
+    '--border-width': '2px'
+  }}
+>
+  Sign Up
+</Link>
+</li>
               </>
             )
           )}
