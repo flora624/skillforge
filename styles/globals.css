@@ -134,20 +134,6 @@ a { color: inherit; text-decoration: none; }
 
 
 
-.btn-secondary {
-  background: linear-gradient(90deg, #4A90E2, #50E3C2) !important;
-  color: #fff !important;
-  border: 2px solid #4A90E2 !important;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(74,144,226,0.07);
-  font-weight: 600;
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
-}
-.btn-secondary:hover {
-  background: linear-gradient(90deg, #50E3C2, #4A90E2);
-  color: #fff;
-  border-color: #50E3C2 !important;
-}
 
 [class*="btn"] {
   display: inline-block;
@@ -1072,21 +1058,21 @@ a { color: inherit; text-decoration: none; }
     justify-content: space-between;
   }
   .navbar .logo {
-    font-size: 1.1rem;
-    height: 48px;
-    width: 48px;
-    max-width: 48px;
-    max-height: 48px;
+    font-size: 1rem;
+    height: 36px;
+    width: 36px;
+    max-width: 36px;
+    max-height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0;
   }
   .navbar .logo > div {
-    width: 48px !important;
-    height: 48px !important;
-    max-width: 48px;
-    max-height: 48px;
+    width: 36px !important;
+    height: 36px !important;
+    max-width: 36px;
+    max-height: 36px;
     position: relative !important;
   }
   .navbar .logo img,
@@ -1094,8 +1080,8 @@ a { color: inherit; text-decoration: none; }
     width: 100% !important;
     height: 100% !important;
     object-fit: contain !important;
-    max-width: 48px;
-    max-height: 48px;
+    max-width: 36px;
+    max-height: 36px;
     display: block;
   }
   .nav-links {
@@ -1108,13 +1094,13 @@ a { color: inherit; text-decoration: none; }
     gap: 0;
   }
   .nav-links li {
-    margin: 0.25rem 0.5rem;
+    margin: 0.15rem 0.25rem;
   }
   .nav-links a, .nav-links .btn-primary, .nav-links .btn-secondary {
-    font-size: 1rem;
-    padding: 0.5rem 0.8rem;
-    border-radius: 6px;
-    min-width: 80px;
+    font-size: 0.92rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 5px;
+    min-width: 60px;
     text-align: center;
     display: block;
   }
