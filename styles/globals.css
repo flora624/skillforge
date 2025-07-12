@@ -1037,3 +1037,54 @@ a { color: inherit; text-decoration: none; }
   box-shadow: 0 0 0 2px #000 !important;
   outline: 2px solid #000 !important;
 }
+/* ===== NAVBAR BUTTON BORDERS ===== */
+/* Navbar container */
+.navbar .container {
+  position: relative;
+}
+
+/* Navbar links container */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* Adds consistent spacing */
+}
+
+/* All navbar buttons */
+.navbar .btn, 
+.navbar .btn-primary,
+.navbar .btn-text,
+.navbar .logout-button {
+  border: 2px solid !important;
+  box-sizing: border-box !important;
+}
+
+/* Primary button in navbar (Sign Up) */
+.navbar .btn-primary {
+  border-color: var(--white-color) !important;
+  background-color: var(--primary-color) !important;
+}
+
+/* Text button in navbar (Login) */
+.navbar .btn-text {
+  border-color: var(--light-color) !important;
+  background: transparent !important;
+}
+
+/* Logout button in navbar */
+.navbar .logout-button {
+  border-color: var(--light-color) !important;
+  background: transparent !important;
+}
+
+/* Hover states */
+.navbar .btn-primary:hover {
+  border-color: var(--white-color) !important;
+  background-color: #357ABD !important;
+}
+
+.navbar .btn-text:hover,
+.navbar .logout-button:hover {
+  border-color: var(--primary-color) !important;
+  background-color: var(--light-color) !important;
+}
