@@ -9,29 +9,34 @@ import { auth } from '../firebase/config';
 // The Main Navbar
 export default function Navbar() {
   const { isLoggedIn, loading } = useAuth();
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  // --- START OF NEW CODE TO ADD ---
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const router = useRouter(); // Hook to get the current page path
+  const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
 
-  // This effect runs when the component mounts to handle scroll detection
-  useEffect(() => {
+    useEffect(() => {
+    setIsClient(true);
+
     const handleScroll = () => {
       const isScrolled = window.scrollY > 10;
-      if (isScrolled !== scrolled) {
-        setScrolled(isScrolled);
-      }
+      setScrolled(isScrolled); // Simplified from the previous version
     };
+
+    // Add the event listener when the component mounts
     document.addEventListener('scroll', handleScroll, { passive: true });
+
+    // Clean up the event listener when the component unmounts
     return () => {
       document.removeEventListener('scroll', handleScroll);
     };
-  }, [scrolled]);
-  // --- END OF NEW CODE TO ADD ---
+  }, []); // The empty dependency array is correct, it runs only once on mount
 
   const handleLogout = async () => {
-  // ... the rest of your handleLogout function
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
   };
 
  return (
