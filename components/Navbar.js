@@ -90,8 +90,8 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
-                <li><Link href="/login" className="btn btn-secondary navbar-action-btn">Login</Link></li>
-                <li><Link href="/signup" className="btn btn-secondary navbar-action-btn">Signup</Link></li>
+                <li><Link href="/login" className="btn btn-text logout-button navbar-action-btn">Login</Link></li>
+                <li><Link href="/signup" className="btn btn-text logout-button navbar-action-btn">Signup</Link></li>
                 </>
               )
             )}
