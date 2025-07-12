@@ -43,6 +43,23 @@ a { color: inherit; text-decoration: none; }
   transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out, transform 0.4s cubic-bezier(0.4,0,0.2,1);
 }
 
+/* Placeholder for navbar to prevent content jump */
+.navbar-placeholder {
+  height: 82px;
+}
+
+@media (max-width: 768px) {
+  .navbar-placeholder {
+    height: 48px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-placeholder {
+    height: 36px;
+  }
+}
+
 /* Hide navbar on scroll down */
 .navbar.navbar--hidden {
   transform: translateY(-100%);

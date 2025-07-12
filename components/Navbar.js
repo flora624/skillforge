@@ -46,24 +46,24 @@ export default function Navbar() {
   };
 
  return (
-  <nav className={`navbar${scrolled ? ' scrolled' : ''}${navbarHidden ? ' navbar--hidden' : ''}`}>
+  <>
+    <nav className={`navbar${scrolled ? ' scrolled' : ''}${navbarHidden ? ' navbar--hidden' : ''}`}>
       <div className="container">
         {/* The Logo */}
         <Link href="/" className="logo">
           <div style={{ width: '80px', height: '80px', position: 'relative' }}>
-  <Image
-    src="/logo.png"
-    alt="SkillFroge Logo"
-    fill
-    priority
-    style={{ objectFit: 'contain' }}
-  />
-</div>
+            <Image
+              src="/logo.png"
+              alt="SkillFroge Logo"
+              fill
+              priority
+              style={{ objectFit: 'contain' }}
+            />
+          </div>
         </Link>
-        
         {/* The Main Navigation Links */}
         <ul className="nav-links">
-         <li><Link href="/why">Why SkillForge</Link></li>
+          <li><Link href="/why">Why SkillForge</Link></li>
 <li><Link href="/projects">Projects</Link></li>
           
           {isClient && !loading && (
@@ -100,5 +100,7 @@ export default function Navbar() {
         </ul>
       </div>
     </nav>
-  );
+    {/* Placeholder to prevent content jump under navbar */}
+    <div className="navbar-placeholder" aria-hidden="true"></div>
+  </>
 }
