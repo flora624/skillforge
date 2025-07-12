@@ -46,56 +46,47 @@ a { color: inherit; text-decoration: none; }
 .nav-links .btn-primary:hover {
   border-color: #357ABD; /* Darker border on hover */
 }
-.btn {
+[class*="btn"] {
+  display: inline-block;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   font-weight: 600;
-  display: inline-block;
-  border: 2px solid; /* No color set here */
   cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
   text-decoration: none;
-  box-sizing: border-box; /* Critical for border consistency */
+  border: 2px solid; /* Border style without color */
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
 }
 
-/* --- Primary Button --- */
+/* Primary Button - Blue with dark border */
 .btn-primary {
-  background-color: var(--primary-color);
-  color: var(--white-color);
-  border-color: var(--dark-color); /* Dark border for contrast */
+  background: #4A90E2;
+  color: white;
+  border-color: #2c3e50 !important; /* Forced dark border */
 }
 
-.btn-primary:hover {
-  background-color: #357ABD;
-  border-color: #2c3e50; /* Slightly darker border */
-}
-
-/* --- Secondary Button --- */
+/* Secondary Button - Gradient with blue border */
 .btn-secondary {
-  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-  color: var(--white-color);
-  border-color: var(--primary-color); /* Match gradient start */
+  background: linear-gradient(90deg, #4A90E2, #50E3C2);
+  color: white;
+  border-color: #4A90E2 !important; /* Solid blue border */
 }
 
-.btn-secondary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  border-color: var(--secondary-color); /* Match gradient end */
-}
-
-/* --- Text Button --- */
+/* Text Button - Gray border */
 .btn-text {
   background: transparent;
-  color: var(--text-color);
-  border: 2px solid var(--grey-color); /* Visible gray border */
+  color: #34495e;
+  border: 2px solid #95a5a6 !important; /* Solid gray border */
   padding: 0.5rem 1rem;
 }
 
-.btn-text:hover {
-  background-color: var(--light-color);
-  color: var(--primary-color);
-  border-color: var(--primary-color); /* Blue border on hover */
+/* Hover States */
+.btn-primary:hover { border-color: #1a2636 !important; }
+.btn-secondary:hover { border-color: #50E3C2 !important; }
+.btn-text:hover, .logout-button:hover { 
+  border-color: #4A90E2 !important;
+  background: #ecf0f1;
 }
 
 .btn-large { font-size: 1.1rem; padding: 1rem 2rem; border-width: 2px; }
@@ -351,14 +342,15 @@ a { color: inherit; text-decoration: none; }
   color: var(--primary-color);
 }
 
+/* Logout Button - Matches text button */
 .logout-button {
-  font-weight: 500;
+  background: transparent;
+  color: #34495e;
+  border: 2px solid #95a5a6 !important;
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  border: 2px solid var(--grey-color); /* Matching text button */
-  background: transparent;
-  color: var(--text-color);
 }
+
 
 .logout-button:hover {
   color: var(--primary-color);
@@ -1037,4 +1029,11 @@ a { color: inherit; text-decoration: none; }
   .hero-section h1 {
     font-size: 2rem; /* Even smaller hero heading */
   }
+}
+/* Add this at the VERY END of your CSS file */
+.btn, .btn-primary, .btn-secondary, .btn-text, .logout-button,
+[class*="btn"], [class^="btn"], [class$="btn"] {
+  border: 2px solid #000 !important;
+  box-shadow: 0 0 0 2px #000 !important;
+  outline: 2px solid #000 !important;
 }
