@@ -118,10 +118,32 @@ header {
     padding: 14px 3vw;
   }
   .nav__links {
-    display: none;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0;
+  }
+  .nav__links li {
+    padding: 0 6px;
+  }
+  .nav__links li a,
+  .cta {
+    font-size: 0.98rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 22px;
+    min-width: 60px;
+    text-align: center;
+    margin: 0;
+    color: #fff !important;
+    background: linear-gradient(90deg, #4A90E2, #50E3C2);
+    border: none;
+    display: block;
   }
   .menu {
-    display: block;
+    display: none !important;
   }
 }
 
