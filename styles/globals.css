@@ -137,11 +137,14 @@ header {
 
 /* Transparent sticky navbar and scroll animation */
 .navbar {
-  background: transparent !important;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  width: 100%;
+  background: transparent !important;
   z-index: 1000;
   transition: background-color 0.3s, box-shadow 0.3s, transform 0.4s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: none;
 }
 
 .navbar--hidden {
@@ -154,16 +157,16 @@ header {
 }
 
 .navbar-placeholder {
-  height: 82px;
+  height: 96px;
 }
 @media (max-width: 800px) {
   .navbar-placeholder {
-    height: 56px;
+    height: 64px;
   }
 }
 @media (max-width: 480px) {
   .navbar-placeholder {
-    height: 40px;
+    height: 48px;
   }
 }
 
