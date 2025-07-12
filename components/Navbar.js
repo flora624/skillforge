@@ -23,10 +23,10 @@ export default function Navbar() {
       const currentScrollY = window.scrollY;
       const isScrolled = currentScrollY > 10;
       setScrolled(isScrolled);
-      if (currentScrollY > lastScrollY.current && currentScrollY > 60) {
-        setNavbarHidden(true); // scrolling down
+      if (currentScrollY <= 10) {
+        setNavbarHidden(false); // Show navbar only at the very top
       } else {
-        setNavbarHidden(false); // scrolling up
+        setNavbarHidden(true); // Hide navbar when not at the top
       }
       lastScrollY.current = currentScrollY;
     };
