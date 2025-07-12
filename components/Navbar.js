@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router'; 
 import Image from 'next/image';
 import { useAuth } from '../context/AuthContext';
 import { signOut } from 'firebase/auth';
@@ -8,22 +9,10 @@ import { auth } from '../firebase/config';
 // The Main Navbar
 export default function Navbar() {
   const { isLoggedIn, loading } = useAuth();
-  const [isClient, setIsClient] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error("Error signing out: ", error);
-    }
-  };
-
-  return (
-    <nav className="navbar">
+ return (
+  <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="container">
         {/* The Logo */}
         <Link href="/" className="logo">
@@ -71,6 +60,7 @@ export default function Navbar() {
               <>
                 <li><Link href="/login">Login</Link></li>
                 <li><Link href="/signup" className="btn btn-primary">Sign Up</Link></li>
+                <li><Link href="/explore" className={`btn-text ${router.pathname === '/explore' ? 'active-link' : ''}`}>Explore</Link></li>
               </>
             )
           )}
