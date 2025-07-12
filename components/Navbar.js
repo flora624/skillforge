@@ -86,9 +86,18 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <li><Link href="/login" className="btn btn-text">Login</Link></li>
-                <li><Link href="/signup" className="btn btn-primary">Sign Up</Link></li>
-                <li><Link href="/explore" className={`btn-text ${router.pathname === '/explore' ? 'active-link' : ''}`}>Explore</Link></li>
+                <li>
+  <Link href="/login" className="btn">Login</Link>
+</li>
+<li>
+  <Link href="/signup" className="btn btn-primary">Sign Up</Link>
+</li>
+<li>
+  <Link href="/explore" className="btn">Explore</Link>
+</li>
+<li>
+  <a onClick={handleLogout} className="btn logout-button">Logout</a>
+</li>
               </>
             )
           )}
