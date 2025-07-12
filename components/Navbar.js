@@ -47,7 +47,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header>
+      <header className={`navbar${scrolled ? ' scrolled' : ''}${navbarHidden ? ' navbar--hidden' : ''}`} style={{background: 'transparent'}}>
         <Link href="/" className="logo">
           <div style={{ width: '80px', height: '80px', position: 'relative' }}>
             <Image
@@ -95,6 +95,8 @@ export default function Navbar() {
           <a href="#" className="menu"><span>☰</span></a>
         </nav>
       </header>
+      {/* Placeholder to prevent content jump under navbar */}
+      <div className="navbar-placeholder" aria-hidden="true"></div>
     </>
   );
 }
