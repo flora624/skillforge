@@ -1073,15 +1073,30 @@ a { color: inherit; text-decoration: none; }
   }
   .navbar .logo {
     font-size: 1.1rem;
-    height: 40px;
-    width: 100%;
+    height: 48px;
+    width: 48px;
+    max-width: 48px;
+    max-height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0;
   }
   .navbar .logo > div {
     width: 48px !important;
     height: 48px !important;
+    max-width: 48px;
+    max-height: 48px;
+    position: relative !important;
+  }
+  .navbar .logo img,
+  .navbar .logo > div img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    max-width: 48px;
+    max-height: 48px;
+    display: block;
   }
   .nav-links {
     flex-direction: row !important;
