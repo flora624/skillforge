@@ -47,28 +47,25 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className={`navbar${scrolled ? ' scrolled' : ''}${navbarHidden ? ' navbar--hidden' : ''}`}>
-        <div className="container">
-          {/* The Logo */}
-          <Link href="/" className="logo">
-            <div style={{ width: '80px', height: '80px', position: 'relative' }}>
-              <Image
-                src="/logo.png"
-                alt="SkillFroge Logo"
-                fill
-                priority
-                style={{ objectFit: 'contain' }}
-              />
-            </div>
-          </Link>
-          {/* The Main Navigation Links */}
-          <ul className="nav-links">
+      <header>
+        <Link href="/" className="logo">
+          <div style={{ width: '80px', height: '80px', position: 'relative' }}>
+            <Image
+              src="/logo.png"
+              alt="SkillForge Logo"
+              fill
+              priority
+              style={{ objectFit: 'contain' }}
+            />
+          </div>
+        </Link>
+        <nav>
+          <ul className="nav__links">
             <li><Link href="/why">Why SkillForge</Link></li>
             <li><Link href="/projects">Projects</Link></li>
             {isClient && !loading && (
               isLoggedIn ? (
                 <>
-                  {/* --- THIS IS THE NEW SVG ICON LINK --- */}
                   <li>
                     <Link href="/profile" className="profile-icon-link">
                       <svg
@@ -85,21 +82,19 @@ export default function Navbar() {
                       </svg>
                     </Link>
                   </li>
-                  {/* --- END OF SVG ICON LINK --- */}
-                  <li><a onClick={handleLogout} className="btn btn-secondary">Logout</a></li>
+                  <li><a onClick={handleLogout} className="cta">Logout</a></li>
                 </>
               ) : (
                 <>
-                <li><Link href="/login" className="btn btn-secondary">Login</Link></li>
-                <li><Link href="/signup" className="btn btn-secondary">Signup</Link></li>
+                  <li><Link href="/login" className="cta">Login</Link></li>
+                  <li><Link href="/signup" className="cta">Signup</Link></li>
                 </>
               )
             )}
           </ul>
-        </div>
-      </nav>
-      {/* Placeholder to prevent content jump under navbar */}
-      <div className="navbar-placeholder" aria-hidden="true"></div>
+          <a href="#" className="menu"><span>☰</span></a>
+        </nav>
+      </header>
     </>
   );
 }
