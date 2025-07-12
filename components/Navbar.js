@@ -47,7 +47,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className={`navbar${scrolled ? ' scrolled' : ''}${navbarHidden ? ' navbar--hidden' : ''}`} style={{background: 'transparent'}}>
+      <header>
         <Link href="/" className="logo">
           <div style={{ width: '80px', height: '80px', position: 'relative' }}>
             <Image
@@ -63,6 +63,8 @@ export default function Navbar() {
           <ul className="nav__links">
             <li><Link href="/why">Why SkillForge</Link></li>
             <li><Link href="/projects">Projects</Link></li>
+          </ul>
+          <ul className="nav__actions">
             {isClient && !loading && (
               isLoggedIn ? (
                 <>
@@ -95,8 +97,6 @@ export default function Navbar() {
           <a href="#" className="menu"><span>☰</span></a>
         </nav>
       </header>
-      {/* Placeholder to prevent content jump under navbar */}
-      <div className="navbar-placeholder" aria-hidden="true"></div>
     </>
   );
 }
