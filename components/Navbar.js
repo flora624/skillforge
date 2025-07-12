@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router'; 
 import Image from 'next/image';
@@ -11,6 +11,8 @@ export default function Navbar() {
   const { isLoggedIn, loading } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [navbarHidden, setNavbarHidden] = useState(false);
+  const lastScrollY = useRef(0);
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
 
@@ -18,18 +20,22 @@ export default function Navbar() {
     setIsClient(true);
 
     const handleScroll = () => {
-      const isScrolled = window.scrollY > 10;
-      setScrolled(isScrolled); // Simplified from the previous version
+      const currentScrollY = window.scrollY;
+      const isScrolled = currentScrollY > 10;
+      setScrolled(isScrolled);
+      if (currentScrollY > lastScrollY.current && currentScrollY > 60) {
+        setNavbarHidden(true); // scrolling down
+      } else {
+        setNavbarHidden(false); // scrolling up
+      }
+      lastScrollY.current = currentScrollY;
     };
 
-    // Add the event listener when the component mounts
-    document.addEventListener('scroll', handleScroll, { passive: true });
-
-    // Clean up the event listener when the component unmounts
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
-      document.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', handleScroll);
     };
-  }, []); // The empty dependency array is correct, it runs only once on mount
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -40,7 +46,7 @@ export default function Navbar() {
   };
 
  return (
-  <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+  <nav className={`navbar${scrolled ? ' scrolled' : ''}${navbarHidden ? ' navbar--hidden' : ''}`}>
       <div className="container">
         {/* The Logo */}
         <Link href="/" className="logo">
