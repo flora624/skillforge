@@ -59,7 +59,7 @@ a { color: inherit; text-decoration: none; }
   padding: 0.5rem 1rem;
   border: 2px solid var(--primary-color); /* Add border */
   border-radius: 8px;
-  background-color: blue;
+  background-color: linear-gradient(90deg, #4A90E2, #50E3C2);
 }
 
 .nav-links a:hover {
