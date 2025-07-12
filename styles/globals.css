@@ -59,7 +59,7 @@ a { color: inherit; text-decoration: none; }
   padding: 0.5rem 1rem;
   border: 2px solid var(--primary-color); /* Add border */
   border-radius: 8px;
-  background-color: transparent;
+  background-color: blue;
 }
 
 .nav-links a:hover {
