@@ -9,7 +9,30 @@ import { auth } from '../firebase/config';
 // The Main Navbar
 export default function Navbar() {
   const { isLoggedIn, loading } = useAuth();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  // --- START OF NEW CODE TO ADD ---
+  const [scrolled, setScrolled] = useState(false);
+  const router = useRouter(); // Hook to get the current page path
+
+  // This effect runs when the component mounts to handle scroll detection
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 10;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+    };
+    document.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      document.removeEventListener('scroll', handleScroll);
+    };
+  }, [scrolled]);
+  // --- END OF NEW CODE TO ADD ---
+
+  const handleLogout = async () => {
+  // ... the rest of your handleLogout function
+  };
 
  return (
   <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
