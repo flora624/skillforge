@@ -40,40 +40,23 @@ a { color: inherit; text-decoration: none; }
 .nav-links li { margin-left: 1.5rem; }
 .nav-links a { font-weight: 500; transition: color 0.2s; cursor: pointer; }
 .nav-links a:hover { color: var(--primary-color); }
-/* Navbar Button Styles */
-.navbar .btn {
-  border: 2px solid var(--primary-color);
-  background-color: transparent;
-  color: var(--primary-color);
+.nav-links .btn-primary {
+  border-color: var(--primary-color); /* Solid border for nav primary button */
 }
-
-.navbar .btn:hover {
-  background-color: var(--primary-color);
-  color: white;
+.nav-links .btn-primary:hover {
+  border-color: #357ABD; /* Darker border on hover */
 }
-
-/* Primary Navbar Button */
-.navbar .btn-primary {
-  border-color: var(--primary-color);
-  background-color: var(--primary-color);
-  color: white;
-}
-
-.navbar .btn-primary:hover {
-  background-color: #357ABD;
-  border-color: #357ABD;
-}
-
-/* Text Navbar Button */
-.navbar .btn-text {
-  border-color: var(--grey-color);
-  background-color: transparent;
-  color: var(--text-color);
-}
-
-.navbar .btn-text:hover {
-  border-color: var(--primary-color);
-  background-color: var(--light-color);
+[class*="btn"] {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  border: 2px solid; /* Border style without color */
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
 }
 
 /* Primary Button - Blue with dark border */
