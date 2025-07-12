@@ -86,12 +86,12 @@ export default function Navbar() {
                     </Link>
                   </li>
                   {/* --- END OF SVG ICON LINK --- */}
-                  <li><a onClick={handleLogout} className="btn btn-text logout-button">Logout</a></li>
+                  <li><a onClick={handleLogout} className="btn btn-text logout-button navbar-action-btn">Logout</a></li>
                 </>
               ) : (
                 <>
-                <li><Link href="/login" className="btn btn-secondary">Login</Link></li>
-                <li><Link href="/signup" className="btn btn-secondary">Signup</Link></li>
+                <li><Link href="/login" className="btn btn-secondary navbar-action-btn">Login</Link></li>
+                <li><Link href="/signup" className="btn btn-secondary navbar-action-btn">Signup</Link></li>
                 </>
               )
             )}
