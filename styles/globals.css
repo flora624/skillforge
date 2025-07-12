@@ -945,7 +945,7 @@ a { color: inherit; text-decoration: none; }
 
   /* --- General Adjustments --- */
   section {
-    padding: 2rem 0; /* Reduce padding on sections */
+    padding: 0rem 0; /* Reduce padding on sections */
   }
   .container {
     padding: 0 1rem; /* Reduce side padding for the main container */
