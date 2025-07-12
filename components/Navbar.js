@@ -57,8 +57,8 @@ export default function Navbar() {
         
         {/* The Main Navigation Links */}
         <ul className="nav-links">
-          <li><Link href="/#features">Why SkillForge?</Link></li>
-          <li><Link href="/#projects">Projects</Link></li>
+         <li><Link href="/why">Why SkillForge</Link></li>
+<li><Link href="/projects">Projects</Link></li>
           
           {isClient && !loading && (
             isLoggedIn ? (
@@ -86,8 +86,8 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <li><Link href="/login" className="btn btn-text">Login</Link></li>
-                <li><Link href="/signup" className="btn btn-primary">Sign Up</Link></li>
+                <li><Link href="/login" className="nav-action">Login</Link></li>
+<li><Link href="/signup" className="nav-action">Signup</Link></li>
               </>
             )
           )}

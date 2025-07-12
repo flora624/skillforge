@@ -57,10 +57,14 @@ a { color: inherit; text-decoration: none; }
   transition: all 0.3s;
   cursor: pointer;
   padding: 0.5rem 1rem;
-  border: 2px solid var(--primary-color); /* Add border */
   border-radius: 8px;
-  background-color: linear-gradient(90deg, #4A90E2, #50E3C2);
+  /* No border by default */
 }
+
+.nav-action {
+  border: 2px solid var(--primary-color);
+}
+
 
 .nav-links a:hover {
   background: linear-gradient(90deg, #4a90e2, #50e3c2);
