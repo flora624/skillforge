@@ -47,13 +47,14 @@ export default function Navbar() {
 
   return (
     <>
-      <header>
+      <header className={`navbar${scrolled ? ' scrolled' : ''}${navbarHidden ? ' navbar--hidden' : ''}`}>
         <Link href="/" className="logo">
-          <div style={{ width: '80px', height: '80px', position: 'relative' }}>
+          <div>
             <Image
               src="/logo.png"
               alt="SkillForge Logo"
-              fill
+              width={60}
+              height={60}
               priority
               style={{ objectFit: 'contain' }}
             />
@@ -94,7 +95,6 @@ export default function Navbar() {
               )
             )}
           </ul>
-          <a href="#" className="menu"><span>☰</span></a>
         </nav>
       </header>
     </>
