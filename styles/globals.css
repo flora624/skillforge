@@ -1219,12 +1219,15 @@ header nav {
     align-items: center;
     justify-content: center;
     padding: 0;
+    flex-shrink: 0;
+    flex-grow: 0;
+    visibility: visible;
   }
   .navbar .logo > div {
-    width: 36px !important;
-    height: 36px !important;
-    max-width: 36px;
-    max-height: 36px;
+    width: 32px !important;
+    height: 32px !important;
+    max-width: 32px;
+    max-height: 32px;
     position: relative !important;
   }
   .navbar .logo img,
@@ -1232,27 +1235,15 @@ header nav {
     width: 100% !important;
     height: 100% !important;
     object-fit: contain !important;
-    max-width: 36px;
-    max-height: 36px;
+    max-width: 32px;
+    max-height: 32px;
     display: block;
   }
-  .nav-links {
-    flex-direction: row !important;
-    display: flex !important;
-    width: auto;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: nowrap;
-    gap: 0;
-  }
-  .nav-links li {
-    margin: 0.15rem 0.25rem;
-  }
   .nav-links a, .nav-links .btn-primary, .nav-links .btn-secondary {
-    font-size: 0.92rem;
-    padding: 0.35rem 0.6rem;
+    font-size: 0.85rem;
+    padding: 0.25rem 0.5rem;
     border-radius: 5px;
-    min-width: 60px;
+    min-width: 48px;
     text-align: center;
     display: block;
   }
@@ -1294,19 +1285,17 @@ header nav {
 /* Specific fix for very small phones */
 @media (max-width: 480px) {
   .navbar .logo > div {
-    width: 36px !important;
-    height: 36px !important;
+    width: 28px !important;
+    height: 28px !important;
+    max-width: 28px;
+    max-height: 28px;
   }
   .nav-links a, .nav-links .btn-primary, .nav-links .btn-secondary {
-    font-size: 0.9rem;
-    padding: 0.4rem 0.6rem;
-    min-width: 60px;
-  }
-  .hero-section h1 {
-    font-size: 2rem; /* Even smaller hero heading */
+    font-size: 0.8rem;
+    padding: 0.18rem 0.35rem;
+    min-width: 40px;
   }
 }
-
 /* --- GOOGLE SIGN-IN BUTTON STYLES --- */
 .google-signin-container {
   margin-top: 1.5rem;
