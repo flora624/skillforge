@@ -1,0 +1,7 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "SkillForge",
+  "url": "https://skillforgeprojects.vercel.app/",
+  "logo": "https://skillforgeprojects.vercel.app/logo.png"
+}

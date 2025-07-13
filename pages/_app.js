@@ -16,6 +16,19 @@ function MyApp({ Component, pageProps }) {
         <meta name="google-adsense-account" content="ca-pub-6379719724029640" />
         <title>SkillForge - Build Your Career Portfolio</title>
         <meta name="description" content="Tackle real-world problems from every career domain. Build a portfolio that gets you hired." />
+        {/* Organization structured data for logo and site name (for all pages) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "SkillForge",
+              "url": "https://skillforgeprojects.vercel.app/",
+              "logo": "https://skillforgeprojects.vercel.app/logo.png"
+            })
+          }}
+        />
       </Head>
 
       {/* Add class based on route */}
