@@ -53,8 +53,8 @@ export default function Navbar() {
             <Image
               src="/logo.png"
               alt="SkillForge Logo"
-              width={60}
-              height={60}
+              width={80}
+              height={80}
               priority
               style={{ objectFit: 'contain' }}
             />
