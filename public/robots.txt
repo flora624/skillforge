@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://skillforgeprojects.vercel.app/
+
+# Sitemaps
+Sitemap: https://skillforgeprojects.vercel.app/sitemap.xml
