@@ -22,9 +22,9 @@ function MyApp({ Component, pageProps }) {
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "Organization",
+              "@type": "website",
               "name": "SkillForge",
-              "url": "https://skillforgeprojects.vercel.app/",
+              "url": "https://skillforgeprojects.vercel.app",
               "logo": "https://skillforgeprojects.vercel.app/logo.png"
             })
           }}
