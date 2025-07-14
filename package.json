@@ -10,6 +10,7 @@
     "postbuild": "next-sitemap"
   },
   "dependencies": {
+    "@tailwindcss/line-clamp": "^0.4.4",
     "firebase": "^9.17.1",
     "gatsby-image": "^3.11.0",
     "item": "^3.0.0",
