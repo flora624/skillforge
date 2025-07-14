@@ -62,8 +62,7 @@ export default function Navbar() {
         </Link>
         <nav>
           <ul className="nav__actions">
-            <li><Link href="/why">Why SkillForge</Link></li>
-            <li><Link href="/projects">Projects</Link></li>
+            <li><Link href="/blog">Blogs</Link></li>
           </ul>
           <ul className="nav__links">
             {isClient && !loading && (

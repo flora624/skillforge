@@ -153,6 +153,7 @@ export default function ProjectPage({ project }) {
 
     return (
         <>
+         <Navbar /> 
             {/* The Navbar is now in _app.js, so we don't need it here */}
             <div className="project-page-container">
                 <div className="project-header">

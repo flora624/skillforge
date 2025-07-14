@@ -421,7 +421,7 @@ header nav {
 
 .btn-large { font-size: 1.1rem; padding: 1rem 2rem; border-width: 2px; }
 .btn-block { display: block; width: 100%; border-width: 2px; }
-.hero-section { background: var(--dark-color); color: var(--white-color); text-align: center; padding: 6rem 0; position: static !important; overflow: visible !important; height: auto !important; z-index: auto !important; }
+.hero-section { background: var(--dark-color); color: var(--white-color); text-align: center; padding: 10rem 0; position: static !important; overflow: visible !important; height: auto !important; z-index: auto !important; }
 .hero-section h1 { font-size: 3.5rem; color: var(--white-color); margin-bottom: 1rem; }
 .hero-section .subtitle { font-size: 1.25rem; color: var(--light-color); max-width: 700px; margin: 0 auto 2rem auto; }
 
@@ -1404,11 +1404,11 @@ header nav {
   border: 1px solid #ddd;
   border-radius: 8px;
   cursor: pointer;
-    width: 64px !important;
+    width: 300px !important;
     height: 64px !important;
     min-width: 64px !important;
     min-height: 64px !important;
-    max-width: 64px !important;
+    max-width: 300px !important;
     max-height: 64px !important;
     flex-shrink: 0 !important;
 }
@@ -1452,4 +1452,46 @@ header nav {
   background: linear-gradient(90deg, #4a90e2, #50e3c2);
   color: #fff;
   border-color: #4a90e2;
+}
+/* styles/globals.css */
+@media (max-width: 1024px) {
+.blog-page h1 {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #1a202c; /* Tailwind's gray-900 */
+}
+
+.blog-page ol {
+  list-style-type: decimal;
+  padding-left: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.blog-page article {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2rem;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.blog-page img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+}
+/* General styling for all blog images */
+.blog-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* 🎯 Specific styling only for the project-based-learning image */
+.blog-image.project-based-learning-benefits img {
+  border: 3px solid #4a90e2;
+  box-shadow: 0 0 12px rgba(74, 144, 226, 0.3);
+  border-radius: 12px;
 }
