@@ -75,7 +75,7 @@ export async function getStaticPaths() {
     try {
         const path = require('path');
         const fs = require('fs');
-        const filePath = path.join(process.cwd(), 'public', 'projects.json');
+        const filePath = path.join(process.cwd(), 'data', 'projects.json');
         
         if (!fs.existsSync(filePath)) {
             return { paths: [], fallback: true };
@@ -95,7 +95,7 @@ export async function getStaticProps({ params }) {
     try {
         const path = require('path');
         const fs = require('fs');
-        const filePath = path.join(process.cwd(), 'public', 'projects.json');
+        const filePath = path.join(process.cwd(), 'data', 'projects.json');
         
         if (!fs.existsSync(filePath)) {
             return { notFound: true };

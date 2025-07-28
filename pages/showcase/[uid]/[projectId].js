@@ -23,7 +23,7 @@ export async function getServerSideProps(context) {
     const progressData = progressSnap.data();
 
     // Fetch all projects from JSON to get questions and details
-    const projectsFilePath = path.join(process.cwd(), 'public', 'projects.json');
+    const projectsFilePath = path.join(process.cwd(), 'data', 'projects.json');
     const jsonData = await fs.readFile(projectsFilePath, 'utf8');
     const allProjects = JSON.parse(jsonData);
     const projectDetails = allProjects.find(p => p.id == projectId);

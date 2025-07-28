@@ -11,7 +11,7 @@ import ProjectCard from '../components/ProjectCard';
 export async function getStaticProps() {
   const path = require('path');
   const fs = require('fs');
-  const filePath = path.join(process.cwd(), 'public', 'projects.json');
+  const filePath = path.join(process.cwd(), 'data', 'projects.json');
   const jsonData = await fs.readFileSync(filePath);
   const allProjects = JSON.parse(jsonData);
   return { props: { allProjects } };

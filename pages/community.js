@@ -9,7 +9,7 @@ import Link from 'next/link';
 export async function getStaticProps() {
     const path = require('path');
     const fs = require('fs');
-    const filePath = path.join(process.cwd(), 'public', 'projects.json');
+    const filePath = path.join(process.cwd(), 'data', 'projects.json');
     const jsonData = fs.readFileSync(filePath, 'utf8');
     const projects = JSON.parse(jsonData) || [];
     return { props: { projects } };

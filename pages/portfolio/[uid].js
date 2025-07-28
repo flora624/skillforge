@@ -17,7 +17,7 @@ export async function getServerSideProps(context) {
     const userDocSnap = await getDoc(userDocRef);
     const userProfile = userDocSnap.exists() ? userDocSnap.data() : null;
 
-    const projectsFilePath = path.join(process.cwd(), 'public', 'projects.json');
+    const projectsFilePath = path.join(process.cwd(), 'data', 'projects.json');
     const jsonData = await fs.readFile(projectsFilePath, 'utf8');
     const allProjects = JSON.parse(jsonData);
 
