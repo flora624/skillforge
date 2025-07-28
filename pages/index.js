@@ -9,6 +9,11 @@ function ProjectCard({ project }) {
   const router = useRouter();
   const { user } = useAuth();
 
+  // Safety check for project object
+  if (!project) {
+    return null;
+  }
+
   const handleStartClick = (e) => {
     e.preventDefault();
     if (user) {
@@ -78,7 +83,7 @@ function getDomainIcon(domain) {
 
 import Head from 'next/head';
 
-export default function Home({ projects }) {
+export default function Home({ projects = [] }) {
   const [filterDomain, setFilterDomain] = useState('all');
   const featuredProjects = projects.slice(0, 3);
   
@@ -105,9 +110,9 @@ export default function Home({ projects }) {
 
   const filteredProjects = filterDomain === 'all' 
     ? featuredProjects 
-    : featuredProjects.filter(project => project.domain === filterDomain);
+    : featuredProjects.filter(project => project && project.domain === filterDomain);
 
-  const uniqueDomains = [...new Set(featuredProjects?.map(p => p.domain) || [])];
+  const uniqueDomains = [...new Set(featuredProjects?.map(p => p?.domain).filter(Boolean) || [])];
 
   return (
     <>
@@ -222,15 +227,34 @@ export default function Home({ projects }) {
 
 // This is now correct and pulls data from projects.json
 export async function getStaticProps() {
-  const path = require('path');
-  const fs = require('fs');
-  const filePath = path.join(process.cwd(), 'public', 'projects.json');
-  const jsonData = fs.readFileSync(filePath, 'utf8');
-  const projects = JSON.parse(jsonData) || [];
+  try {
+    const path = require('path');
+    const fs = require('fs');
+    const filePath = path.join(process.cwd(), 'public', 'projects.json');
+    
+    if (!fs.existsSync(filePath)) {
+      console.warn('projects.json file not found');
+      return {
+        props: {
+          projects: [],
+        },
+      };
+    }
+    
+    const jsonData = fs.readFileSync(filePath, 'utf8');
+    const projects = JSON.parse(jsonData) || [];
 
-  return {
-    props: {
-      projects,
-    },
-  };
+    return {
+      props: {
+        projects,
+      },
+    };
+  } catch (error) {
+    console.error('Error loading projects:', error);
+    return {
+      props: {
+        projects: [],
+      },
+    };
+  }
 }

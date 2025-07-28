@@ -17,6 +17,238 @@ export async function getStaticProps() {
   return { props: { allProjects } };
 }
 
+// --- EXPERIENCE MANAGER COMPONENT ---
+const ExperienceManager = ({ profile, setProfile, inputStyle, labelStyle, handleChange }) => {
+    const addExperience = () => {
+        const newExperience = {
+            id: Date.now(),
+            position: '',
+            company: '',
+            location: '',
+            startDate: '',
+            endDate: '',
+            current: false,
+            description: ''
+        };
+        setProfile(prev => ({
+            ...prev,
+            experiences: [...(prev.experiences || []), newExperience]
+        }));
+    };
+
+    const updateExperience = (id, field, value) => {
+        setProfile(prev => ({
+            ...prev,
+            experiences: prev.experiences.map(exp => 
+                exp.id === id ? { ...exp, [field]: value } : exp
+            )
+        }));
+    };
+
+    const removeExperience = (id) => {
+        setProfile(prev => ({
+            ...prev,
+            experiences: prev.experiences.filter(exp => exp.id !== id)
+        }));
+    };
+
+    const buttonStyle = {
+        padding: '8px 16px',
+        borderRadius: '6px',
+        border: 'none',
+        cursor: 'pointer',
+        fontWeight: '500',
+        fontSize: '14px',
+        transition: 'all 0.2s ease'
+    };
+
+    const addButtonStyle = {
+        ...buttonStyle,
+        background: '#10b981',
+        color: 'white'
+    };
+
+    const removeButtonStyle = {
+        ...buttonStyle,
+        background: '#ef4444',
+        color: 'white'
+    };
+
+    const experienceCardStyle = {
+        background: '#f8fafc',
+        border: '1px solid #e2e8f0',
+        borderRadius: '8px',
+        padding: '24px',
+        marginBottom: '20px'
+    };
+
+    return (
+        <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h3 style={{ color: '#1f2937', margin: 0 }}>Professional Experience</h3>
+                <button type="button" onClick={addExperience} style={addButtonStyle}>
+                    ➕ Add Experience
+                </button>
+            </div>
+
+            {/* Basic Experience Info */}
+            <div style={{ marginBottom: '30px', padding: '20px', background: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                <h4 style={{ marginBottom: '16px', color: '#374151' }}>Basic Info</h4>
+                <div style={{ display: 'grid', gap: '20px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
+                    <div>
+                        <label style={labelStyle}>Total Experience</label>
+                        <div style={{ display: 'grid', gap: '12px', gridTemplateColumns: '1fr 1fr' }}>
+                            <div>
+                                <input 
+                                    style={inputStyle} 
+                                    type="number" 
+                                    name="experienceYears" 
+                                    value={profile.experienceYears || ''} 
+                                    onChange={handleChange} 
+                                    placeholder="Years" 
+                                    min="0" 
+                                    max="50" 
+                                />
+                                <small style={{ color: '#6b7280', fontSize: '12px' }}>Years</small>
+                            </div>
+                            <div>
+                                <input 
+                                    style={inputStyle} 
+                                    type="number" 
+                                    name="experienceMonths" 
+                                    value={profile.experienceMonths || ''} 
+                                    onChange={handleChange} 
+                                    placeholder="Months" 
+                                    min="0" 
+                                    max="11" 
+                                />
+                                <small style={{ color: '#6b7280', fontSize: '12px' }}>Months (0-11)</small>
+                            </div>
+                        </div>
+                        <small style={{ color: '#6b7280', fontSize: '12px', marginTop: '8px', display: 'block' }}>
+                            Enter your total experience. For example: 2 months = 0 years, 2 months
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            {/* Detailed Experience Entries */}
+            <div>
+                <h4 style={{ marginBottom: '16px', color: '#374151' }}>Detailed Experience History</h4>
+                <p style={{ color: '#6b7280', fontSize: '14px', marginBottom: '20px' }}>
+                    Add your work experience in chronological order. These will appear on your portfolio.
+                </p>
+
+                {(!profile.experiences || profile.experiences.length === 0) && (
+                    <div style={{ 
+                        textAlign: 'center', 
+                        padding: '40px', 
+                        background: '#f9fafb', 
+                        borderRadius: '8px', 
+                        border: '2px dashed #d1d5db',
+                        color: '#6b7280'
+                    }}>
+                        <p style={{ fontSize: '16px', marginBottom: '12px' }}>No experience entries yet</p>
+                        <p style={{ fontSize: '14px' }}>Click "Add Experience" to start building your experience history</p>
+                    </div>
+                )}
+
+                {profile.experiences && profile.experiences.map((experience, index) => (
+                    <div key={experience.id} style={experienceCardStyle}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                            <h5 style={{ color: '#1f2937', margin: 0 }}>Experience #{index + 1}</h5>
+                            <button 
+                                type="button" 
+                                onClick={() => removeExperience(experience.id)} 
+                                style={removeButtonStyle}
+                            >
+                                🗑️ Remove
+                            </button>
+                        </div>
+
+                        <div style={{ display: 'grid', gap: '16px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
+                            <div>
+                                <label style={labelStyle}>Position/Role *</label>
+                                <input 
+                                    style={inputStyle}
+                                    type="text"
+                                    value={experience.position || ''}
+                                    onChange={(e) => updateExperience(experience.id, 'position', e.target.value)}
+                                    placeholder="Software Engineer"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label style={labelStyle}>Company *</label>
+                                <input 
+                                    style={inputStyle}
+                                    type="text"
+                                    value={experience.company || ''}
+                                    onChange={(e) => updateExperience(experience.id, 'company', e.target.value)}
+                                    placeholder="Google Inc."
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label style={labelStyle}>Location</label>
+                                <input 
+                                    style={inputStyle}
+                                    type="text"
+                                    value={experience.location || ''}
+                                    onChange={(e) => updateExperience(experience.id, 'location', e.target.value)}
+                                    placeholder="San Francisco, CA"
+                                />
+                            </div>
+                            <div>
+                                <label style={labelStyle}>Start Date</label>
+                                <input 
+                                    style={inputStyle}
+                                    type="month"
+                                    value={experience.startDate || ''}
+                                    onChange={(e) => updateExperience(experience.id, 'startDate', e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label style={labelStyle}>End Date</label>
+                                <input 
+                                    style={inputStyle}
+                                    type="month"
+                                    value={experience.endDate || ''}
+                                    onChange={(e) => updateExperience(experience.id, 'endDate', e.target.value)}
+                                    disabled={experience.current}
+                                />
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '24px' }}>
+                                <input 
+                                    type="checkbox"
+                                    checked={experience.current || false}
+                                    onChange={(e) => {
+                                        updateExperience(experience.id, 'current', e.target.checked);
+                                        if (e.target.checked) {
+                                            updateExperience(experience.id, 'endDate', '');
+                                        }
+                                    }}
+                                />
+                                <label style={{ ...labelStyle, marginBottom: 0 }}>Currently working here</label>
+                            </div>
+                        </div>
+
+                        <div style={{ marginTop: '16px' }}>
+                            <label style={labelStyle}>Job Description</label>
+                            <textarea 
+                                style={{...inputStyle, minHeight: '80px', resize: 'vertical'}}
+                                value={experience.description || ''}
+                                onChange={(e) => updateExperience(experience.id, 'description', e.target.value)}
+                                placeholder="Describe your role, responsibilities, and key achievements..."
+                            />
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
 // --- ENHANCED PORTFOLIO CUSTOMIZATION COMPONENT ---
 const PortfolioCustomizer = ({ user }) => {
     const [profile, setProfile] = useState({
@@ -44,6 +276,8 @@ const PortfolioCustomizer = ({ user }) => {
         currentPosition: '',
         company: '',
         experienceYears: '',
+        experienceMonths: '',
+        experiences: [],
         
         // Contact Info
         location: '',
@@ -97,7 +331,8 @@ const PortfolioCustomizer = ({ user }) => {
                 ...profile,
                 skills: profile.skills.split(',').map(s => s.trim()).filter(s => s),
                 primaryTools: profile.primaryTools.split(',').map(s => s.trim()).filter(s => s),
-                experienceYears: profile.experienceYears ? parseInt(profile.experienceYears) : 0
+                experienceYears: profile.experienceYears ? parseInt(profile.experienceYears) : 0,
+                experienceMonths: profile.experienceMonths ? parseInt(profile.experienceMonths) : 0
             };
             await setDoc(docRef, dataToSave, { merge: true });
             setStatus('Portfolio settings saved successfully!');
@@ -283,23 +518,13 @@ const PortfolioCustomizer = ({ user }) => {
 
                 {/* Experience Tab */}
                 {activeTab === 'experience' && (
-                    <div>
-                        <h3 style={{ marginBottom: '20px', color: '#1f2937' }}>Professional Experience</h3>
-                        <div style={{ display: 'grid', gap: '20px', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
-                            <div>
-                                <label style={labelStyle}>Current Position</label>
-                                <input style={inputStyle} type="text" name="currentPosition" value={profile.currentPosition || ''} onChange={handleChange} placeholder="Senior Software Engineer" />
-                            </div>
-                            <div>
-                                <label style={labelStyle}>Company</label>
-                                <input style={inputStyle} type="text" name="company" value={profile.company || ''} onChange={handleChange} placeholder="Tech Company Inc." />
-                            </div>
-                            <div>
-                                <label style={labelStyle}>Years of Experience</label>
-                                <input style={inputStyle} type="number" name="experienceYears" value={profile.experienceYears || ''} onChange={handleChange} placeholder="5" min="0" max="50" />
-                            </div>
-                        </div>
-                    </div>
+                    <ExperienceManager 
+                        profile={profile} 
+                        setProfile={setProfile} 
+                        inputStyle={inputStyle} 
+                        labelStyle={labelStyle} 
+                        handleChange={handleChange}
+                    />
                 )}
 
                 {/* Settings Tab */}

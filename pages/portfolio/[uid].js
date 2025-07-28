@@ -71,7 +71,15 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
     const displayName = userProfile?.displayName || 'Developer';
     const bio = userProfile?.bio || 'A Software Engineer who has developed countless innovative solutions.';
     const projectCount = completedProjects.length;
-    const experienceYears = Math.max(1, Math.floor(projectCount / 4)); // Estimate years based on projects
+    // Calculate experience more accurately, supporting months
+    let experienceYears;
+    if (userProfile?.experienceYears) {
+        experienceYears = userProfile.experienceYears;
+    } else if (userProfile?.experienceMonths) {
+        experienceYears = Math.round((userProfile.experienceMonths / 12) * 10) / 10; // Round to 1 decimal
+    } else {
+        experienceYears = Math.max(1, Math.floor(projectCount / 4)); // Fallback estimate
+    }
 
     return (
         <>
@@ -101,50 +109,73 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
                     </div>
                     <h1 className="hero-name">{displayName}</h1>
                     <p className="hero-description">{bio}</p>
+                    
+                    {/* About Me Section */}
+                    {userProfile?.aboutDescription && (
+                        <div className="about-me-section">
+                            <h3 className="about-me-title">About Me</h3>
+                            <p className="about-me-content">{userProfile.aboutDescription}</p>
+                        </div>
+                    )}
                 </div>
             </section>
 
             {/* Large Title Section */}
             <section className="large-title-section">
-                <h2 className="large-title">SOFTWARE ENGINEER</h2>
+                <h2 className="large-title">{userProfile?.portfolioTitle || 'SOFTWARE ENGINEER'}</h2>
                 <p className="large-subtitle">
-                    Passionate about creating intuitive and engaging user experiences. 
-                    Specialize in transforming ideas into beautifully crafted products.
+                    {userProfile?.portfolioSubtitle || userProfile?.aboutDescription || 
+                     'Passionate about creating intuitive and engaging user experiences. Specialize in transforming ideas into beautifully crafted products.'}
                 </p>
             </section>
 
             {/* Stats Section */}
             <section className="stats-section">
                 <div className="stat-item">
-                    <span className="stat-number">+{experienceYears}</span>
-                    <span className="stat-label">YEARS OF<br/>EXPERIENCE</span>
+                    <span className="stat-number">
+                        +{experienceYears < 1 ? 
+                            (userProfile?.experienceMonths || Math.round(experienceYears * 12)) : 
+                            experienceYears
+                        }
+                    </span>
+                    <span className="stat-label">
+                        {experienceYears < 1 ? 'MONTHS OF' : 'YEARS OF'}<br/>EXPERIENCE
+                    </span>
                 </div>
                 <div className="stat-item">
                     <span className="stat-number">+{projectCount}</span>
                     <span className="stat-label">PROJECTS<br/>COMPLETED</span>
                 </div>
-                <div className="stat-item">
-                    <span className="stat-number">+{Math.floor(projectCount * 1.5)}</span>
-                    <span className="stat-label">WORLDWIDE<br/>CLIENTS</span>
-                </div>
+               
             </section>
 
-            {/* Skills Banner */}
-            <section className="skills-banner">
-                <div className="skills-text">
-                    {userProfile?.skills ? 
-                        userProfile.skills.join(', ').toUpperCase() : 
-                        'DYNAMIC ANIMATION, MOTION DESIGN'
-                    }
-                </div>
-                <div className="tools-text">
-                    REACT, NEXTJS, JAVASCRIPT, NODEJS, MONGODB
+            {/* Skills Section */}
+            <section className="skills-section">
+                <h2 className="section-title"><span>MY SKILLS</span></h2>
+                <div className="skills-grid">
+                    {userProfile?.skills && userProfile.skills.length > 0 ? (
+                        userProfile.skills.map((skill, index) => (
+                            <div key={index} className="skill-box">
+                                {skill.trim()}
+                            </div>
+                        ))
+                    ) : (
+                        /* Fallback to default skills if no custom skills are available */
+                        <>
+                            <div className="skill-box">React</div>
+                            <div className="skill-box">JavaScript</div>
+                            <div className="skill-box">Node.js</div>
+                            <div className="skill-box">Python</div>
+                            <div className="skill-box">Machine Learning</div>
+                            <div className="skill-box">UI/UX Design</div>
+                        </>
+                    )}
                 </div>
             </section>
 
             {/* Recent Projects */}
             <section id="projects" className="projects-section">
-                <h2 className="section-title">RECENT<span>PROJECTS</span></h2>
+                <h2 className="section-title"><span>RECENT PROJECTS</span></h2>
                 <div className="projects-grid">
                     {completedProjects.slice(0, 6).map((project, index) => (
                         <div key={project.projectId} className="project-card">
@@ -166,72 +197,143 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
 
             {/* Experience Section */}
             <section id="experience" className="experience-section">
-                <h2 className="section-title">{experienceYears} YEARS OF<span>EXPERIENCE</span></h2>
+                <h2 className="section-title">
+                    {experienceYears < 1 ? 
+                        `${userProfile?.experienceMonths || Math.round(experienceYears * 12)} MONTHS OF` : 
+                        `${experienceYears} YEARS OF`
+                    }<span> EXPERIENCE</span>
+                </h2>
                 <div className="experience-list">
-                    <div className="experience-item">
-                        <h3>SkillForge Builder</h3>
-                        <p>Building real-world projects and developing innovative solutions through hands-on experience.</p>
-                        <span>Jan 2020 - Present</span>
-                    </div>
-                    <div className="experience-item">
-                        <h3>Full-Stack Developer</h3>
-                        <p>Developed and implemented solutions for various projects, collaborated with teams and clients.</p>
-                        <span>Jun 2018 - Dec 2019</span>
-                    </div>
-                    <div className="experience-item">
-                        <h3>Software Engineer</h3>
-                        <p>Designed and built user interfaces and applications, focusing on enhancing usability and performance.</p>
-                        <span>Mar 2016 - May 2018</span>
-                    </div>
+                    {/* Display detailed experience entries if available */}
+                    {userProfile?.experiences && userProfile.experiences.length > 0 ? (
+                        userProfile.experiences.map((experience, index) => (
+                            <div key={experience.id || index} className="experience-item">
+                                <div className="experience-header">
+                                    <h3>{experience.position}</h3>
+                                    <span className="experience-duration">
+                                        {experience.startDate && (
+                                            <>
+                                                {new Date(experience.startDate + '-01').toLocaleDateString('en-US', { 
+                                                    month: 'short', 
+                                                    year: 'numeric' 
+                                                })}
+                                                {' - '}
+                                                {experience.current ? 
+                                                    'Present' : 
+                                                    experience.endDate ? 
+                                                        new Date(experience.endDate + '-01').toLocaleDateString('en-US', { 
+                                                            month: 'short', 
+                                                            year: 'numeric' 
+                                                        }) : 
+                                                        'Present'
+                                                }
+                                            </>
+                                        )}
+                                    </span>
+                                </div>
+                                <div className="experience-company">
+                                    <h4>{experience.company}</h4>
+                                    {experience.location && (
+                                        <span className="experience-location">{experience.location}</span>
+                                    )}
+                                </div>
+                                {experience.description && (
+                                    <p className="experience-description">{experience.description}</p>
+                                )}
+                            </div>
+                        ))
+                    ) : (
+                        /* Fallback to basic experience display */
+                        <>
+                            {userProfile?.currentPosition && userProfile?.company ? (
+                                <div className="experience-item">
+                                    <div className="experience-header">
+                                        <h3>{userProfile.currentPosition}</h3>
+                                        <span className="experience-duration">Current Position</span>
+                                    </div>
+                                    <div className="experience-company">
+                                        <h4>{userProfile.company}</h4>
+                                    </div>
+                                </div>
+                            ) : null}
+                            <div className="experience-item">
+                                <div className="experience-header">
+                                    <h3>SkillForge Builder</h3>
+                                    <span className="experience-duration">Jan 2020 - Present</span>
+                                </div>
+                                <div className="experience-company">
+                                    <h4>SkillForge Platform</h4>
+                                </div>
+                                <p className="experience-description">
+                                    Building real-world projects and developing innovative solutions through hands-on experience.
+                                </p>
+                            </div>
+                        </>
+                    )}
                 </div>
             </section>
 
             {/* Tools Section */}
             <section id="tools" className="tools-section">
-                <h2 className="section-title">PREMIUM<span>TOOLS</span></h2>
+                <h2 className="section-title"><span>TOOLS</span></h2>
                 <div className="tools-grid">
-                    <div className="tool-card">
-                        <div className="tool-icon">
-                            <i className="fab fa-react"></i>
-                        </div>
-                        <h3>React</h3>
-                        <p>Frontend Framework</p>
-                    </div>
-                    <div className="tool-card">
-                        <div className="tool-icon">
-                            <i className="fab fa-node-js"></i>
-                        </div>
-                        <h3>Node.js</h3>
-                        <p>Backend Runtime</p>
-                    </div>
-                    <div className="tool-card">
-                        <div className="tool-icon">
-                            <i className="fas fa-database"></i>
-                        </div>
-                        <h3>MongoDB</h3>
-                        <p>Database</p>
-                    </div>
-                    <div className="tool-card">
-                        <div className="tool-icon">
-                            <i className="fab fa-figma"></i>
-                        </div>
-                        <h3>Figma</h3>
-                        <p>Design Tool</p>
-                    </div>
-                    <div className="tool-card">
-                        <div className="tool-icon">
-                            <i className="fab fa-git-alt"></i>
-                        </div>
-                        <h3>Git</h3>
-                        <p>Version Control</p>
-                    </div>
-                    <div className="tool-card">
-                        <div className="tool-icon">
-                            <i className="fab fa-aws"></i>
-                        </div>
-                        <h3>AWS</h3>
-                        <p>Cloud Platform</p>
-                    </div>
+                    {userProfile?.primaryTools && userProfile.primaryTools.length > 0 ? (
+                        userProfile.primaryTools.map((tool, index) => (
+                            <div key={index} className="tool-card">
+                                <div className="tool-icon">
+                                    <i className="fas fa-code"></i>
+                                </div>
+                                <h3>{tool}</h3>
+                                <p>Development Tool</p>
+                            </div>
+                        ))
+                    ) : (
+                        /* Fallback to default tools if no custom tools are available */
+                        <>
+                            <div className="tool-card">
+                                <div className="tool-icon">
+                                    <i className="fab fa-react"></i>
+                                </div>
+                                <h3>React</h3>
+                                <p>Frontend Framework</p>
+                            </div>
+                            <div className="tool-card">
+                                <div className="tool-icon">
+                                    <i className="fab fa-node-js"></i>
+                                </div>
+                                <h3>Node.js</h3>
+                                <p>Backend Runtime</p>
+                            </div>
+                            <div className="tool-card">
+                                <div className="tool-icon">
+                                    <i className="fas fa-database"></i>
+                                </div>
+                                <h3>MongoDB</h3>
+                                <p>Database</p>
+                            </div>
+                            <div className="tool-card">
+                                <div className="tool-icon">
+                                    <i className="fab fa-figma"></i>
+                                </div>
+                                <h3>Figma</h3>
+                                <p>Design Tool</p>
+                            </div>
+                            <div className="tool-card">
+                                <div className="tool-icon">
+                                    <i className="fab fa-git-alt"></i>
+                                </div>
+                                <h3>Git</h3>
+                                <p>Version Control</p>
+                            </div>
+                            <div className="tool-card">
+                                <div className="tool-icon">
+                                    <i className="fab fa-aws"></i>
+                                </div>
+                                <h3>AWS</h3>
+                                <p>Cloud Platform</p>
+                            </div>
+                        </>
+                    )}
                 </div>
             </section>
 
@@ -240,7 +342,7 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
                 <h2 className="section-title">LET'S WORK<span>TOGETHER</span></h2>
                 <div className="contact-content">
                     <div className="contact-info">
-                        {userProfile?.email && (
+                        {userProfile?.showEmail !== false && userProfile?.email && (
                             <p>Email: <a href={`mailto:${userProfile.email}`}>{userProfile.email}</a></p>
                         )}
                         {userProfile?.githubUrl && (
@@ -248,6 +350,18 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
                         )}
                         {userProfile?.linkedinUrl && (
                             <p>LinkedIn: <a href={userProfile.linkedinUrl} target="_blank" rel="noopener noreferrer">Connect</a></p>
+                        )}
+                        {userProfile?.twitterUrl && (
+                            <p>Twitter: <a href={userProfile.twitterUrl} target="_blank" rel="noopener noreferrer">Follow</a></p>
+                        )}
+                        {userProfile?.portfolioUrl && (
+                            <p>Website: <a href={userProfile.portfolioUrl} target="_blank" rel="noopener noreferrer">Visit</a></p>
+                        )}
+                        {userProfile?.showLocation !== false && userProfile?.location && (
+                            <p>Location: {userProfile.location}</p>
+                        )}
+                        {userProfile?.availability && (
+                            <p>Status: {userProfile.availability.charAt(0).toUpperCase() + userProfile.availability.slice(1).replace('-', ' ')}</p>
                         )}
                     </div>
                 </div>
@@ -309,7 +423,9 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
                 }
 
                 .hero-content {
-                    max-width: 600px;
+                    max-width: 800px;
+                    width: 100%;
+                    text-align: center;
                 }
 
                 .profile-image {
@@ -346,6 +462,37 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
                     font-size: 1.2rem;
                     color: #ccc;
                     line-height: 1.6;
+                    margin-bottom: 2rem;
+                    text-align: center;
+                    max-width: 600px;
+                    margin: 0 auto 2rem auto;
+                }
+
+                .about-me-section {
+                    margin-top: 3rem;
+                    padding: 2rem;
+                    background: rgba(255, 255, 255, 0.05);
+                    border-radius: 12px;
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    backdrop-filter: blur(10px);
+                }
+
+                .about-me-title {
+                    font-size: 1.5rem;
+                    font-weight: 600;
+                    color: #fff;
+                    margin-bottom: 1rem;
+                    text-align: center;
+                }
+
+                .about-me-content {
+                    font-size: 1.1rem;
+                    color: #ccc;
+                    line-height: 1.7;
+                    text-align: center;
+                    margin: 0;
+                    max-width: 600px;
+                    margin: 0 auto;
                 }
 
                 .large-title-section {
@@ -399,26 +546,37 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
                     line-height: 1.2;
                 }
 
-                .skills-banner {
+                .skills-section {
+                    padding: 6rem 2rem;
                     background: #111;
-                    padding: 2rem;
-                    text-align: center;
-                    border-top: 1px solid #333;
-                    border-bottom: 1px solid #333;
                 }
 
-                .skills-text {
-                    font-size: 1.1rem;
-                    font-weight: 600;
+                .skills-grid {
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                    gap: 1rem;
+                    max-width: 1000px;
+                    margin: 0 auto;
+                }
+
+                .skill-box {
+                    background: #000;
                     color: #fff;
-                    margin-bottom: 0.5rem;
-                    letter-spacing: 0.1em;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    border: 1px solid #333;
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                    text-align: center;
+                    transition: all 0.3s ease;
+                    white-space: nowrap;
                 }
 
-                .tools-text {
-                    font-size: 1rem;
-                    color: #ccc;
-                    letter-spacing: 0.1em;
+                .skill-box:hover {
+                    background: #222;
+                    border-color: #555;
+                    transform: translateY(-2px);
                 }
 
                 .projects-section {
@@ -508,10 +666,51 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
                     border: 1px solid #333;
                 }
 
+                .experience-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    margin-bottom: 1rem;
+                    flex-wrap: wrap;
+                    gap: 1rem;
+                }
+
                 .experience-item h3 {
                     font-size: 1.5rem;
                     color: #fff;
+                    margin: 0;
+                    flex: 1;
+                }
+
+                .experience-duration {
+                    color: #666;
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                    white-space: nowrap;
+                }
+
+                .experience-company {
                     margin-bottom: 1rem;
+                }
+
+                .experience-company h4 {
+                    font-size: 1.2rem;
+                    color: #fff;
+                    margin: 0 0 0.5rem 0;
+                    font-weight: 600;
+                }
+
+                .experience-location {
+                    color: #888;
+                    font-size: 0.9rem;
+                    font-style: italic;
+                }
+
+                .experience-description {
+                    color: #ccc;
+                    line-height: 1.6;
+                    margin: 0;
+                    font-size: 1rem;
                 }
 
                 .experience-item p {
@@ -555,6 +754,17 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
                     font-size: 3rem;
                     color: #fff;
                     margin-bottom: 1rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 60px;
+                }
+
+                .tool-icon-image {
+                    width: 48px;
+                    height: 48px;
+                    object-fit: contain;
+                    filter: brightness(1.1);
                 }
 
                 .tool-card h3 {
@@ -638,6 +848,24 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
 
                     .tools-grid {
                         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                    }
+
+                    .experience-header {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: 0.5rem;
+                    }
+
+                    .experience-item h3 {
+                        font-size: 1.3rem;
+                    }
+
+                    .experience-duration {
+                        white-space: normal;
+                    }
+
+                    .experience-company h4 {
+                        font-size: 1.1rem;
                     }
                 }
             `}</style>

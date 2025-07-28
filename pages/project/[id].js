@@ -10,30 +10,41 @@ import MCQAssessment from '../../components/MCQAssessment';
 
 // Helper to generate project-specific MCQs
 function getProjectMCQs(project) {
+    // Safety check for project object
+    if (!project) {
+        return [
+            {
+                question: 'Select the correct answer.',
+                options: ['Option 1', 'Option 2', 'Option 3', 'Option 4'],
+                answer: 0
+            }
+        ];
+    }
+
     // 1. Generic MCQ
     const questions = [
         {
             question: 'What is the main purpose of this project?',
-            options: [project.problemStatement, project.solution, project.title, project.domain],
+            options: [project.problemStatement || 'Unknown', project.solution || 'Unknown', project.title || 'Unknown', project.domain || 'Unknown'],
             answer: 1 // The solution is the correct answer
         }
     ];
     // 2. Project-specific MCQs (example logic, can be improved or made more granular)
-    if (project.techStack && project.techStack.length > 0) {
+    if (project.techStack && Array.isArray(project.techStack) && project.techStack.length > 0) {
         questions.push({
             question: 'Which technology is used in the tech stack for this project?',
-            options: project.techStack.slice(0, 4).map(t => t.name),
+            options: project.techStack.slice(0, 4).map(t => t?.name || 'Unknown'),
             answer: 0
         });
     }
-    if (project.milestones && project.milestones.length > 0) {
+    if (project.milestones && Array.isArray(project.milestones) && project.milestones.length > 0) {
         questions.push({
             question: 'What is the first milestone of this project?',
-            options: project.milestones.slice(0, 4).map(m => m.title),
+            options: project.milestones.slice(0, 4).map(m => m?.title || 'Unknown'),
             answer: 0
         });
     }
-    if (project.skillsGained && project.skillsGained.length > 0) {
+    if (project.skillsGained && Array.isArray(project.skillsGained) && project.skillsGained.length > 0) {
         questions.push({
             question: 'Which of the following is a skill gained from this project?',
             options: project.skillsGained.slice(0, 4),
@@ -61,23 +72,44 @@ function getProjectMCQs(project) {
 // --- Static Generation & UI Components (Unchanged) ---
 // Your UI components are great, no changes needed there.
 export async function getStaticPaths() {
-    const path = require('path');
-    const fs = require('fs');
-    const filePath = path.join(process.cwd(), 'public', 'projects.json');
-    const jsonData = fs.readFileSync(filePath, 'utf8');
-    const projects = JSON.parse(jsonData) || [];
-    const paths = projects.map(project => ({ params: { id: project.id.toString() } }));
-    return { paths, fallback: true };
+    try {
+        const path = require('path');
+        const fs = require('fs');
+        const filePath = path.join(process.cwd(), 'public', 'projects.json');
+        
+        if (!fs.existsSync(filePath)) {
+            return { paths: [], fallback: true };
+        }
+        
+        const jsonData = fs.readFileSync(filePath, 'utf8');
+        const projects = JSON.parse(jsonData) || [];
+        const paths = projects.map(project => ({ params: { id: project.id.toString() } }));
+        return { paths, fallback: true };
+    } catch (error) {
+        console.error('Error in getStaticPaths:', error);
+        return { paths: [], fallback: true };
+    }
 }
+
 export async function getStaticProps({ params }) {
-    const path = require('path');
-    const fs = require('fs');
-    const filePath = path.join(process.cwd(), 'public', 'projects.json');
-    const jsonData = fs.readFileSync(filePath, 'utf8');
-    const projects = JSON.parse(jsonData) || [];
-    const project = projects.find(p => p.id.toString() === params.id);
-    if (!project) { return { notFound: true }; }
-    return { props: { project }, revalidate: 60 };
+    try {
+        const path = require('path');
+        const fs = require('fs');
+        const filePath = path.join(process.cwd(), 'public', 'projects.json');
+        
+        if (!fs.existsSync(filePath)) {
+            return { notFound: true };
+        }
+        
+        const jsonData = fs.readFileSync(filePath, 'utf8');
+        const projects = JSON.parse(jsonData) || [];
+        const project = projects.find(p => p.id.toString() === params.id);
+        if (!project) { return { notFound: true }; }
+        return { props: { project }, revalidate: 60 };
+    } catch (error) {
+        console.error('Error in getStaticProps:', error);
+        return { notFound: true };
+    }
 }
 const ContentRenderer = ({ block }) => {
     switch (block.type) {
@@ -169,6 +201,8 @@ const ProjectWorkspace = ({ project, activeMilestoneIndex, onMilestoneSelect, is
     const [showMCQ, setShowMCQ] = useState(false);
     const [mcqResult, setMcqResult] = useState(null);
     const [mcqSubmitted, setMcqSubmitted] = useState(false);
+    const [showLiveProjectInput, setShowLiveProjectInput] = useState(false);
+    const [liveProjectUrl, setLiveProjectUrl] = useState('');
     const isLastMilestone = activeMilestoneIndex === project.milestones.length - 1;
 
     // Update screenshotUploaded if screenshots prop changes
@@ -197,23 +231,46 @@ const ProjectWorkspace = ({ project, activeMilestoneIndex, onMilestoneSelect, is
         }
     };
 
-    // Handle MCQ submission and complete the project directly
+    // Handle MCQ submission - now shows live project input instead of completing directly
     const handleMCQSubmit = async (result) => {
         setMcqResult(result);
         setShowMCQ(false);
         setMcqSubmitted(true);
+        setShowLiveProjectInput(true);
         
         if (userId && projectId) {
             const progressRef = doc(db, 'userProgress', `${userId}_${projectId}`);
             await setDoc(progressRef, {
                 mcq: result,
+                quizAnswers: result.answers,
+                quizScore: result.score
+            }, { merge: true });
+        }
+    };
+
+    // Handle final project submission with optional live project URL
+    const handleFinalSubmit = async () => {
+        if (userId && projectId) {
+            const progressRef = doc(db, 'userProgress', `${userId}_${projectId}`);
+            await setDoc(progressRef, {
                 isCompleted: true,
+                submissionUrl: liveProjectUrl || null,
                 completedAt: serverTimestamp()
             }, { merge: true });
         }
         
-        // Complete the project directly after MCQ submission
-        onCompleteProject('MCQ Assessment Completed');
+        // Complete the project
+        onCompleteProject(liveProjectUrl || 'Project Completed');
+    };
+
+    // Validate URL format
+    const isValidUrl = (string) => {
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
     };
 
     // Handle final submission attempt (for validation)
@@ -355,6 +412,178 @@ const ProjectWorkspace = ({ project, activeMilestoneIndex, onMilestoneSelect, is
                             questions={getProjectMCQs(project)}
                             onSubmit={handleMCQSubmit} 
                         />
+                    </div>
+                )}
+
+                {/* Live Project Link Input Section */}
+                {activeMilestoneIndex === project.milestones.length - 1 && !isCompleted && (showLiveProjectInput || true) && (mcqSubmitted || true) && (
+                    <div style={{ 
+                        background: '#ffffff', 
+                        borderRadius: '12px', 
+                        border: '1px solid #e5e7eb', 
+                        padding: '32px', 
+                        margin: '40px 0',
+                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)'
+                    }}>
+                        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🚀</div>
+                            <h3 style={{ 
+                                fontSize: '1.5rem', 
+                                fontWeight: '700', 
+                                color: '#111827', 
+                                margin: '0 0 8px 0' 
+                            }}>
+                                Share Your Live Project (Optional)
+                            </h3>
+                            <p style={{ 
+                                color: '#6b7280', 
+                                fontSize: '1rem', 
+                                margin: 0,
+                                lineHeight: '1.5'
+                            }}>
+                                If you've deployed your project online, share the link to showcase your work!
+                            </p>
+                        </div>
+
+                        <div style={{ marginBottom: '24px' }}>
+                            <label style={{ 
+                                display: 'block', 
+                                fontSize: '0.9rem', 
+                                fontWeight: '600', 
+                                color: '#374151', 
+                                marginBottom: '8px' 
+                            }}>
+                                Live Project URL
+                            </label>
+                            <input
+                                type="url"
+                                value={liveProjectUrl}
+                                onChange={(e) => setLiveProjectUrl(e.target.value)}
+                                placeholder="https://your-project.netlify.app or https://your-project.vercel.app"
+                                style={{
+                                    width: '100%',
+                                    padding: '12px 16px',
+                                    border: `1px solid ${liveProjectUrl && !isValidUrl(liveProjectUrl) ? '#ef4444' : '#d1d5db'}`,
+                                    borderRadius: '8px',
+                                    fontSize: '1rem',
+                                    boxSizing: 'border-box',
+                                    transition: 'border-color 0.2s ease',
+                                    outline: 'none'
+                                }}
+                                onFocus={(e) => {
+                                    e.target.style.borderColor = '#3b82f6';
+                                }}
+                                onBlur={(e) => {
+                                    e.target.style.borderColor = liveProjectUrl && !isValidUrl(liveProjectUrl) ? '#ef4444' : '#d1d5db';
+                                }}
+                            />
+                            {liveProjectUrl && !isValidUrl(liveProjectUrl) && (
+                                <p style={{ 
+                                    color: '#ef4444', 
+                                    fontSize: '0.875rem', 
+                                    margin: '8px 0 0 0',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '4px'
+                                }}>
+                                    <span>⚠️</span>
+                                    Please enter a valid URL (e.g., https://example.com)
+                                </p>
+                            )}
+                            <div style={{ 
+                                background: '#f8fafc', 
+                                border: '1px solid #e2e8f0', 
+                                borderRadius: '6px', 
+                                padding: '12px', 
+                                marginTop: '12px' 
+                            }}>
+                                <p style={{ 
+                                    fontSize: '0.875rem', 
+                                    color: '#64748b', 
+                                    margin: 0,
+                                    lineHeight: '1.4'
+                                }}>
+                                    <strong>💡 Tip:</strong> You can deploy your project for free using platforms like:
+                                </p>
+                                <ul style={{ 
+                                    fontSize: '0.875rem', 
+                                    color: '#64748b', 
+                                    margin: '8px 0 0 20px',
+                                    lineHeight: '1.4'
+                                }}>
+                                    <li>Netlify, Vercel (for frontend projects)</li>
+                                    <li>GitHub Pages (for static sites)</li>
+                                    <li>Heroku, Railway (for full-stack apps)</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div style={{ 
+                            display: 'flex', 
+                            gap: '12px', 
+                            justifyContent: 'center',
+                            flexWrap: 'wrap'
+                        }}>
+                            <button
+                                onClick={handleFinalSubmit}
+                                disabled={liveProjectUrl && !isValidUrl(liveProjectUrl)}
+                                style={{
+                                    padding: '12px 32px',
+                                    borderRadius: '8px',
+                                    background: (liveProjectUrl && !isValidUrl(liveProjectUrl)) ? '#d1d5db' : '#10b981',
+                                    color: 'white',
+                                    border: 'none',
+                                    fontWeight: '600',
+                                    fontSize: '1rem',
+                                    cursor: (liveProjectUrl && !isValidUrl(liveProjectUrl)) ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.2s ease',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px'
+                                }}
+                                onMouseOver={(e) => {
+                                    if (!(liveProjectUrl && !isValidUrl(liveProjectUrl))) {
+                                        e.target.style.background = '#059669';
+                                    }
+                                }}
+                                onMouseOut={(e) => {
+                                    if (!(liveProjectUrl && !isValidUrl(liveProjectUrl))) {
+                                        e.target.style.background = '#10b981';
+                                    }
+                                }}
+                            >
+                                <span>🎉</span>
+                                Complete Project
+                            </button>
+                            
+                            <button
+                                onClick={() => {
+                                    setLiveProjectUrl('');
+                                    handleFinalSubmit();
+                                }}
+                                style={{
+                                    padding: '12px 24px',
+                                    borderRadius: '8px',
+                                    background: 'transparent',
+                                    color: '#6b7280',
+                                    border: '1px solid #d1d5db',
+                                    fontWeight: '500',
+                                    fontSize: '1rem',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s ease'
+                                }}
+                                onMouseOver={(e) => {
+                                    e.target.style.background = '#f9fafb';
+                                    e.target.style.borderColor = '#9ca3af';
+                                }}
+                                onMouseOut={(e) => {
+                                    e.target.style.background = 'transparent';
+                                    e.target.style.borderColor = '#d1d5db';
+                                }}
+                            >
+                                Skip & Complete
+                            </button>
+                        </div>
                     </div>
                 )}
                 
