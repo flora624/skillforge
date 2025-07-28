@@ -45,15 +45,22 @@ export async function getServerSideProps(context) {
       }
     });
 
+    // Ensure completedProjects is always an array
     return { 
         props: { 
-            userProfile, 
-            completedProjects 
+            userProfile: userProfile || {},
+            completedProjects: completedProjects || []
         } 
     };
   } catch (error) {
     console.error("Error fetching portfolio:", error);
-    return { props: { error: "Failed to load portfolio." } };
+    return { 
+        props: { 
+            userProfile: {},
+            completedProjects: [],
+            error: "Failed to load portfolio." 
+        } 
+    };
   }
 }
 
