@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Allow read access to 'projects' collection for authenticated users
+    match /projects/{projectId} {
+      allow read: if request.auth != null;
+    }
+
+    // Allow read/write access to 'completions' collection for authenticated users on their own documents
+    match /completions/{documentId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+
+    // Allow read/write access to 'progress' collection for authenticated users on their own documents
+    match /progress/{documentId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+
+    // Allow read/write access to 'Users' collection for authenticated users on their own documents
+    match /Users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Default deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

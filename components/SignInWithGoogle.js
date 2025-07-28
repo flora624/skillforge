@@ -1,4 +1,4 @@
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { auth, db } from "../firebase/config"; // Corrected import path
 import { toast, ToastContainer } from "react-toastify"; // We need ToastContainer as well
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for toastify
@@ -9,7 +9,13 @@ export default function SignInWithGoogle() {
   
   async function googleLogin() {
     const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({
+      prompt: 'select_account'
+    });
     try {
+      // Sign out any existing user to allow account selection
+      await signOut(auth);
+
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
@@ -45,11 +51,13 @@ export default function SignInWithGoogle() {
 
   return (
     <div className="google-signin-container">
-      <ToastContainer /> {/* The ToastContainer is needed to display the notifications */}
-      <p className="continue-p">-- Or continue with --</p>
+
+      <p className="google-signin-btn9">-- Sign In With --</p>
       <button className="google-signin-btn" onClick={googleLogin}>
+        <div className="logo-content9">
         <Image src="/google.png" alt="Google icon" width={24} height={24} />
-        <span>Sign in with Google</span>
+        <span>Google</span>
+      </div>
       </button>
     </div>
   );

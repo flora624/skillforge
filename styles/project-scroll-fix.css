@@ -1,0 +1,56 @@
+/* Fix for project page scrolling issues */
+.project-scroll-container {
+    height: calc(100vh - 100px) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scroll-behavior: smooth !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e0 #f7fafc;
+    position: relative;
+}
+
+.project-scroll-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.project-scroll-container::-webkit-scrollbar-track {
+    background: #f7fafc;
+    border-radius: 4px;
+}
+
+.project-scroll-container::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 4px;
+}
+
+.project-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* Ensure proper scroll behavior and fix scroll to top issue */
+.project-scroll-container * {
+    scroll-margin-top: 20px;
+}
+
+/* Additional scroll fixes */
+.project-content-wrapper {
+    min-height: 100%;
+    padding-bottom: 40px;
+}
+
+/* Fix for slow scroll to top issue */
+.project-scroll-container {
+    scroll-snap-type: none !important;
+}
+
+/* Ensure smooth scrolling works properly */
+html, body {
+    scroll-behavior: smooth !important;
+}
+
+/* Override any conflicting styles */
+.project-scroll-container {
+    scroll-padding-top: 0 !important;
+    scroll-margin-top: 0 !important;
+}

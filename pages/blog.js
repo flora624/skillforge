@@ -1,159 +1,239 @@
-import React, { useState, useEffect } from "react";
+import React from 'react';
+import Head from 'next/head';
+import Link from 'next/link';
 import Navbar from '../components/Navbar';
 
-// Import your external blog post components
-import ProjectBasedLearningBenefits from "../pages/blog/ProjectBasedLearningBenefits";
-import TopSkillsFor2025 from "../pages/blog/TopSkillsFor2025";
-
-const App = () => {
-  const [currentPostComponent, setCurrentPostComponent] = useState(null);
-
-  const blogPosts = [
-    {
-      id: 1,
-      title: "The Benefits of Project-Based Learning in Modern Education",
-      excerpt:
-        "Project-based learning (PBL) transforms how students engage with knowledge. Learn why PBL fosters deeper understanding and real-world problem-solving.",
-      category: "Education",
-      date: "April 5, 2025",
-      image: "https://placehold.co/600x400?text=Project-Based+Learning",
-      slug: "project-based-learning-benefits",
-      component: ProjectBasedLearningBenefits,
-    },
-    {
-      id: 2,
-      title: "Top Skills to Master by 2025 for Career Success",
-      excerpt:
-        "As we move into 2025, the job market evolves rapidly. Discover essential skills to stay competitive and future-ready.",
-      category: "Career Development",
-      date: "March 28, 2025",
-      image: "https://placehold.co/600x400?text=Skills+for+2025",
-      slug: "top-skills-for-2025",
-      component: TopSkillsFor2025,
-    },
-    {
-      id: 3,
-      title: "The Importance of Soft Skills in Tech",
-      excerpt:
-        "Technical skills are crucial, but soft skills like communication and teamwork drive real-world success.",
-      category: "Professional Development",
-      date: "May 10, 2025",
-      image: "https://placehold.co/600x400?text=Soft+Skills",
-      slug: "soft-skills-in-tech",
-      component: () => <div>Soft Skills Post</div>,
-    },
-    {
-      id: 4,
-      title: "How to Build a Standout Developer Portfolio",
-      excerpt:
-        "Your portfolio is your gateway to opportunity. Learn what makes it truly impressive to recruiters.",
-      category: "Career Advice",
-      date: "June 2, 2025",
-      image: "https://placehold.co/600x400?text=Developer+Portfolio",
-      slug: "developer-portfolio-tips",
-      component: () => <div>Portfolio Tips Post</div>,
-    },
-  ];
-
-  useEffect(() => {
-    const hash = window.location.hash.replace("#", "");
-    if (hash) {
-      const post = blogPosts.find((p) => p.slug === hash);
-      if (post) {
-        const Component = post.component;
-        setCurrentPostComponent(<Component />);
-      }
-    }
-  }, []);
-
-  if (currentPostComponent) {
-    return (
-      <div className=".homePageLayout_site_">
-        <Navbar />
-        <div className="bg-white">
-          <div className="container mx-auto px-4 py-8">
-            <button
-              onClick={() => {
-                window.location.hash = "";
-                setCurrentPostComponent(null);
-              }}
-              className="mb-6 text-indigo-600 hover:text-indigo-800 font-medium text-sm sm:text-base"
-            >
-              ← Back to Blogs
-            </button>
-            <div>{currentPostComponent}</div>
-          </div>
-        </div>
-      </div>
-    );
+const blogPosts = [
+  {
+    slug: 'build-job-winning-portfolio',
+    title: 'How to Build a Job-Winning Portfolio with Real Projects',
+    category: 'Career',
+    author: 'SkillForge Team',
+    date: 'July 2024',
+    readTime: '5 min read',
+    image: '/blog/portfolio-projects.jpg',
+    excerpt: 'Discover why hands-on projects are the key to landing your dream job. Learn how to showcase your skills, stand out to employers, and build a portfolio that gets you hired in tech.'
+  },
+  {
+    slug: 'top-7-in-demand-tech-skills-2024',
+    title: 'Top 7 In-Demand Tech Skills to Learn in 2024',
+    category: 'Learning',
+    author: 'SkillForge Team',
+    date: 'June 2024',
+    readTime: '4 min read',
+    image: '/blog/tech-skills-2024.jpg',
+    excerpt: 'Stay ahead in your tech career! Explore the most valuable skills employers want this year, from AI to cloud computing, and how you can master them with real-world projects.'
+  },
+  {
+    slug: 'ultimate-guide-project-based-education',
+    title: 'The Ultimate Guide to Learning by Doing: Project-Based Education',
+    category: 'Education',
+    author: 'SkillForge Team',
+    date: 'May 2024',
+    readTime: '6 min read',
+    image: '/blog/project-based-learning.jpg',
+    excerpt: 'Traditional learning is out, project-based learning is in! Find out how building real solutions accelerates your growth and prepares you for the tech industry.'
+  },
+  {
+    slug: 'ace-technical-interviews-portfolio-projects',
+    title: 'How to Ace Technical Interviews with Portfolio Projects',
+    category: 'Career',
+    author: 'SkillForge Team',
+    date: 'April 2024',
+    readTime: '5 min read',
+    image: '/blog/technical-interview.jpg',
+    excerpt: 'Technical interviews are tough, but your portfolio can be your secret weapon. Learn how to present your projects, explain your process, and impress interviewers.'
+  },
+  {
+    slug: 'from-theory-to-practice-real-world-projects',
+    title: 'From Theory to Practice: Why Real-World Projects Matter',
+    category: 'Learning',
+    author: 'SkillForge Team',
+    date: 'March 2024',
+    readTime: '4 min read',
+    image: '/blog/theory-to-practice.jpg',
+    excerpt: 'Textbooks teach you concepts, but projects teach you skills. See how applying knowledge in real scenarios bridges the gap between learning and doing.'
+  },
+  {
+    slug: 'kickstart-your-tech-career-roadmap',
+    title: 'Kickstart Your Tech Career: A Beginner’s Roadmap',
+    category: 'Career',
+    author: 'SkillForge Team',
+    date: 'February 2024',
+    readTime: '5 min read',
+    image: '/blog/tech-career-roadmap.jpg',
+    excerpt: 'New to tech? This step-by-step roadmap covers everything from choosing your first language to building your first project and landing your first job.'
   }
+];
+
+const categories = ['All', 'Career', 'Learning', 'Education'];
+
+export default function BlogPage() {
+  const [selectedCategory, setSelectedCategory] = React.useState('All');
+
+  const filteredPosts = selectedCategory === 'All'
+    ? blogPosts
+    : blogPosts.filter(post => post.category === selectedCategory);
 
   return (
-    <div className="bg-gray-50 min-h-screen font-sans text-gray-800">
+    <>
+      <Head>
+        <title>SkillForge Blog | Learn, Build, and Grow Your Tech Career</title>
+        <meta name="description" content="Read the latest on project-based learning, tech skills, and career growth. SkillForge Blog helps you turn theory into real-world skills and land your dream job." />
+        <meta name="keywords" content="SkillForge, tech blog, project-based learning, portfolio, tech skills, career, education, learning by doing, technical interview, real-world projects" />
+        <meta property="og:title" content="SkillForge Blog | Learn, Build, and Grow Your Tech Career" />
+        <meta property="og:description" content="Read the latest on project-based learning, tech skills, and career growth. SkillForge Blog helps you turn theory into real-world skills and land your dream job." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://your-skillforge-domain.com/blog" />
+        <meta property="og:image" content="/blog/skillforge-blog-og.jpg" />
+      </Head>
       <Navbar />
-
-      <section className="bg-gradient-to-r from-indigo-100 via-purple-50 to-pink-100 py-12 sm:py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-3 sm:mb-4 leading-tight">
-            Explore Our Latest Blogs
-          </h2>
-          <p className="text-sm sm:text-base md:text-xl text-gray-700 max-w-2xl mx-auto">
-            Insights on education, careers, and personal growth.
-          </p>
-        </div>
-      </section>
-
-      <section className="py-12 sm:py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h3 className="text-2xl sm:text-3xl font-semibold text-center text-gray-800 mb-6 sm:mb-10">
-            Latest Blogs
-          </h3>
-          <div className="grid md:grid-cols-2 gap-y-10 gap-x-16">
-            {blogPosts.map((post) => (
-              <div
-                key={post.id}
-                className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition transform hover:-translate-y-1 duration-200 cursor-pointer"
-                onClick={() => {
-                  const Component = post.component;
-                  window.location.hash = post.slug;
-                  setCurrentPostComponent(<Component />);
-                }}
-              >
-                <div className={`blog-image ${post.slug}`}>
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    className="w-full h-48 object-cover"
-                  />
-                </div>
-                <div className="p-5 flex flex-col">
-                  <div className="flex justify-between text-xs text-gray-500 mb-2">
-                    <span className="text-indigo-600 font-medium">{post.category}</span>
-                    <span>{post.date}</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-800 mb-1 line-clamp-2">
-                    {post.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-3">
-                    {post.excerpt}
-                  </p>
-                  <span className="text-indigo-600 text-sm font-medium hover:underline mt-auto">
-                    Read more →
-                  </span>
-                </div>
+      <div className="blog-hero">
+        <h1 className="blog-title">SkillForge Blog</h1>
+        <p className="blog-subtitle">Project-based learning, tech skills, and career advice for future builders.</p>
+      </div>
+      <div className="blog-categories">
+        {categories.map(cat => (
+          <button
+            key={cat}
+            className={`blog-category-btn${selectedCategory === cat ? ' active' : ''}`}
+            onClick={() => setSelectedCategory(cat)}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+      <div className="blog-grid">
+        {filteredPosts.map(post => (
+          <div className="blog-card" key={post.id}>
+            <div className="blog-card-img-wrap">
+              <img src={post.image} alt={post.title} className="blog-card-img" />
+            </div>
+            <div className="blog-card-content">
+              <span className="blog-card-category">{post.category}</span>
+              <h2 className="blog-card-title">{post.title}</h2>
+              <div className="blog-card-meta">
+                <span>{post.author}</span> | <span>{post.date}</span> | <span>{post.readTime}</span>
               </div>
-            ))}
+              <p className="blog-card-excerpt">{post.excerpt}</p>
+              <Link href={`/blog/${post.slug}`}><a className="blog-card-readmore">Read More →</a></Link>
+            </div>
           </div>
-        </div>
-      </section>
-
-      <footer className="bg-white border-t border-gray-200 py-4 sm:py-6">
-        <div className="container mx-auto px-4 text-center text-xs sm:text-sm text-gray-600">
-          © {new Date().getFullYear()} My Blog. All rights reserved.
-        </div>
-      </footer>
-    </div>
+        ))}
+      </div>
+      <style jsx>{`
+        .blog-hero {
+          background: #f8fafc;
+          padding: 48px 0 24px 0;
+          text-align: center;
+        }
+        .blog-title {
+          font-size: 2.5rem;
+          font-weight: 800;
+          color: #111827;
+          margin-bottom: 10px;
+        }
+        .blog-subtitle {
+          color: #6b7280;
+          font-size: 1.2rem;
+          margin-bottom: 0;
+        }
+        .blog-categories {
+          display: flex;
+          justify-content: center;
+          gap: 12px;
+          margin: 32px 0 24px 0;
+          flex-wrap: wrap;
+        }
+        .blog-category-btn {
+          background: #f3f4f6;
+          color: #374151;
+          border: none;
+          border-radius: 20px;
+          padding: 8px 22px;
+          font-size: 1rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: background 0.2s, color 0.2s;
+        }
+        .blog-category-btn.active, .blog-category-btn:hover {
+          background: #3b82f6;
+          color: #fff;
+        }
+        .blog-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+          gap: 32px;
+          max-width: 1200px;
+          margin: 0 auto 60px auto;
+          padding: 0 24px;
+        }
+        .blog-card {
+          background: #fff;
+          border-radius: 12px;
+          box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          transition: box-shadow 0.2s;
+        }
+        .blog-card:hover {
+          box-shadow: 0 6px 32px rgba(59,130,246,0.10);
+        }
+        .blog-card-img-wrap {
+          width: 100%;
+          height: 210px;
+          overflow: hidden;
+        }
+        .blog-card-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .blog-card-content {
+          padding: 24px 20px 20px 20px;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+        .blog-card-category {
+          color: #3b82f6;
+          font-size: 0.95rem;
+          font-weight: 600;
+          margin-bottom: 8px;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+        }
+        .blog-card-title {
+          font-size: 1.35rem;
+          font-weight: 700;
+          color: #1e293b;
+          margin: 0 0 10px 0;
+        }
+        .blog-card-meta {
+          color: #64748b;
+          font-size: 0.98rem;
+          margin-bottom: 12px;
+        }
+        .blog-card-excerpt {
+          color: #374151;
+          font-size: 1.05rem;
+          margin-bottom: 18px;
+          flex: 1;
+        }
+        .blog-card-readmore {
+          color: #3b82f6;
+          font-weight: 600;
+          text-decoration: none;
+          font-size: 1.05rem;
+          align-self: flex-start;
+          transition: color 0.2s;
+        }
+        .blog-card-readmore:hover {
+          color: #1d4ed8;
+        }
+      `}</style>
+    </>
   );
-};
-
-export default App;
+}

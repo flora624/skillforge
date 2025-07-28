@@ -1,100 +1,231 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router'; 
+import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { useAuth } from '../context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase/config';
 
-// The Main Navbar
-export default function Navbar() {
-  const { isLoggedIn, loading } = useAuth();
+// Enhanced Navbar with EduPlatform styling
+export default function EnhancedNavbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [navbarHidden, setNavbarHidden] = useState(false);
-  const lastScrollY = useRef(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
 
-    useEffect(() => {
+  const { user, isLoggedIn, loading } = useAuth();
+
+  useEffect(() => {
     setIsClient(true);
 
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       const isScrolled = currentScrollY > 10;
       setScrolled(isScrolled);
-      if (currentScrollY <= 10) {
-        setNavbarHidden(false); // Show navbar only at the very top
-      } else {
-        setNavbarHidden(true); // Hide navbar when not at the top
-      }
-      lastScrollY.current = currentScrollY;
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [user, isLoggedIn, loading]);
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
+      setDropdownOpen(false); // Close dropdown on logout
+      closeMobileMenu(); // Close mobile menu if open
+      router.push('/login');
     } catch (error) {
-      console.error("Error signing out: ", error);
+      console.error('Logout failed:', error);
     }
   };
 
+  // Close dropdown if clicked outside
+  const dropdownRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
-      <header className={`navbar${scrolled ? ' scrolled' : ''}${navbarHidden ? ' navbar--hidden' : ''}`}>
-        <Link href="/" className="logo">
-          <div>
-            <Image
-              src="/logo.png"
-              alt="SkillForge Logo"
-              width={80}
-              height={80}
-              priority
-              style={{ objectFit: 'contain' }}
-            />
-          </div>
-        </Link>
-        <nav>
-          <ul className="nav__actions">
-            <li><Link href="/blog">Blogs</Link></li>
-          </ul>
-          <ul className="nav__links">
-            {isClient && !loading && (
-              isLoggedIn ? (
-                <>
-                  <li>
-                    <Link href="/profile" className="profile-icon-link">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="profile-svg-icon"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </Link>
-                  </li>
-                  <li><a onClick={handleLogout} className="cta">Logout</a></li>
-                </>
+      <header className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+        <div className="navbar-container">
+          <Link href="/">
+            <a className="navbar-logo">
+              <div className="logo-content">
+                <div className="logo-icon">
+                  <i className=""></i>
+                </div>
+                <Image src="/logo.png" alt="logo icon" width={60} height={60}  />
+              </div>
+            </a>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="navbar-nav desktop-nav">
+            <ul className="nav-links">
+              <li>
+                <Link href="/explore">
+                  <a className={`nav-link ${router.pathname === '/projects' ? 'active' : ''}`}>
+                    <i className="fas fa-project-diagram"></i>
+                    Projects
+                  </a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/community">
+                  <a className={`nav-link ${router.pathname === '/community' ? 'active' : ''}`}>
+                    <i className="fas fa-handshake"></i>
+                    Community
+                  </a>
+                </Link>
+              </li>
+               <li>
+                <Link href="/blog">
+                  <a className={`nav-link ${router.pathname === '/blog' ? 'active' : ''}`}>
+                    <i className="fas fa-blog"></i>
+                    Blog
+                  </a>
+                </Link>
+              </li>
+            </ul>
+
+            <div className="nav-actions">
+              {!loading && (isLoggedIn ? (
+                <div className="profile-dropdown" ref={dropdownRef}>
+                  <Link href="/profile" passHref>
+                    <a className="profile-icon-btn" style={{
+                      background: 'transparent',
+                      border: 'none',
+                      padding: 0,
+                      cursor: 'pointer',
+                      color: 'linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                    }}>
+                      {user?.photoURL ? (
+                        <Image src={user.photoURL} alt="Profile" width={40} height={40} className="rounded-full" style={{ borderRadius: '50%' }} />
+                      ) : (
+                        <i className="fas fa-user-circle fa-2x"></i>
+                      )}
+                    </a>
+                  </Link>
+                </div>
               ) : (
                 <>
-                  <li><Link href="/login" className="cta">Login</Link></li>
-                  <li><Link href="/signup" className="cta">Signup</Link></li>
+                  <Link href="/login">
+                    <a className="btn btn-outline btn-small">
+                      Login
+                    </a>
+                  </Link>
+                  <Link href="/signup">
+                    <a className="btn btn-primary btn-small">
+                      <i className="fas fa-rocket"></i>
+                      Start Building
+                    </a>
+                  </Link>
                 </>
-              )
-            )}
+              ))}
+            </div>
+          </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            className={`mobile-menu-toggle ${mobileMenuOpen ? 'active' : ''}`}
+            onClick={toggleMobileMenu}
+            aria-label="Toggle mobile menu"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+
+        {/* Mobile Navigation */}
+        <nav className={`mobile-nav ${mobileMenuOpen ? 'active' : ''}`}>
+          <ul className="mobile-nav-links">
+            {/* FIX: onClick is moved to the <a> tag */}
+            <li>
+              <Link href="/projects">
+                <a className="mobile-nav-link" onClick={closeMobileMenu}>
+                  <i className="fas fa-project-diagram"></i>
+                  Projects
+                </a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/blog">
+                <a className="mobile-nav-link" onClick={closeMobileMenu}>
+                  <i className="fas fa-blog"></i>
+                  Blog
+                </a>
+              </Link>
+            </li>
+            <li className="mobile-nav-divider"></li>
+            {!loading && (isLoggedIn ? (
+              // In mobile, just show links directly or a simplified menu
+              <>
+                <li>
+                  <Link href="/profile">
+                    <a className="mobile-nav-link" onClick={closeMobileMenu}>
+                      <i className="fas fa-user"></i> Profile
+                    </a>
+                  </Link>
+                </li>
+                <li>
+                  {/* FIX: Logout is a button that handles its own click */}
+                  <button onClick={handleLogout} className="mobile-nav-link logout-button">
+                    <i className="fas fa-sign-out-alt"></i> Logout
+                  </button>
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <Link href="/login">
+                    <a className="mobile-nav-link" onClick={closeMobileMenu}>
+                      <i className="fas fa-sign-in-alt"></i> Login
+                    </a>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/signup">
+                    <a className="mobile-nav-link primary" onClick={closeMobileMenu}>
+                      <i className="fas fa-rocket"></i> Start Building
+                    </a>
+                  </Link>
+                </li>
+              </>
+            ))}
           </ul>
         </nav>
+
+        {/* Mobile Menu Overlay */}
+        {mobileMenuOpen && (
+          <div className="mobile-menu-overlay" onClick={closeMobileMenu}></div>
+        )}
       </header>
     </>
   );

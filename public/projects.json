@@ -1,104 +1,553 @@
 [
-    {
+  {
     "id": 1,
-    "title": "Design Netflix's Thumbnail A/B Testing System",
-    "domain": "System Design & Product",
+    "title": "AI RAG Chatbot with AWS Bedrock",
+    "tagline": "Build an intelligent chatbot that answers questions based on your own documents, using Retrieval-Augmented Generation and serverless AWS services.",
+    "domain": "Full-Stack + AI/ML",
     "difficulty": "Advanced",
-    "problemStatement": "Inspired by **Netflix**, whose research proved that thumbnail artwork is a primary driver of user engagement. A single title can have dozens of image variants, and serving the right one to the right user can dramatically increase watch time. The challenge is building a system that can run thousands of these A/B tests simultaneously across millions of users, collect data reliably, and determine the winning artwork. Your task is to design the high-level architecture for this critical system.",
-    "skillsGained": ["System Design", "API Design", "Data Modeling", "A/B Testing", "Product Thinking"],
-    "milestones": [
-      {
-        "id": "m1_schema_design",
-        "title": "Milestone 1: Design the Database Schema",
-        "goal": "Create a logical data model to store all information related to titles, images, tests, and user interactions.",
-        "instructions": "In a document or diagram, propose schemas for at least four key entities: 'Titles', 'ImageAssets' (linked to a title), 'ActiveTests' (linking multiple image assets to a title), and 'UserImpressions' (to log which user saw which image and if they clicked). For each entity, list the critical fields and their data types.",
-        "submissionType": "file"
-      },
-      {
-        "id": "m2_architecture",
-        "title": "Milestone 2: Illustrate the System Architecture",
-        "goal": "Create a high-level diagram illustrating the flow of data and requests between system components to serve a test variant to a user.",
-        "instructions": "Using a diagramming tool (e.g., Miro, Excalidraw), create an architectural diagram. Your diagram must show a 'Client App' (e.g., a smart TV), a 'Gateway API', a 'Homepage Service', and a dedicated 'Personalization Service'. Use numbered arrows to show the sequence: 1. Client requests homepage. 2. Homepage service gets content list. 3. Homepage service asks Personalization Service for each thumbnail. 4. Personalization Service returns a specific image URL based on the user's test assignment.",
-        "submissionType": "file"
-      },
-      {
-        "id": "m3_api_definition",
-        "title": "Milestone 3: Define the Event Logging API",
-        "goal": "Create the precise technical contract for the API endpoint that will capture the user interaction data needed to evaluate the test's success.",
-        "instructions": "Write the definition for a `POST /v1/events` endpoint. Specify the JSON request body structure precisely. It must include a `userId` (string), `sessionId` (string), `assetId` (string), `eventType` (an enum of 'VIEW' or 'CLICK'), and a `clientTimestamp` (in ISO 8601 format).",
-        "submissionType": "text"
-      }
+    "estimatedHours": 80,
+    "problemStatement": "Standard Large Language Models (LLMs) like ChatGPT have no knowledge of private, internal, or very recent documents. Businesses need a secure and cost-effective way to build chatbots that can provide accurate answers from their own knowledge base without the immense cost of retraining a foundational model.",
+    "solution": "Construct a complete RAG pipeline. This involves creating a data ingestion script to process documents (e.g., PDFs) into a vector database like Pinecone. Then, build a Next.js application with a serverless backend on AWS Lambda that retrieves relevant context from this database to provide accurate, context-aware answers from an AWS Bedrock LLM (like Claude).",
+    "skillsGained": [
+      "Retrieval-Augmented Generation (RAG)",
+      "Vector Databases (Pinecone)",
+      "LLM Prompt Engineering",
+      "AWS SDK Integration (Bedrock, S3, Lambda)",
+      "Serverless Functions",
+      "Real-time Data Streaming",
+      "Document Processing (PDFs)",
+      "Cloud Architecture"
     ],
-    "reflectionQuiz": [],
-    "resources": [],
-    "resumeText": "Designed a scalable A/B testing system for personalized content, inspired by Netflix's engineering challenges, including relational data schema design, microservice architecture, and RESTful API definitions."
+    "techStack": [
+      { "name": "Next.js", "type": "Framework" },
+      { "name": "TypeScript", "type": "Language" },
+      { "name": "AWS Bedrock", "type": "AI Service" },
+      { "name": "AWS S3", "type": "File Storage" },
+      { "name": "AWS Lambda", "type": "Serverless Compute" },
+      { "name": "Pinecone", "type": "Vector Database" },
+      { "name": "LangChain", "type": "AI Orchestration" },
+      { "name": "Tailwind CSS", "type": "Styling" }
+    ],
+    "professionalPractices": {
+      "ragPipeline": {
+        "title": "RAG Pipeline Design",
+        "description": "Understand the end-to-end flow of a production RAG system, from data ingestion and embedding to retrieval and final generation. This is a core pattern for building modern AI applications."
+      },
+      "serverlessArchitecture": {
+        "title": "Serverless at Scale",
+        "description": "Learn to leverage serverless functions (AWS Lambda) to build scalable, cost-effective backends that only run when needed, which is ideal for AI inference tasks."
+      },
+      "promptEngineering": {
+        "title": "Advanced Prompt Engineering",
+        "description": "Go beyond simple questions. Learn how to structure prompts that include retrieved context, instructing the LLM to ground its answers in specific facts, reducing hallucinations and improving accuracy."
+      }
+    },
+    "milestones": [
+      { "id": "m1_setup", "title": "Phase 1: Foundation & AWS Setup", "goal": "Set up your AWS account with the necessary permissions (IAM user), configure the AWS SDK in your local environment, and initialize the Next.js project.", "content": [ { "type": "paragraph", "value": "Before writing any application code, it's crucial to establish a secure and correctly configured cloud environment. This phase ensures your application can communicate with AWS services." }, { "type": "subheader", "value": "1. AWS Account and IAM User Setup" }, { "type": "paragraph", "value": "Create an AWS account if you don't have one. Create a new IAM (Identity and Access Management) user with programmatic access. Attach policies that grant access to Bedrock, S3, and Lambda. Securely save your access key and secret key." }, { "type": "callout", "style": "error", "value": "**Security Critical:** Never commit your AWS keys to Git. Use environment variables (`.env.local`) to store them securely." }, { "type": "code", "language": "bash", "value": "# .env.local\nAWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY\nAWS_SECRET_ACCESS_KEY=YOUR_SECRET_KEY\nAWS_REGION=us-east-1 # Or your preferred region" }, { "type": "subheader", "value": "2. Project Initialization" }, { "type": "paragraph", "value": "Create a new Next.js project with TypeScript and install the necessary initial dependencies." }, { "type": "code", "language": "bash", "value": "npx create-next-app@latest ai-rag-chatbot --ts\ncd ai-rag-chatbot\nnpm install @aws-sdk/client-bedrock-runtime langchain ai" } ] },
+      { "id": "m2_ingestion", "title": "Phase 2: Data Ingestion Pipeline", "goal": "Build a script that takes a source document (e.g., a PDF), loads it, splits it into chunks, creates embeddings for each chunk using an AI model, and stores them in a Pinecone vector database.", "content": [ { "type": "paragraph", "value": "This is the 'retrieval' part of RAG. We are preparing our knowledge base so the AI can search it later. We will use LangChain to simplify this process." }, { "type": "subheader", "value": "1. Set Up Pinecone" }, { "type": "paragraph", "value": "Create a free account on Pinecone. Create a new index, making sure to configure the correct 'dimensions' (e.g., 1536 for OpenAI's `text-embedding-ada-002`) for your embedding model." }, { "type": "subheader", "value": "2. Create the Ingestion Script" }, { "type": "paragraph", "value": "Write a Node.js script (`scripts/ingest.ts`) that uses LangChain to load a PDF, split it into smaller documents, generate embeddings, and upload them to your Pinecone index." }, { "type": "code", "language": "typescript", "value": "// scripts/ingest.ts (conceptual)\nimport { PDFLoader } from 'langchain/document_loaders/fs/pdf';\nimport { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';\nimport { PineconeStore } from 'langchain/vectorstores/pinecone';\nimport { OpenAIEmbeddings } from 'langchain/embeddings/openai';\nimport { pinecone } from '@/utils/pinecone-client';\n\n// Load PDF\nconst loader = new PDFLoader('docs/your-document.pdf');\nconst rawDocs = await loader.load();\n\n// Split text\nconst textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 });\nconst docs = await textSplitter.splitDocuments(rawDocs);\n\n// Create and store embeddings\nconst embeddings = new OpenAIEmbeddings();\nconst index = pinecone.Index('your-index-name');\nawait PineconeStore.fromDocuments(docs, embeddings, {\n  pineconeIndex: index,\n  namespace: 'your-namespace',\n});" } ] },
+      { "id": "m3_backend", "title": "Phase 3: Building the RAG Backend API", "goal": "Create a Next.js API route that receives a user's question, queries the Pinecone database for relevant context, constructs a detailed prompt, and calls AWS Bedrock to generate an answer.", "content": [ { "type": "paragraph", "value": "This is the core logic of the application. It connects the user's query to the knowledge base and the LLM." }, { "type": "subheader", "value": "1. Create the API Route" }, { "type": "paragraph", "value": "Set up a new API route in `pages/api/chat.ts`. This endpoint will handle the main RAG chain." }, { "type": "code", "language": "typescript", "value": "// pages/api/chat.ts (conceptual)\nimport { Bedrock } from 'langchain/llms/bedrock';\nimport { PineconeStore } from 'langchain/vectorstores/pinecone';\nimport { ConversationalRetrievalQAChain } from 'langchain/chains';\n\n// Initialize models and vector store\nconst model = new Bedrock({ model: 'anthropic.claude-v2' });\nconst vectorStore = await PineconeStore.fromExistingIndex(...);\n\n// Create the chain\nconst chain = ConversationalRetrievalQAChain.fromLLM(\n  model,\n  vectorStore.asRetriever(),\n  { returnSourceDocuments: true }\n);\n\n// Handle request\nconst response = await chain.call({ question: userQuery, chat_history: [] });\n// Send 'response.text' back to the client" } ] },
+      { "id": "m4_frontend", "title": "Phase 4: Frontend Chat Interface & Streaming", "goal": "Build a clean chat interface using React. Implement logic to send user messages to your backend API and stream the response back in real-time for a smooth, ChatGPT-like user experience.", "content": [ { "type": "paragraph", "value": "A good user experience is critical. We'll use the Vercel AI SDK to make streaming responses from our serverless backend incredibly easy." }, { "type": "subheader", "value": "1. Implement the UI" }, { "type": "paragraph", "value": "Create the chat bubbles, input form, and message list components." }, { "type": "subheader", "value": "2. Use the `useChat` Hook" }, { "type": "paragraph", "value": "The Vercel AI SDK provides a `useChat` hook that handles all the complexity of state management, API calls, and streaming responses." }, { "type": "code", "language": "typescript", "value": "// app/page.tsx\n'use client';\nimport { useChat } from 'ai/react';\n\nexport default function Chat() {\n  const { messages, input, handleInputChange, handleSubmit } = useChat();\n\n  return (\n    <div>\n      {messages.map(m => (\n        <div key={m.id}><b>{m.role}:</b> {m.content}</div>\n      ))}\n\n      <form onSubmit={handleSubmit}>\n        <input value={input} onChange={handleInputChange} />\n        <button type=\"submit\">Send</button>\n      </form>\n    </div>\n  );\n}" } ] },
+      { "id": "m5_deploy", "title": "Phase 5: Deployment & Final Polish", "goal": "Deploy the Next.js application to Vercel. Ensure environment variables for AWS, Pinecone, etc., are correctly configured in the Vercel project settings.", "content": [ { "type": "paragraph", "value": "Take your application live. Vercel automatically deploys API routes as serverless AWS Lambda functions, making the process seamless." }, { "type": "callout", "style": "info", "value": "**Professional Practice:** Set up a separate Pinecone index and AWS user for production vs. development to ensure your environments are isolated." } ] }
+    ]
   },
   {
     "id": 2,
-    "title": "Optimize Web Page for Google's Core Vitals",
-    "domain": "Web Development",
+    "title": "Real-Time IoT Sensor Dashboard",
+    "tagline": "Build a live dashboard to monitor and visualize data from IoT devices using MQTT, a time-series database, and a dynamic frontend.",
+    "domain": "IoT & Data Visualization",
     "difficulty": "Intermediate",
-    "problemStatement": "Inspired by **Google**, which now uses a set of metrics called Core Web Vitals (LCP, FID, CLS) as a key ranking factor in search results. A poor score not only harms SEO but also leads to a frustrating user experience and higher bounce rates. Your task is to take a sample 'slow' webpage and apply specific, targeted optimization techniques to measurably improve its Core Web Vitals score.",
-    "skillsGained": ["Web Performance", "Core Web Vitals", "Image Optimization", "Lazy Loading", "SEO"],
-    "milestones": [
-      {
-        "id": "m1_auditing",
-        "title": "Milestone 1: Audit and Establish a Baseline",
-        "goal": "Establish a clear, measurable performance baseline by auditing a webpage using professional-grade tools.",
-        "instructions": "Use Google Chrome's built-in Lighthouse tool (found in DevTools). Run a 'Performance' audit on the provided sample page. In a text document, record the initial scores for Performance, Largest Contentful Paint (LCP), and Cumulative Layout Shift (CLS). Take a screenshot of the 'Opportunities' section for your reference.",
-        "submissionType": "text"
-      },
-      {
-        "id": "m2_optimization",
-        "title": "Milestone 2: Apply Image and Font Optimizations",
-        "goal": "Fix two of the largest and most common performance bottlenecks: unoptimized images and render-blocking fonts.",
-        "instructions": "1. **Image:** Convert the large JPG image on the page to a modern, efficient format like WebP using an online tool. Replace the `<img>` tag's `src` with the new image. 2. **Loading:** Add the `loading=\"lazy\"` attribute to the `<img>` tag. 3. **Fonts:** For the external Google Font `<link>` tag, add `&display=swap` to the end of the `href` URL to prevent font-loading from blocking page rendering.",
-        "submissionType": "code"
-      },
-      {
-        "id": "m3_report",
-        "title": "Milestone 3: Re-Audit and Report Improvements",
-        "goal": "Quantify the impact of your optimizations and clearly explain the results.",
-        "instructions": "Run the Lighthouse audit again on your modified page. In your submission, create a simple 'Before vs. After' table with the LCP and Performance scores. Below the table, write a short paragraph explaining *why* your changes improved the score, referencing the specific optimizations you made (e.g., 'Lazy loading the image deferred its download until it was needed...').",
-        "submissionType": "link"
-      }
+    "estimatedHours": 60,
+    "problemStatement": "Collecting, storing, and visualizing high-frequency data from a network of sensors (e.g., temperature, humidity) in real-time is challenging. A system is needed to ingest this data efficiently and display it on an intuitive dashboard for monitoring and analysis.",
+    "solution": "A simulated Python sensor script will publish data via the MQTT protocol to a Mosquitto broker running in Docker. A Node.js backend service will subscribe to the MQTT topic, process the incoming data, and store it in InfluxDB, a time-series database. A React frontend will fetch historical data via a REST API and display it in charts, while simultaneously listening for live updates pushed from the backend via WebSockets.",
+    "skillsGained": [
+      "MQTT Protocol",
+      "Time-Series Databases (InfluxDB)",
+      "WebSockets for Real-time UI",
+      "Data Visualization (Chart.js)",
+      "Containerization (Docker)",
+      "IoT Device Simulation",
+      "Backend Service Development (Node.js/Express)",
+      "REST API Design"
     ],
-    "reflectionQuiz": [],
-    "resources": [],
-    "resumeText": "Improved a webpage's Core Web Vitals score by over 30 points by implementing key optimization techniques including image compression (WebP), lazy loading, and non-render-blocking font strategies."
+    "techStack": [
+      { "name": "React", "type": "Framework" },
+      { "name": "Node.js", "type": "Runtime" },
+      { "name": "Express.js", "type": "Framework" },
+      { "name": "InfluxDB", "type": "Time-Series Database" },
+      { "name": "Mosquitto", "type": "MQTT Broker" },
+      { "name": "WebSocket (Socket.io)", "type": "Real-time API" },
+      { "name": "Docker", "type": "Containerization" },
+      { "name": "Chart.js", "type": "Library" }
+    ],
+    "professionalPractices": {
+      "pubSubArchitecture": {
+        "title": "Decoupling with Publish/Subscribe",
+        "description": "Understand how a message broker (MQTT) decouples data producers (sensors) from consumers (backend), creating a scalable and resilient architecture."
+      },
+      "timeSeriesDataModeling": {
+        "title": "Time-Series Data Modeling",
+        "description": "Learn the principles of structuring data in a time-series database for extremely fast time-based queries and aggregations, which is different from relational modeling."
+      },
+      "efficientRealtimeUI": {
+        "title": "Efficient Real-Time UI Updates",
+        "description": "Implement a performant frontend that can handle a stream of incoming data via WebSockets, updating charts and visuals without freezing or re-rendering the entire page."
+      }
+    },
+    "milestones": [
+      { "id": "m1_setup", "title": "Phase 1: Infrastructure Setup with Docker", "goal": "Use Docker Compose to spin up the core infrastructure: the Mosquitto MQTT broker and the InfluxDB database.", "content": [ { "type": "paragraph", "value": "Containerizing our services ensures a consistent and reproducible environment. We will define all services in a single `docker-compose.yml` file, which acts as the blueprint for our project's backend infrastructure." }, { "type": "code", "language": "yaml", "value": "# docker-compose.yml\nversion: '3.8'\nservices:\n  mosquitto:\n    image: eclipse-mosquitto:2\n    ports:\n      - \"1883:1883\"\n      - \"9001:9001\"\n    volumes:\n      - ./mosquitto/config:/mosquitto/config\n\n  influxdb:\n    image: influxdb:2.7\n    ports:\n      - \"8086:8086\"\n    volumes:\n      - influxdb_data:/var/lib/influxdb2\n\nvolumes:\n  influxdb_data:" }, { "type": "paragraph", "value": "After creating this file, run `docker-compose up` to start the services. You can then access the InfluxDB UI at `http://localhost:8086` to perform initial setup (create user, org, bucket)." } ] },
+      { "id": "m2_sensor_and_ingestion", "title": "Phase 2: Sensor Simulation and Data Ingestion", "goal": "Create a Python script to simulate a sensor and a Node.js service to ingest its data into InfluxDB.", "content": [ { "type": "subheader", "value": "1. Simulated Sensor (Python)" }, { "type": "paragraph", "value": "Write a Python script that generates random sensor data and publishes it to an MQTT topic every few seconds using the `paho-mqtt` library." }, { "type": "code", "language": "python", "value": "# sensor_simulator.py\nimport paho.mqtt.client as mqtt\nimport time, json, random\n\nclient = mqtt.Client()\nclient.connect(\"localhost\", 1883, 60)\n\nwhile True:\n    payload = {'temperature': random.uniform(20.0, 25.0)}\n    client.publish(\"iot/sensor/temperature\", json.dumps(payload))\n    time.sleep(2)" }, { "type": "subheader", "value": "2. Ingestion Service (Node.js)" }, { "type": "paragraph", "value": "Build a Node.js service that subscribes to the MQTT topic, receives the JSON data, and writes it to your InfluxDB instance using the `@influxdata/influxdb-client` library." }, { "type": "code", "language": "javascript", "value": "// ingestion_service.js (conceptual)\nimport { InfluxDB, Point } from '@influxdata/influxdb-client';\nimport mqtt from 'mqtt';\n\nconst influxClient = new InfluxDB({ url: 'http://localhost:8086', token: 'YOUR_TOKEN' });\nconst writeApi = influxClient.getWriteApi('YOUR_ORG', 'YOUR_BUCKET');\n\nconst mqttClient = mqtt.connect('mqtt://localhost');\nmqttClient.on('connect', () => mqttClient.subscribe('iot/sensor/temperature'));\n\nmqttClient.on('message', (topic, message) => {\n  const data = JSON.parse(message.toString());\n  const point = new Point('temp_measurement').floatField('value', data.temperature);\n  writeApi.writePoint(point);\n});" } ] },
+      { "id": "m3_api_and_frontend_setup", "title": "Phase 3: API and Frontend Foundation", "goal": "Build a REST API endpoint to serve historical data and set up the basic React frontend with a chart.", "content": [ { "type": "paragraph", "value": "The frontend needs a way to load data when it first mounts. A REST API built with Express.js is perfect for this initial data load." }, { "type": "code", "language": "javascript", "value": "// server.js (conceptual API in your backend service)\napp.get('/api/data/historical', async (req, res) => {\n  const queryApi = influxClient.getQueryApi('YOUR_ORG');\n  const fluxQuery = `from(bucket:\"YOUR_BUCKET\") |> range(start: -1h)`;\n  const data = await queryApi.collectRows(fluxQuery);\n  res.json(data);\n});" }, { "type": "paragraph", "value": "Initialize a React app (`npx create-react-app iot-dashboard`) and create a component that fetches from this endpoint on mount and displays the data in a basic chart using `react-chartjs-2`." } ] },
+      { "id": "m4_realtime_layer", "title": "Phase 4: Implementing Real-Time Updates with WebSockets", "goal": "Integrate WebSockets (using Socket.io) to push live data from the backend to the frontend.", "content": [ { "type": "paragraph", "value": "This crucial step transforms the static chart into a live dashboard. Polling the API is inefficient; WebSockets provide a persistent, two-way communication channel." }, { "type": "subheader", "value": "1. Backend WebSocket Logic" }, { "type": "paragraph", "value": "In your Node.js ingestion service, after writing to InfluxDB, broadcast the new data point to all connected Socket.io clients." }, { "type": "code", "language": "javascript", "value": "// ingestion_service.js (additions)\nimport { Server } from 'socket.io';\nconst io = new Server(3001); // Attach to your http server\n\nmqttClient.on('message', (topic, message) => {\n  // ... existing InfluxDB logic ...\n  io.emit('new-data', data); // Broadcast the new data\n});" }, { "type": "subheader", "value": "2. Frontend WebSocket Logic" }, { "type": "paragraph", "value": "In your React chart component, establish a Socket.io connection and listen for `new-data` events. When an event is received, dynamically update the Chart.js instance with the new point, creating a live-scrolling effect." }, { "type": "code", "language": "javascript", "value": "// ChartComponent.jsx (conceptual)\nuseEffect(() => {\n  const socket = io('http://localhost:3001');\n  socket.on('new-data', (newData) => {\n    // Logic to add newData to chart's data array\n    // and remove the oldest point to create a sliding window effect\n    chartRef.current.update();\n  });\n  return () => socket.disconnect();\n}, []);" } ] },
+      { "id": "m5_polish", "title": "Phase 5: Dashboard Polish & Features", "goal": "Add features like time-range selectors, multiple charts for different metrics, and visual thresholds.", "content": [ { "type": "paragraph", "value": "Improve the user experience by adding UI controls. Allow users to select different time ranges (e.g., Last 15 Mins, Last 24 Hours), which will trigger a new API call to the historical endpoint with a different range parameter." }, { "type": "callout", "style": "info", "value": "**Professional Practice:** Implement visual thresholds. For example, dynamically change the chart's line color to red if the temperature value exceeds a predefined critical level (e.g., 24.5°C)." } ] }
+    ]
   },
-    {
+  {
     "id": 3,
-    "title": "Design a Frictionless Checkout Flow",
-    "domain": "UI/UX Design",
-    "difficulty": "Intermediate",
-    "problemStatement": "Inspired by **Stripe**, which revolutionized online payments by obsessing over a simple, elegant checkout. Your task is to design a modern, frictionless two-page checkout flow inspired by this industry-leading standard.",
-    "skillsGained": ["UI Design", "UX Design", "Prototyping", "Figma/Adobe XD", "User Empathy"],
-    "milestones": [
-      {
-        "id": "m1_wireframes",
-        "title": "Milestone 1: Low-Fidelity Wireframing",
-        "goal": "Create basic, black-and-white layouts for the 'Payment Details' and 'Confirmation' screens to focus on structure and content placement.",
-        "instructions": "In Figma, design wireframes for the two key screens. Focus on minimizing input fields. Ensure the total price and the primary 'Pay' button are most prominent. Arrange fields in a single column.",
-        "submissionType": "file"
-      },
-      {
-        "id": "m2_high_fidelity",
-        "title": "Milestone 2: High-Fidelity Mockups & Trust Signals",
-        "goal": "Add a full visual design system (color, typography, spacing) to your wireframes to create a polished, trustworthy interface.",
-        "instructions": "Develop your wireframes into full-color mockups. Choose a simple, professional color palette. Add trust signals like a lock icon next to the pay button and logos for accepted credit cards.",
-        "submissionType": "file"
-      },
-      {
-        "id": "m3_prototype",
-        "title": "Milestone 3: Build a Clickable Prototype",
-        "goal": "Link your high-fidelity mockups together to create a working prototype that demonstrates the user's journey.",
-        "instructions": "Use Figma's 'Prototype' mode to connect the 'Pay' button on the Payment screen to the Confirmation screen. Add a 'Return to Shop' button on the Confirmation screen. Share the public Figma prototype link.",
-        "submissionType": "link"
-      }
+    "title": "CI/CD Pipeline for a Web App with Terraform & GitHub Actions",
+    "tagline": "Automate the testing, building, and deployment of a web application to the cloud using professional DevOps practices.",
+    "domain": "DevOps & Cloud Engineering",
+    "difficulty": "Advanced",
+    "estimatedHours": 70,
+    "problemStatement": "Manually deploying applications is slow, error-prone, and not scalable. Development teams need an automated process (CI/CD) to ensure every code change is automatically tested and safely deployed to production environments like AWS.",
+    "solution": "Define the required cloud infrastructure (e.g., S3 for static hosting, CloudFront for CDN) using Terraform (Infrastructure as Code). Create a GitHub Actions workflow that triggers on every push to the `main` branch. The workflow will install dependencies, run tests (unit, integration), build the application for production, and then use the AWS CLI to deploy the build artifacts to the S3 bucket provisioned by Terraform.",
+    "skillsGained": [
+      "Continuous Integration/Continuous Deployment (CI/CD)",
+      "GitHub Actions",
+      "Infrastructure as Code (IaC) with Terraform",
+      "AWS S3 & CloudFront",
+      "Automated Testing",
+      "Environment Variables & Secrets Management",
+      "YAML Workflow Configuration",
+      "Cloud Deployment Strategies"
     ],
-    "reflectionQuiz": [],
-    "resources": [],
-    "resumeText": "Designed a high-fidelity, two-page payment checkout flow focused on minimizing user friction and building trust, applying UX principles inspired by Stripe's industry-leading developer experience."
+    "techStack": [
+      { "name": "GitHub Actions", "type": "CI/CD Platform" },
+      { "name": "Terraform", "type": "IaC Tool" },
+      { "name": "AWS S3", "type": "Object Storage" },
+      { "name": "AWS CloudFront", "type": "CDN" },
+      { "name": "Docker", "type": "Containerization (for testing)" },
+      { "name": "Node.js/React", "type": "Application Stack" },
+      { "name": "YAML", "type": "Configuration Language" },
+      { "name": "AWS CLI", "type": "Cloud CLI" }
+    ],
+    "professionalPractices": {
+      "infrastructureAsCode": {
+        "title": "Infrastructure as Code (IaC)",
+        "description": "Manage and provision your cloud infrastructure using version-controlled configuration files (Terraform) rather than manual processes. This ensures consistency, reproducibility, and prevents configuration drift."
+      },
+      "gitflowWorkflow": {
+        "title": "Git-Triggered Workflows",
+        "description": "Adopt a professional Git workflow where merges into specific branches (e.g., `main`, `develop`) automatically trigger validation and deployment pipelines, forming the backbone of modern software delivery."
+      },
+      "secretsManagement": {
+        "title": "Secure Secrets Management",
+        "description": "Learn to handle sensitive information like API keys and cloud credentials securely within a CI/CD environment using encrypted secrets (e.g., GitHub Secrets), never hardcoding them in your code."
+      }
+    },
+    "milestones": [
+      { "id": "m1_app_setup", "title": "Phase 1: The Sample Application & Git Repo", "goal": "Create a simple React application, add a basic unit test, and push it to a new GitHub repository.", "content": [ { "type": "paragraph", "value": "The pipeline needs something to build and test. We'll use a standard `create-react-app` project. This ensures we have a `package.json` with scripts for testing and building." }, { "type": "code", "language": "bash", "value": "npx create-react-app my-cicd-app\ncd my-cicd-app\n# Edit a test file in src/ to make it non-trivial\ngit init\ngit add .\ngit commit -m \"Initial commit\"\n# Create a repo on GitHub and push to it" } ] },
+      { "id": "m2_terraform", "title": "Phase 2: Defining Infrastructure with Terraform", "goal": "Write Terraform configuration files to define an S3 bucket for static website hosting and a CloudFront distribution for global CDN access.", "content": [ { "type": "paragraph", "value": "This phase treats infrastructure as code. You'll define the desired state of your AWS resources in HCL (HashiCorp Configuration Language). First, run `terraform init` to initialize your workspace." }, { "type": "code", "language": "hcl", "value": "# main.tf\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_s3_bucket\" \"site\" {\n  bucket = \"my-unique-portfolio-site-bucket-12345\"\n}\n\nresource \"aws_s3_bucket_website_configuration\" \"site_config\" {\n  bucket = aws_s3_bucket.site.id\n  index_document {\n    suffix = \"index.html\"\n  }\n}\n\n# A simple CloudFront distribution would also be defined here" }, { "type": "paragraph", "value": "Run `terraform plan` to see what will be created, then `terraform apply` to provision the resources in your AWS account." } ] },
+      { "id": "m3_github_actions_build", "title": "Phase 3: CI - The Build & Test Workflow", "goal": "Create a GitHub Actions workflow in `.github/workflows/` that checks out code, installs dependencies, runs tests, and builds the React app.", "content": [ { "type": "paragraph", "value": "This is the 'Continuous Integration' part. We create a YAML file that tells GitHub's runners what to do on every push to the `main` branch. This ensures every commit is validated." }, { "type": "code", "language": "yaml", "value": "# .github/workflows/deploy.yml\nname: Deploy Website\n\non:\n  push:\n    branches:\n      - main\n\njobs:\n  build-and-deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Checkout code\n        uses: actions/checkout@v3\n\n      - name: Setup Node.js\n        uses: actions/setup-node@v3\n        with:\n          node-version: '18'\n          cache: 'npm'\n\n      - name: Install dependencies\n        run: npm ci\n\n      - name: Run tests\n        run: npm test\n\n      - name: Build application\n        run: npm run build" } ] },
+      { "id": "m4_github_actions_deploy", "title": "Phase 4: CD - The Deployment Step", "goal": "Add steps to the GitHub Actions workflow to configure AWS credentials securely and sync the build output to the S3 bucket.", "content": [ { "type": "paragraph", "value": "This is the 'Continuous Deployment' part. After a successful build, the workflow will deploy the artifacts to our cloud infrastructure." }, { "type": "callout", "style": "error", "value": "**Security Critical:** Go to your GitHub repo > Settings > Secrets and variables > Actions. Add your `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` as repository secrets. The workflow will access them securely." }, { "type": "code", "language": "yaml", "value": "# Add these steps to the end of the build-and-deploy job in deploy.yml\n      - name: Configure AWS Credentials\n        uses: aws-actions/configure-aws-credentials@v2\n        with:\n          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}\n          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}\n          aws-region: us-east-1\n\n      - name: Deploy to S3\n        run: aws s3 sync ./build s3://my-unique-portfolio-site-bucket-12345 --delete" } ] },
+      { "id": "m5_validation", "title": "Phase 5: Validation and Cache Invalidation", "goal": "Verify the deployment and add a CloudFront invalidation step to the workflow to ensure users see the latest version immediately.", "content": [ { "type": "paragraph", "value": "Deploying new files to S3 isn't enough if a CDN like CloudFront is caching the old ones. The final step is to tell CloudFront to clear its cache." }, { "type": "callout", "style": "info", "value": "You will need the ID of the CloudFront distribution created by Terraform. You can get this from the Terraform output or add it as another GitHub secret." }, { "type": "code", "language": "yaml", "value": "# Add as the final step in the job\n      - name: Invalidate CloudFront Cache\n        run: aws cloudfront create-invalidation --distribution-id YOUR_CLOUDFRONT_DISTRIBUTION_ID --paths \"/*\"" }, { "type": "paragraph", "value": "Now, make a visible change in your React app's `App.js`, commit, and push. Watch the pipeline run automatically in the 'Actions' tab on GitHub and see your live site update within minutes." } ] }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Scalable Data Engineering ETL Pipeline",
+    "tagline": "Build a production-grade ETL pipeline to extract data from an API, transform it, and load it into a cloud data warehouse, all orchestrated by Airflow.",
+    "domain": "Data Engineering",
+    "difficulty": "Advanced",
+    "estimatedHours": 90,
+    "problemStatement": "Businesses need to consolidate data from various sources (APIs, databases) into a central data warehouse for analysis. Manually running scripts is unreliable. A robust, automated, and scalable system is required to handle data extraction, transformation, and loading (ETL) on a schedule.",
+    "solution": "Develop a Python-based ETL pipeline orchestrated by Apache Airflow. The pipeline will run as a Directed Acyclic Graph (DAG) with distinct tasks: 1) Extract data from a public REST API (e.g., a movie database). 2) Transform the raw JSON data into a clean, structured format using the Pandas library. 3) Load the transformed data into Google BigQuery. The entire environment (Airflow, Python dependencies) will be managed with Docker.",
+    "skillsGained": [
+      "ETL Pipeline Design",
+      "Workflow Orchestration (Apache Airflow)",
+      "Data Warehousing (Google BigQuery)",
+      "Data Transformation (Pandas)",
+      "API Data Extraction",
+      "Infrastructure with Docker Compose",
+      "SQL for Analytics",
+      "Data Partitioning and Clustering"
+    ],
+    "techStack": [
+      { "name": "Python", "type": "Language" },
+      { "name": "Apache Airflow", "type": "Orchestration" },
+      { "name": "Google BigQuery", "type": "Data Warehouse" },
+      { "name": "Pandas", "type": "Data Manipulation Library" },
+      { "name": "Docker", "type": "Containerization" },
+      { "name": "REST API", "type": "Data Source" },
+      { "name": "SQL", "type": "Query Language" },
+      { "name": "Google Cloud SDK", "type": "Cloud CLI" }
+    ],
+    "professionalPractices": {
+      "declarativeWorkflows": {
+        "title": "Declarative Workflows with DAGs",
+        "description": "Define complex data pipelines as code using Airflow's Directed Acyclic Graphs (DAGs). This provides clear dependency management, scheduling, monitoring, and automatic retries for failed tasks."
+      },
+      "idempotentTasks": {
+        "title": "Designing Idempotent Tasks",
+        "description": "Learn to write ETL tasks that can be run multiple times with the same input, always producing the same output. This is critical for reliability and makes it safe to re-run failed pipelines."
+      },
+      "dataWarehousingSchema": {
+        "title": "Data Warehouse Schema Design",
+        "description": "Understand how to design tables in an analytical warehouse like BigQuery, using techniques like partitioning and clustering to optimize query performance and reduce costs."
+      }
+    },
+    "milestones": [
+      { "id": "m1_setup", "title": "Phase 1: Environment Setup", "goal": "Set up a local Airflow environment using the official Docker Compose file and configure a Google Cloud Platform project with BigQuery.", "content": [ { "type": "paragraph", "value": "We will use the recommended way to run Airflow locally. You'll also need a GCP account and a service account key to allow Airflow to communicate with BigQuery." }, { "type": "callout", "style": "info", "value": "Follow the official Airflow documentation to initialize your environment with `docker-compose up`. This will create several Docker containers for the scheduler, webserver, etc." }, { "type": "subheader", "value": "1. GCP Setup" }, { "type": "paragraph", "value": "In GCP, create a new project, enable the BigQuery API, and create a service account with 'BigQuery Data Editor' and 'BigQuery Job User' roles. Download the JSON key file." }, { "type": "subheader", "value": "2. BigQuery Table" }, { "type": "paragraph", "value": "In the BigQuery UI, create a new dataset (e.g., `movie_data`) and a table (e.g., `popular_movies`) with a defined schema (title: STRING, release_date: DATE, vote_average: FLOAT)." } ] },
+      { "id": "m2_extract", "title": "Phase 2: The 'Extract' Task", "goal": "Write a Python function and create an Airflow task that fetches data from a public API (e.g., TheMovieDB) and saves it to a file inside the Airflow container.", "content": [ { "type": "paragraph", "value": "This task is responsible for getting the raw data. We save it to a file within the DAG's context to pass it to the next task. This file is temporary." }, { "type": "code", "language": "python", "value": "# dags/movie_etl_dag.py (conceptual)\nfrom airflow.decorators import task\n\n@task\ndef extract_movie_data(api_key: str):\n    import requests, json\n    response = requests.get(f'https://api.themoviedb.org/3/movie/popular?api_key={api_key}')\n    response.raise_for_status() # Fail task if API call fails\n    movies = response.json()['results']\n    # The return value is automatically passed via XComs\n    return movies" } ] },
+      { "id": "m3_transform", "title": "Phase 3: The 'Transform' Task", "goal": "Write a Python function using Pandas to read the raw data from the previous task, clean it, select relevant fields, and return a list of dictionaries.", "content": [ { "type": "paragraph", "value": "Raw API data is rarely in the exact format needed for our database schema. This task cleans and structures the data." }, { "type": "code", "language": "python", "value": "# dags/movie_etl_dag.py (conceptual)\nfrom airflow.decorators import task\nimport pandas as pd\n\n@task\ndef transform_movie_data(movies: list):\n    df = pd.DataFrame(movies)\n    # Select and rename columns to match BigQuery schema\n    transformed_df = df[['title', 'release_date', 'vote_average']]\n    transformed_df = transformed_df.rename(columns={'vote_average': 'vote_average'})\n    # Convert dataframe to list of dicts for loading\n    return transformed_df.to_dict('records')" } ] },
+      { "id": "m4_load", "title": "Phase 4: The 'Load' Task", "goal": "Create a task that takes the transformed data and loads it into the BigQuery table using an Airflow provider.", "content": [ { "type": "paragraph", "value": "This is the final step where data lands in the warehouse. We use a pre-built Airflow operator for this, which is the recommended practice." }, { "type": "callout", "style": "info", "value": "You must install the provider with `pip install apache-airflow-providers-google` and set up a GCP connection in the Airflow UI using your service account JSON." }, { "type": "code", "language": "python", "value": "# dags/movie_etl_dag.py (conceptual)\nfrom airflow.providers.google.cloud.operators.bigquery import BigQueryInsertJobOperator\n\n@task\ndef load_to_bigquery(transformed_movies: list):\n    # This is a simplified approach. For large data, loading via GCS is better.\n    load_task = BigQueryInsertJobOperator(\n        task_id='insert_movies_to_bigquery',\n        gcp_conn_id='your_gcp_conn_id',\n        configuration={\n            'load': {\n                'destinationTable': {\n                    'projectId': 'your-gcp-project',\n                    'datasetId': 'movie_data',\n                    'tableId': 'popular_movies'\n                },\n                'sourceFormat': 'NEWLINE_DELIMITED_JSON',\n                'writeDisposition': 'WRITE_TRUNCATE' # Overwrite table each time\n            }\n        },\n        rows=transformed_movies\n    )" } ] },
+      { "id": "m5_orchestration", "title": "Phase 5: Orchestrate and Schedule the DAG", "goal": "Define the full DAG with task dependencies, set a daily schedule, and trigger it from the Airflow UI.", "content": [ { "type": "paragraph", "value": "Connect all the pieces into a complete, scheduled workflow. We'll use the TaskFlow API for a clean, Pythonic definition." }, { "type": "code", "language": "python", "value": "# dags/movie_etl_dag.py (full DAG structure)\nfrom airflow.decorators import dag\nfrom datetime import datetime\n\n@dag(start_date=datetime(2023, 1, 1), schedule='@daily', catchup=False)\ndef movie_etl_dag():\n    api_key = 'YOUR_TMDB_API_KEY'\n    raw_data = extract_movie_data(api_key)\n    transformed_data = transform_movie_data(raw_data)\n    load_to_bigquery(transformed_data)\n\nmovie_etl_dag()" }, { "type": "paragraph", "value": "Place this file in your `dags` folder. Airflow will automatically detect it. You can then enable it in the UI, trigger a manual run, and see the tasks execute in order." } ] }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Full-Stack E-Commerce Platform",
+    "tagline": "Build a complete e-commerce website with product listings, a shopping cart, user authentication, and payment processing with Stripe.",
+    "domain": "E-commerce & Full-Stack",
+    "difficulty": "Advanced",
+    "estimatedHours": 120,
+    "problemStatement": "Building an online store from scratch is complex, requiring a robust backend for managing products and orders, a secure payment system, a user-friendly frontend for browsing, and a persistent shopping cart experience.",
+    "solution": "Develop a Next.js application for both the frontend and backend API. Use Prisma as an ORM to interact with a PostgreSQL database for storing users, products, and orders. Implement user authentication with NextAuth.js. Build a shopping cart using client-side state management (e.g., Zustand or Redux Toolkit). Integrate Stripe Checkout for secure, off-site payment processing.",
+    "skillsGained": [
+      "Full-Stack Development (Next.js)",
+      "Database Modeling (PostgreSQL)",
+      "ORM (Prisma)",
+      "User Authentication (NextAuth.js)",
+      "Payment Gateway Integration (Stripe)",
+      "State Management (Zustand/Redux)",
+      "API Route Development",
+      "Server-Side Rendering (SSR)"
+    ],
+    "techStack": [
+      { "name": "Next.js", "type": "Framework" },
+      { "name": "React", "type": "Library" },
+      { "name": "TypeScript", "type": "Language" },
+      { "name": "PostgreSQL", "type": "Database" },
+      { "name": "Prisma", "type": "ORM" },
+      { "name": "Stripe", "type": "Payment Service" },
+      { "name": "NextAuth.js", "type": "Authentication" },
+      { "name": "Tailwind CSS", "type": "Styling" }
+    ],
+    "professionalPractices": {
+      "relationalDataModeling": {
+        "title": "Relational Data Modeling",
+        "description": "Design a relational database schema with tables for Users, Products, Orders, and OrderItems, establishing clear relationships (one-to-many, many-to-many) to ensure data integrity."
+      },
+      "securePaymentHandling": {
+        "title": "Secure Payment Handling",
+        "description": "Learn the best practice of never handling raw credit card data on your server. Instead, orchestrate a secure checkout session with a trusted third-party provider like Stripe."
+      },
+      "sessionManagement": {
+        "title": "Authentication and Session Management",
+        "description": "Implement robust user login, registration, and session management using a battle-tested library like NextAuth.js, protecting user data and private routes."
+      }
+    },
+    "milestones": [
+      { "id": "m1_setup", "title": "Phase 1: Project & Database Setup", "goal": "Initialize a Next.js project and set up a PostgreSQL database (e.g., with Docker). Define the database schema with Prisma.", "content": [ { "type": "paragraph", "value": "The foundation is a well-defined data model. Prisma allows us to define this model in a simple schema file, which becomes the single source of truth for our database structure." }, { "type": "code", "language": "prisma", "value": "// prisma/schema.prisma\ndatasource db { provider = \"postgresql\" ... }\ngenerator client { provider = \"prisma-client-js\" }\n\nmodel Product {\n  id          String  @id @default(cuid())\n  name        String\n  description String\n  price       Float\n  imageUrl    String\n}\n\nmodel User {\n  id    String @id @default(cuid())\n  email String @unique\n  // ... other fields like name, password, etc.\n}\n// More models for Order, OrderItem etc. will be added later" }, { "type": "paragraph", "value": "Run `npx prisma migrate dev --name init` to create the initial tables in your database based on this schema." } ] },
+      { "id": "m2_products", "title": "Phase 2: Product Display & API", "goal": "Seed the database with sample products and build the public-facing pages to display them (a product grid and a single product detail page).", "content": [ { "type": "subheader", "value": "1. Seeding Data" }, { "type": "paragraph", "value": "Create a `seed.ts` script that uses Prisma Client to populate your `Product` table with some sample data." }, { "type": "subheader", "value": "2. Product Pages" }, { "type": "paragraph", "value": "Use Next.js server-side rendering (`getServerSideProps` or App Router server components) to fetch all products from the database using Prisma Client. Pass this data as props to your React components to render a grid of products on the homepage. Create a dynamic route `[productId].tsx` for single product pages." } ] },
+      { "id": "m3_cart", "title": "Phase 3: Shopping Cart & State Management", "goal": "Implement a client-side shopping cart. Users should be able to add products, see the cart contents, and update quantities.", "content": [ { "type": "paragraph", "value": "Use a lightweight state management library like Zustand to manage the cart state globally. This avoids prop-drilling and keeps the cart logic organized." }, { "type": "code", "language": "typescript", "value": "// store/cartStore.ts (conceptual)\nimport create from 'zustand';\n\ninterface CartState {\n  items: any[];\n  addToCart: (product: any) => void;\n  // ... other actions like removeFromCart, updateQuantity\n}\n\nexport const useCartStore = create<CartState>((set) => ({\n  items: [],\n  addToCart: (product) => set((state) => ({ items: [...state.items, product] })),\n}));" }, { "type": "callout", "style": "info", "value": "To make the cart persist across browser sessions, use `zustand/middleware` to sync the cart state to `localStorage`." } ] },
+      { "id": "m4_auth_checkout", "title": "Phase 4: Authentication & Stripe Checkout", "goal": "Integrate NextAuth.js for user login/signup. Create a checkout flow where an authenticated user generates a Stripe Checkout session.", "content": [ { "type": "paragraph", "value": "Protect the checkout page so only authenticated users can access it. When a user proceeds to checkout, your backend API route will use the Stripe SDK to create a session with the items from the user's cart and redirect them to the Stripe-hosted payment page." }, { "type": "code", "language": "typescript", "value": "// pages/api/checkout_sessions.ts (conceptual)\nimport { stripe } from '@/lib/stripe';\n\nexport default async function handler(req, res) {\n  const { cartItems } = req.body;\n  const line_items = cartItems.map(item => ({\n    price_data: { /* ... product data ... */ },\n    quantity: item.quantity\n  }));\n\n  const session = await stripe.checkout.sessions.create({\n    payment_method_types: ['card'],\n    line_items,\n    mode: 'payment',\n    success_url: `${req.headers.origin}/result?session_id={CHECKOUT_SESSION_ID}`,\n    cancel_url: `${req.headers.origin}/cart`,\n  });\n\n  res.status(200).json({ sessionId: session.id });\n}" } ] },
+      { "id": "m5_orders", "title": "Phase 5: Order Fulfillment & History", "goal": "Use Stripe webhooks to listen for successful payments. When a payment succeeds, create an Order record in your database and display past orders on a user's profile page.", "content": [ { "type": "paragraph", "value": "This closes the loop reliably. A dedicated webhook API route will receive events from Stripe, verify their authenticity, and then use Prisma to save the order details to your `Order` and `OrderItem` tables." }, { "type": "callout", "style": "error", "value": "**Security Critical:** Always verify the webhook signature from Stripe to ensure the request is genuine and not a malicious attempt to create fake orders." }, { "type": "paragraph", "value": "Finally, create a protected `/profile/orders` page where a logged-in user can see a list of their past orders, fetched from the database using their user ID." } ] }
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Real-Time Collaborative Whiteboard",
+    "tagline": "Build a web-based whiteboard where multiple users can draw together in real-time, like a simplified Miro or FigJam.",
+    "domain": "Real-Time Applications & WebSockets",
+    "difficulty": "Advanced",
+    "estimatedHours": 80,
+    "problemStatement": "Standard web applications follow a request-response model. To enable real-time collaboration, where one user's actions are instantly visible to others, a persistent, low-latency communication channel between all clients and the server is required.",
+    "solution": "Create a React frontend using the HTML5 Canvas API for drawing. When a user draws, their coordinates and actions are sent to a Node.js backend server via WebSockets (using a library like Socket.io). The server then broadcasts this drawing data to all other connected clients in the same 'room'. Each client's application listens for these broadcasted events and renders the drawing actions on their own canvas, creating the illusion of shared, real-time activity.",
+    "skillsGained": [
+      "WebSockets (Socket.io)",
+      "HTML5 Canvas API",
+      "Real-time State Synchronization",
+      "Broadcast and Room-based Logic",
+      "Client-side State Prediction",
+      "Event-driven Architecture",
+      "Handling Network Latency",
+      "Frontend Performance with Canvas"
+    ],
+    "techStack": [
+      { "name": "React", "type": "Framework" },
+      { "name": "Node.js", "type": "Runtime" },
+      { "name": "Express.js", "type": "Framework" },
+      { "name": "WebSocket (Socket.io)", "type": "Real-time API" },
+      { "name": "HTML5 Canvas", "type": "Browser API" },
+      { "name": "TypeScript", "type": "Language" },
+      { "name": "Vite", "type": "Build Tool" }
+    ],
+    "professionalPractices": {
+      "realtimeEventBroadcasting": {
+        "title": "Real-time Event Broadcasting",
+        "description": "Understand the fundamental pattern of real-time apps: a client emits an event, the server receives it and broadcasts it to all other clients, who then react to that event."
+      },
+      "stateSynchronization": {
+        "title": "State Synchronization Challenges",
+        "description": "Learn to manage shared state across multiple clients, including how to handle initial state for new joiners and ensure consistency despite network delays."
+      },
+      "optimisticUI": {
+        "title": "Optimistic UI Updates",
+        "description": "Improve user experience by implementing optimistic updates. When a user draws, render it on their screen immediately, before the server confirms it, making the app feel instantaneous."
+      }
+    },
+    "milestones": [
+      { "id": "m1_setup", "title": "Phase 1: Basic Canvas Drawing", "goal": "Create a React component with an HTML5 canvas element and implement mouse event handlers to allow a single user to draw on it.", "content": [ { "type": "paragraph", "value": "Before networking, we need the core drawing functionality. You'll need a `useRef` for the canvas element and `useEffect` to attach `mousedown`, `mousemove`, and `mouseup` event listeners to draw lines on the canvas 2D context." } ] },
+      { "id": "m2_server_setup", "title": "Phase 2: WebSocket Server Setup", "goal": "Set up a simple Node.js and Express server with Socket.io. It should be able to accept WebSocket connections from clients and log connection events.", "content": [ { "type": "paragraph", "value": "The server will act as the central hub for all real-time communication. We'll set up the basic boilerplate." }, { "type": "code", "language": "javascript", "value": "// server/index.js\nconst express = require('express');\nconst http = require('http');\nconst { Server } = require('socket.io');\n\nconst app = express();\nconst server = http.createServer(app);\nconst io = new Server(server, {\n  cors: { origin: 'http://localhost:5173' } // Allow client connection\n});\n\nio.on('connection', (socket) => {\n  console.log(`Client connected: ${socket.id}`);\n  socket.on('disconnect', () => {\n    console.log(`Client disconnected: ${socket.id}`);\n  });\n});\n\nserver.listen(3001, () => console.log('Server listening on port 3001'));" } ] },
+      { "id": "m3_client_server_integration", "title": "Phase 3: Connecting Client and Server & Emitting Events", "goal": "Modify the React client to connect to the WebSocket server. When a user draws, emit the drawing data to the server.", "content": [ { "type": "paragraph", "value": "This is the first step of synchronization. The local drawing actions are now sent to the central server using `socket.emit`." }, { "type": "code", "language": "typescript", "value": "// client/src/Whiteboard.tsx (conceptual)\nimport { io } from 'socket.io-client';\nconst socket = io('http://localhost:3001');\n\n// Inside the mouse move handler\nif (isDrawing) {\n    // ... local drawing logic ...\n    const drawEvent = { x0: lastPos.x, y0: lastPos.y, x1: currentPos.x, y1: currentPos.y, color };\n    socket.emit('draw', drawEvent);\n}" } ] },
+      { "id": "m4_broadcasting", "title": "Phase 4: Broadcasting and Rendering", "goal": "Update the server to broadcast received drawing data to all other clients. Update the client to listen for these broadcasts and draw them on the canvas.", "content": [ { "type": "paragraph", "value": "This is the magic moment where collaboration happens. One user's actions will now appear on another's screen. The server uses `socket.broadcast.emit` to send to everyone except the original sender." }, { "type": "code", "language": "javascript", "value": "// server/index.js (inside io.on('connection'))\nsocket.on('draw', (data) => {\n  // Broadcast to everyone else in the same room/namespace\n  socket.broadcast.emit('draw', data);\n});" }, { "type": "paragraph", "value": "On the client side, we set up a listener for the same event." }, { "type": "code", "language": "typescript", "value": "// client/src/Whiteboard.tsx (inside useEffect)\nsocket.on('draw', (data) => {\n  // A function that takes coordinates and color\n  // and draws a line on the canvas context.\n  drawRemoteLine(data.x0, data.y0, data.x1, data.y1, data.color);\n});" } ] },
+      { "id": "m5_features", "title": "Phase 5: Advanced Features (Rooms & State Sync)", "goal": "Implement a 'room' system so multiple whiteboards can exist simultaneously and sync the full canvas state for new users.", "content": [ { "type": "subheader", "value": "1. Room Logic" }, { "type": "paragraph", "value": "Modify the server to have clients join a room upon connection, e.g., based on the URL. Broadcasts should then be sent only to that room: `socket.to(roomName).emit(...)`." }, { "type": "subheader", "value": "2. Initial State Synchronization" }, { "type": "paragraph", "value": "When a new user joins a room, they see a blank canvas. The best practice is for the server to store the canvas state (as a data URL or a history of draw commands) and send it to the new user immediately upon them joining the room. This ensures everyone is in sync." }, { "type": "callout", "style": "info", "value": "A simple implementation could have the first user in a room periodically emit their full canvas `toDataURL()` to the server, which then caches it for new joiners." } ] }
+    ]
+  },
+  {
+    "id": 7,
+    "title": "Computer Vision Object Detection API",
+    "tagline": "Deploy a pre-trained machine learning model as a Python API to detect common objects in user-uploaded images.",
+    "domain": "AI/ML & API Development",
+    "difficulty": "Intermediate",
+    "estimatedHours": 50,
+    "problemStatement": "Running a machine learning model for inference often requires a specific environment and dependencies. To make a model accessible to other applications (e.g., a web or mobile app), it needs to be wrapped in a stable, easy-to-use web API.",
+    "solution": "Use a pre-trained object detection model like YOLOv8 from a library such as `ultralytics`. Build a Python web server using FastAPI, which is highly performant for ML applications. Create an API endpoint that accepts an image upload. The endpoint will process the image, pass it to the YOLO model for inference, and return a JSON response containing the detected objects' labels, confidence scores, and bounding box coordinates.",
+    "skillsGained": [
+      "ML Model Serving",
+      "API Development (FastAPI)",
+      "Computer Vision",
+      "Object Detection",
+      "Using Pre-trained Models (YOLO)",
+      "Image Processing (Pillow/OpenCV)",
+      "Python Environment Management",
+      "Asynchronous Programming in Python"
+    ],
+    "techStack": [
+      { "name": "Python", "type": "Language" },
+      { "name": "FastAPI", "type": "API Framework" },
+      { "name": "YOLOv8 (Ultralytics)", "type": "ML Model/Library" },
+      { "name": "Pillow", "type": "Image Processing Library" },
+      { "name": "Uvicorn", "type": "ASGI Server" },
+      { "name": "Docker", "type": "Containerization" }
+    ],
+    "professionalPractices": {
+      "modelServingPattern": {
+        "title": "ML Model Serving Pattern",
+        "description": "Learn the common architectural pattern of wrapping a complex ML model in a simple, stateless web API. This decouples the model from the applications that use it."
+      },
+      "asyncApiForIO": {
+        "title": "Asynchronous APIs for I/O-Bound Tasks",
+        "description": "Understand why using an async framework like FastAPI is beneficial for ML APIs, as it can handle multiple concurrent requests efficiently while waiting for I/O operations like model loading or file reading."
+      },
+      "dependencyManagement": {
+        "title": "Dependency Management for ML",
+        "description": "Recognize the importance of pinning specific versions of ML libraries (`torch`, `ultralytics`, etc.) in a `requirements.txt` file to ensure a reproducible and stable model environment."
+      }
+    },
+    "milestones": [
+      { "id": "m1_model_local", "title": "Phase 1: Local Model Inference", "goal": "Write a simple Python script that loads the pre-trained YOLO model and runs inference on a local image file, printing the results.", "content": [ { "type": "paragraph", "value": "First, we ensure the model works correctly in our environment before building an API around it. This isolates any model/dependency issues from API issues." }, { "type": "code", "language": "python", "value": "# test_model.py\nfrom ultralytics import YOLO\n\n# Load a pretrained YOLOv8n model\nmodel = YOLO('yolov8n.pt')\n\n# Run inference on an image\nresults = model('path/to/your/image.jpg')\n\n# Process results object\nfor r in results:\n    for box in r.boxes:\n        class_name = model.names[int(box.cls)]\n        confidence = float(box.conf)\n        print(f'Detected {class_name} with confidence {confidence:.2f}')" } ] },
+      { "id": "m2_fastapi_setup", "title": "Phase 2: Basic FastAPI Endpoint", "goal": "Set up a FastAPI application with a simple 'hello world' endpoint to ensure the web server is running correctly.", "content": [ { "type": "paragraph", "value": "This step verifies the web framework and server configuration. We'll install FastAPI and Uvicorn, the server that will run our app." }, { "code":"", "language": "bash", "value": "pip install fastapi uvicorn" }, { "type": "code", "language": "python", "value": "# main.py\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get('/')\nasync def root():\n    return {'message': 'Object Detection API is running!'}" }, { "type": "callout", "style": "info", "value": "Run the server from your terminal with `uvicorn main:app --reload`. You should see the JSON response at `http://127.0.0.1:8000`." } ] },
+      { "id": "m3_image_upload", "title": "Phase 3: Image Upload Endpoint", "goal": "Create a new FastAPI endpoint that can accept an image file uploaded via an HTTP POST request.", "content": [ { "type": "paragraph", "value": "The API needs a way to receive the input data. FastAPI makes handling file uploads straightforward using `UploadFile` and `File`." }, { "type": "code", "language": "python", "value": "# main.py\nfrom fastapi import FastAPI, UploadFile, File\nimport io\nfrom PIL import Image\n\napp = FastAPI()\n\n@app.post('/detect/')\nasync def detect_objects(file: UploadFile = File(...)):\n    # Read image content into memory\n    image_bytes = await file.read()\n    # Convert bytes to a PIL Image\n    try:\n        image = Image.open(io.BytesIO(image_bytes))\n    except Exception:\n        return {\"error\": \"Invalid image file\"}\n    \n    return {'filename': file.filename, 'image_size': image.size}" } ] },
+      { "id": "m4_inference_api", "title": "Phase 4: Integrating the Model into the API", "goal": "Combine the model inference logic from Phase 1 with the upload endpoint. The API should now run detection on the uploaded image and return structured JSON.", "content": [ { "type": "paragraph", "value": "This is the core of the project. We load the model once at startup to avoid reloading it on every request. The endpoint then processes the uploaded image and formats the model's output." }, { "type": "code", "language": "python", "value": "# main.py (conceptual additions)\nmodel = YOLO('yolov8n.pt') # Load model globally\n\n@app.post('/detect/')\nasync def detect_objects(file: UploadFile = File(...)):\n    image = Image.open(io.BytesIO(await file.read()))\n    results = model(image)\n    \n    detections = []\n    for r in results:\n        for box in r.boxes:\n            detections.append({\n                'class': model.names[int(box.cls)],\n                'confidence': float(box.conf),\n                'bbox': [int(coord) for coord in box.xyxy[0]] # [x1, y1, x2, y2]\n            })\n    return {'detections': detections}" } ] },
+      { "id": "m5_dockerize", "title": "Phase 5: Containerize the Application", "goal": "Create a Dockerfile to package the FastAPI application, all its Python dependencies, and the model weights into a self-contained, portable Docker image.", "content": [ { "type": "paragraph", "value": "Dockerizing the application makes it easy to deploy anywhere, ensuring the environment is always consistent. This is a critical step for production ML systems." }, { "type": "code", "language": "dockerfile", "value": "# Dockerfile\nFROM python:3.9-slim\n\nWORKDIR /app\n\n# First copy only requirements to leverage Docker cache\nCOPY requirements.txt requirements.txt\nRUN pip install --no-cache-dir -r requirements.txt\n\n# The ultralytics library will download the model on first run\n# or you can copy it in if you have it locally.\n\nCOPY . /app\n\nEXPOSE 80\nCMD [\"uvicorn\", \"main:app\", \"--host\", \"0.0.0.0\", \"--port\", \"80\"]" }, { "type": "callout", "style": "info", "value": "Build with `docker build -t object-detection-api .` and run with `docker run -p 8000:80 object-detection-api`." } ] }
+    ]
+  },
+  {
+    "id": 8,
+    "title": "Stock Market Analysis Dashboard",
+    "tagline": "Create a financial dashboard that fetches and displays historical stock data, calculates key metrics, and visualizes trends.",
+    "domain": "FinTech & Data Analysis",
+    "difficulty": "Intermediate",
+    "estimatedHours": 65,
+    "problemStatement": "Investors and traders need to analyze historical price data and technical indicators for stocks. Accessing this data and visualizing it effectively often requires specialized, expensive software. A custom web dashboard can provide this functionality in an accessible way.",
+    "solution": "Build a SvelteKit application for a fast and reactive user interface. The user will be able to input a stock ticker symbol. The SvelteKit backend (server-side load functions) will then call a third-party financial data API (e.g., Alpha Vantage or Finnhub) to fetch historical price data (OHLC). This data will be processed to calculate metrics like moving averages and then passed to the frontend, where it's visualized using interactive charts.",
+    "skillsGained": [
+      "Third-Party API Integration",
+      "Financial Data Handling (OHLC)",
+      "Data Analysis & Calculation",
+      "Data Visualization (Charts)",
+      "Reactive Frontend Frameworks (SvelteKit)",
+      "Server-Side Data Fetching",
+      "State Management in Svelte",
+      "API Key Management"
+    ],
+    "techStack": [
+      { "name": "SvelteKit", "type": "Framework" },
+      { "name": "Svelte", "type": "Language/Compiler" },
+      { "name": "Alpha Vantage / Finnhub", "type": "Data API" },
+      { "name": "Chart.js / Lightweight Charts", "type": "Visualization Library" },
+      { "name": "Node.js", "type": "Runtime" },
+      { "name": "Tailwind CSS", "type": "Styling" },
+      { "name": "Vercel", "type": "Hosting" }
+    ],
+    "professionalPractices": {
+      "apiAbstraction": {
+        "title": "API Abstraction Layer",
+        "description": "Create a dedicated module or server route in your application to handle all interactions with the external financial API. This isolates your main application logic from the specifics of the third-party service."
+      },
+      "secureApiKeys": {
+        "title": "Secure API Key Handling",
+        "description": "Never expose your financial API key on the client side. Learn to store it as an environment variable on the server and make all API calls from the SvelteKit backend."
+      },
+      "dataTransformationForViz": {
+        "title": "Data Transformation for Visualization",
+        "description": "Practice transforming raw API data (often complex JSON) into a clean, simple structure that is optimized for consumption by charting libraries."
+      }
+    },
+    "milestones": [
+      { "id": "m1_setup", "title": "Phase 1: SvelteKit Project and API Setup", "goal": "Initialize a new SvelteKit project and sign up for a free API key from a financial data provider like Alpha Vantage.", "content": [ { "type": "paragraph", "value": "We'll start with a clean SvelteKit skeleton project. Securing your API key in a `.env` file from the beginning is a crucial first step." }, { "type": "code", "language": "bash", "value": "# .env\n# Private env vars are only accessible on the server in SvelteKit\nALPHA_VANTAGE_API_KEY=YOUR_API_KEY" } ] },
+      { "id": "m2_api_call", "title": "Phase 2: Server-Side Data Fetching", "goal": "Create a SvelteKit page with a `+page.server.js` file. Implement the `load` function to fetch data for a hardcoded stock ticker from the financial API.", "content": [ { "type": "paragraph", "value": "SvelteKit's `load` function runs on the server before the page is rendered, making it the perfect place to securely call our external API without exposing the key to the client." }, { "type": "code", "language": "javascript", "value": "// src/routes/stock/[ticker]/+page.server.js\nimport { ALPHA_VANTAGE_API_KEY } from '$env/static/private';\n\nexport async function load({ params }) {\n  const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${params.ticker}&apikey=${ALPHA_VANTAGE_API_KEY}`;\n  const res = await fetch(url);\n  const data = await res.json();\n\n  // Basic transformation for easier consumption\n  const timeSeries = data['Time Series (Daily)'];\n  const processedData = Object.entries(timeSeries).map(([date, values]) => ({\n    time: date,\n    close: parseFloat(values['4. close'])\n  }));\n\n  return { stockData: processedData.reverse() }; // Reverse to be in chronological order\n}" } ] },
+      { "id": "m3_charting", "title": "Phase 3: Basic Data Visualization", "goal": "In the corresponding `+page.svelte` file, receive the data from the `load` function and render an interactive stock chart.", "content": [ { "type": "paragraph", "value": "This step involves taking the server-provided data and turning it into a visual representation on the client. We'll use a library like `lightweight-charts` which is specifically designed for financial data." }, { "type": "code", "language": "svelte", "value": "<!-- src/routes/stock/[ticker]/+page.svelte -->\n<script>\n  import { onMount } from 'svelte';\n  import { createChart } from 'lightweight-charts';\n\n  export let data; // Data comes from the load function\n  let chartContainer;\n\n  onMount(() => {\n    const chart = createChart(chartContainer, { width: 800, height: 400 });\n    const lineSeries = chart.addLineSeries();\n    lineSeries.setData(data.stockData.map(d => ({ time: d.time, value: d.close })));\n  });\n</script>\n\n<div bind:this={chartContainer} />" } ] },
+      { "id": "m4_user_input", "title": "Phase 4: User Input and Dynamic Routing", "goal": "Create a main page with an input field where a user can type a ticker symbol. Submitting the form should navigate them to the dynamic route for that ticker.", "content": [ { "type": "paragraph", "value": "Make the dashboard interactive by allowing users to choose which stock to analyze. We'll use a simple Svelte form." }, { "type": "code", "language": "svelte", "value": "<!-- src/routes/+page.svelte -->\n<script>\n  import { goto } from '$app/navigation';\n  let ticker = 'AAPL';\n\n  function handleSubmit() {\n    goto(`/stock/${ticker.toUpperCase()}`);\n  }\n</script>\n\n<form on:submit|preventDefault={handleSubmit}>\n  <input type=\"text\" bind:value={ticker} />\n  <button type=\"submit\">Analyze Stock</button>\n</form>" } ] },
+      { "id": "m5_metrics", "title": "Phase 5: Calculating and Displaying Metrics", "goal": "Enhance the server-side data processing to calculate a 50-day simple moving average (SMA). Display the SMA as a second line on the chart.", "content": [ { "type": "paragraph", "value": "Add value by providing analysis, not just raw data. A moving average is a common technical indicator that is straightforward to calculate." }, { "type": "callout", "style": "info", "value": "This calculation should be done in the `+page.server.js` load function to keep the client light and to process data before sending it." }, { "type": "paragraph", "value": "After calculating the SMA data, pass it as another prop to the frontend and add a second `lineSeries` to the chart to display it alongside the price." } ] }
+    ]
+  },
+  {
+    "id": 9,
+    "title": "Microservices-Based Ordering System",
+    "tagline": "Decompose a monolithic application into a system of independent microservices that communicate over a message bus.",
+    "domain": "Backend & Cloud Native",
+    "difficulty": "Expert",
+    "estimatedHours": 150,
+    "problemStatement": "Monolithic applications are difficult to scale, maintain, and update. A change in one part requires re-deploying the entire system. A microservices architecture solves this by breaking the system into small, independent services that can be developed and deployed individually.",
+    "solution": "Design and build three distinct microservices in Node.js: a 'Users' service for authentication, a 'Products' service to manage inventory, and an 'Orders' service to handle purchases. Services will expose their own REST APIs. For inter-service communication (e.g., the Orders service needs product details), they will communicate asynchronously via a RabbitMQ message bus. The entire system will be run locally using Docker Compose.",
+    "skillsGained": [
+      "Microservices Architecture",
+      "Asynchronous Communication (Message Queues)",
+      "RabbitMQ / AMQP",
+      "Service Discovery",
+      "Container Orchestration (Docker Compose)",
+      "API Gateway Pattern (Optional)",
+      "Database-per-Service Pattern",
+      "Inter-service Communication"
+    ],
+    "techStack": [
+      { "name": "Node.js", "type": "Runtime" },
+      { "name": "Express.js", "type": "Framework" },
+      { "name": "RabbitMQ", "type": "Message Broker" },
+      { "name": "Docker", "type": "Containerization" },
+      { "name": "PostgreSQL", "type": "Database" },
+      { "name": "JWT (JSON Web Tokens)", "type": "Authentication" }
+    ],
+    "professionalPractices": {
+      "databasePerService": {
+        "title": "Database-per-Service Pattern",
+        "description": "Understand a core principle of microservices: each service owns and manages its own database. This ensures loose coupling and prevents one service from directly impacting another's data store."
+      },
+      "asyncCommunication": {
+        "title": "Asynchronous Communication",
+        "description": "Learn why using a message bus like RabbitMQ for inter-service communication is more resilient and scalable than direct synchronous (HTTP) calls between services."
+      },
+      "serviceDecoupling": {
+        "title": "Service Decoupling",
+        "description": "Practice designing services with clear boundaries and responsibilities, aiming for high cohesion within a service and low coupling between services."
+      }
+    },
+    "milestones": [
+      { "id": "m1_compose", "title": "Phase 1: Docker Compose and RabbitMQ Setup", "goal": "Create a `docker-compose.yml` file to define the network and run a RabbitMQ container. This will be the communication backbone.", "content": [ { "type": "paragraph", "value": "Before writing any services, we set up the shared infrastructure that will allow them to talk to each other. We will also define placeholder services for our future applications." }, { "type": "code", "language": "yaml", "value": "# docker-compose.yml\nversion: '3.8'\nservices:\n  rabbitmq:\n    image: rabbitmq:3.9-management\n    ports:\n      - \"5672:5672\" # For AMQP\n      - \"15672:15672\" # For Management UI\n\n  products_db:\n    image: postgres:14\n    # ... volumes, environment for password\n\n  products_service:\n    build: ./products_service\n    # ... ports, environment\n\n  # ... other services (orders, users) defined similarly" } ] },
+      { "id": "m2_service_one", "title": "Phase 2: Building the 'Products' Service", "goal": "Create the first microservice for managing products. It will have its own database, a REST API (e.g., POST /products), and logic to publish an event ('product.created') to RabbitMQ.", "content": [ { "type": "paragraph", "value": "This service is self-contained. It can create, read, and update products, and it announces important events to the rest of the system using the `amqplib` library." }, { "type": "code", "language": "javascript", "value": "// products_service/index.js (conceptual)\napp.post('/products', async (req, res) => {\n  // 1. Logic to save product to products_db\n  const newProduct = await db.saveProduct(req.body);\n\n  // 2. Publish event to RabbitMQ\n  const channel = await getRabbitMQChannel();\n  const exchange = 'products_exchange';\n  await channel.assertExchange(exchange, 'fanout', { durable: false });\n  channel.publish(exchange, '', Buffer.from(JSON.stringify(newProduct)));\n\n  res.status(201).send(newProduct);\n});" } ] },
+      { "id": "m3_service_two", "title": "Phase 3: Building the 'Orders' Service", "goal": "Create the 'Orders' service. It will listen for 'product.created' events to maintain a local, replicated copy of product data and expose an API to create new orders.", "content": [ { "type": "paragraph", "value": "The Orders service needs product prices to calculate order totals, but it should not call the Products service directly. Instead, it subscribes to events and maintains its own data." }, { "type": "callout", "style": "info", "value": "This pattern of data replication via events is called 'Event-Carried State Transfer' and is key to achieving service autonomy." }, { "type": "code", "language": "javascript", "value": "// orders_service/event-listener.js (conceptual)\nasync function listenForProductEvents() {\n  const channel = await getRabbitMQChannel();\n  const exchange = 'products_exchange';\n  await channel.assertExchange(exchange, 'fanout', { durable: false });\n\n  const q = await channel.assertQueue('', { exclusive: true });\n  channel.bindQueue(q.queue, exchange, '');\n\n  channel.consume(q.queue, (msg) => {\n    const product = JSON.parse(msg.content.toString());\n    // Save/update product info in the Orders service's own database\n    db.replicateProduct(product);\n  }, { noAck: true });\n}" } ] },
+      { "id": "m4_communication", "title": "Phase 4: Placing an Order", "goal": "Implement the API endpoint in the 'Orders' service to place an order. This will read from its own replicated product data and publish an 'order.created' event.", "content": [ { "type": "paragraph", "value": "This tests the entire asynchronous flow. When a client calls `POST /orders`, the service checks its local data for the price, creates the order in its own database, and then tells the rest of the system about it by publishing a new event." }, { "type": "code", "language": "javascript", "value": "// orders_service/index.js (conceptual)\napp.post('/orders', async (req, res) => {\n  // 1. Fetch product price from the Orders DB (the replicated one)\n  const product = await db.getProduct(req.body.productId);\n\n  // 2. Create order in the Orders DB\n  const newOrder = await db.createOrder({ ...req.body, price: product.price });\n\n  // 3. Publish an 'order.created' event for other services (e.g., notifications)\n  publishEvent('orders_exchange', newOrder);\n\n  res.status(201).send(newOrder);\n});" } ] },
+      { "id": "m5_gateway", "title": "Phase 5: (Advanced) API Gateway", "goal": "Introduce a simple API Gateway as the single entry point for all client requests. The gateway will route requests to the appropriate internal microservice.", "content": [ { "type": "paragraph", "value": "In a real system, clients don't talk to each individual service. An API Gateway handles concerns like authentication, rate limiting, and routing, simplifying the client and securing the internal network. We can build a simple one with Node.js and `http-proxy-middleware`." }, { "type": "code", "language": "javascript", "value": "// api_gateway/index.js (conceptual)\nconst { createProxyMiddleware } = require('http-proxy-middleware');\n\napp.use('/api/products', createProxyMiddleware({ target: 'http://products_service:3000', changeOrigin: true }));\napp.use('/api/orders', createProxyMiddleware({ target: 'http://orders_service:3001', changeOrigin: true }));\n\n// Add authentication middleware here before the proxies" } ] }
+    ]
+  },
+  {
+    "id": 10,
+    "title": "Browser-Based 2D Platformer Game",
+    "tagline": "Develop a classic 2D platformer game that runs in the browser using the Phaser.js game engine, complete with physics, animations, and collectibles.",
+    "domain": "Game Development",
+    "difficulty": "Intermediate",
+    "estimatedHours": 75,
+    "problemStatement": "Game development involves complex concepts not found in typical web development, such as a game loop, physics, sprite management, and asset loading. A framework is needed to manage this complexity and build interactive experiences for the web.",
+    "solution": "Use the Phaser.js 3 game engine within a modern web development setup (e.g., Vite). Create a game with a player character who can run and jump. Design a level using a tilemap created with a free tool like Tiled. Implement physics for gravity and collisions. Add collectibles (e.g., coins) and a simple UI to display the score. The game will be structured into distinct Phaser Scenes (e.g., Preloader, MainGame, UI).",
+    "skillsGained": [
+      "Game Development Fundamentals",
+      "Game Engine (Phaser.js)",
+      "Game Loop and Scenes",
+      "Sprite and Animation Management",
+      "2D Physics and Collision Detection",
+      "Tilemap Level Design",
+      "Asset Management (Images, Audio)",
+      "State Management in Games"
+    ],
+    "techStack": [
+      { "name": "Phaser.js", "type": "Game Engine" },
+      { "name": "JavaScript / TypeScript", "type": "Language" },
+      { "name": "Tiled", "type": "Level Editor" },
+      { "name": "Vite", "type": "Build Tool" },
+      { "name": "HTML5", "type": "Platform" }
+    ],
+    "professionalPractices": {
+      "sceneManagement": {
+        "title": "Scene-Based Game Architecture",
+        "description": "Learn to structure your game into modular 'Scenes' (e.g., Main Menu, Level 1, Game Over). This is a fundamental pattern for organizing game logic and managing game state."
+      },
+      "entityComponentSystem": {
+        "title": "Entity-Component Thinking (Simplified)",
+        "description": "Understand the concept of creating game objects (Entities) by composing behaviors (Components). Phaser's structure naturally encourages this pattern, promoting reusable and flexible code."
+      },
+      "assetLifecycle": {
+        "title": "Game Asset Lifecycle",
+        "description": "Practice the full lifecycle of game assets: preloading all necessary images and sounds before the game starts, using them within the game, and cleaning them up when they are no longer needed."
+      }
+    },
+    "milestones": [
+      { "id": "m1_setup", "title": "Phase 1: Project Setup and First Scene", "goal": "Set up a new web project using Vite and Phaser.js. Create a 'Preloader' scene that loads all game assets before transitioning to the main game.", "content": [ { "type": "paragraph", "value": "A Phaser game is configured with scenes. The first scene is typically a 'Preloader' that loads all game assets (images, spritesheets) and shows a loading bar. Once loading is complete, it starts the next scene." }, { "type": "code", "language": "javascript", "value": "// src/scenes/PreloaderScene.js\nexport class PreloaderScene extends Phaser.Scene {\n  constructor() { super('PreloaderScene'); }\n\n  preload() {\n    this.load.image('sky', 'assets/sky.png');\n    this.load.spritesheet('player', 'assets/player.png', { frameWidth: 32, frameHeight: 48 });\n    // ... load other assets\n  }\n\n  create() {\n    this.scene.start('MainGameScene');\n  }\n}" } ] },
+      { "id": "m2_player", "title": "Phase 2: Player, Physics, and Platforms", "goal": "In the 'MainGameScene', add a player sprite and a static platform. Enable arcade physics on both, giving the player gravity and the ability to collide with the platform.", "content": [ { "type": "paragraph", "value": "This brings the character and a simple world to life. We'll add the player and platform as physics-enabled game objects and define their interaction." }, { "type": "code", "language": "javascript", "value": "// src/scenes/MainGameScene.js (inside create method)\nconst platforms = this.physics.add.staticGroup();\nplatforms.create(400, 568, 'ground').setScale(2).refreshBody();\n\nthis.player = this.physics.add.sprite(100, 450, 'player');\nthis.player.setBounce(0.2);\nthis.player.setCollideWorldBounds(true);\n\nthis.physics.add.collider(this.player, platforms);" } ] },
+      { "id": "m3_controls_animation", "title": "Phase 3: Controls and Animation", "goal": "Implement keyboard controls to move the player left and right and to make them jump. Create animations for 'left', 'right', and 'idle' from the player's spritesheet.", "content": [ { "type": "paragraph", "value": "In the `create` method, we define the animations. In the `update` loop of your scene, we check for keyboard input and set the player's velocity and animation accordingly." }, { "type": "code", "language": "javascript", "value": "// In create()\nthis.anims.create({ key: 'left', frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }), frameRate: 10, repeat: -1 });\nthis.cursors = this.input.keyboard.createCursorKeys();\n\n// In update()\nif (this.cursors.left.isDown) {\n  this.player.setVelocityX(-160);\n  this.player.anims.play('left', true);\n} else if (this.cursors.right.isDown) {\n  this.player.setVelocityX(160);\n  this.player.anims.play('right', true);\n} else {\n  this.player.setVelocityX(0);\n  this.player.anims.play('turn');\n}\nif (this.cursors.up.isDown && this.player.body.touching.down) {\n  this.player.setVelocityY(-330);\n}" } ] },
+      { "id": "m4_level", "title": "Phase 4: Level Design with Tilemaps", "goal": "Create a simple level in the Tiled map editor. Export it as a JSON file and load it into Phaser to create static platforms for the player.", "content": [ { "type": "paragraph", "value": "Instead of placing platforms manually in code, a tilemap allows for visual level design. You will load the tileset image and the JSON map data to construct the level." }, { "type": "callout", "style": "info", "value": "In Tiled, make sure to create an object layer for collision boundaries. This is what Phaser will use to create the physics bodies." }, { "type": "code", "language": "javascript", "value": "// In preload()\nthis.load.tilemapTiledJSON('map', 'assets/level1.json');\nthis.load.image('tiles', 'assets/tileset.png');\n\n// In create()\nconst map = this.make.tilemap({ key: 'map' });\nconst tileset = map.addTilesetImage('tileset_name_in_tiled', 'tiles');\nconst platformsLayer = map.createLayer('Platforms', tileset, 0, 0);\nplatformsLayer.setCollisionByExclusion(-1, true);\nthis.physics.add.collider(this.player, platformsLayer);" } ] },
+      { "id": "m5_gameplay", "title": "Phase 5: Collectibles and UI Scene", "goal": "Add a group of collectible stars to the level. When the player collects one, update the score. Create a separate UI Scene to overlay the score on top of the game.", "content": [ { "type": "paragraph", "value": "This adds a goal to the game. We'll use a physics overlap check. Running the UI in a parallel scene is a professional practice that separates game logic from display logic." }, { "type": "code", "language": "javascript", "value": "// In MainGameScene.js, create()\nconst stars = this.physics.add.group({ key: 'star', repeat: 11, setXY: { x: 12, y: 0, stepX: 70 } });\nthis.physics.add.overlap(this.player, stars, this.collectStar, null, this);\n\n// In config\nscene: [PreloaderScene, MainGameScene, UIScene]\n\n// In MainGameScene, create()\nthis.scene.launch('UIScene');\n\n// In collectStar(player, star)\nstar.disableBody(true, true);\nthis.events.emit('starCollected'); // Emit event for UI scene\n\n// In UIScene.js\ngameScene.events.on('starCollected', () => { \n  this.score += 10; \n  this.scoreText.setText('Score: ' + this.score); \n});" } ] }
+    ]
+  },
+  {
+    "id": 11,
+    "title": "Security Log Analysis Dashboard",
+    "tagline": "Build a security information and event management (SIEM) dashboard to ingest, parse, and visualize security logs to detect potential threats.",
+    "domain": "Cybersecurity & Data Analysis",
+    "difficulty": "Advanced",
+    "estimatedHours": 90,
+    "problemStatement": "Security teams are flooded with logs from various sources (web servers, firewalls). Manually sifting through these logs is impossible. A centralized system is needed to ingest these logs, parse them into structured data, and provide a dashboard for visualizing patterns and anomalies (e.g., brute-force attempts, vulnerability scanning).",
+    "solution": "Use the ELK Stack (Elasticsearch, Logstash, Kibana) running in Docker. Configure Logstash to ingest web server access logs (e.g., Nginx) from a file. Logstash will use a Grok filter to parse the unstructured log lines into structured JSON fields (IP, URL, status code). The parsed data is then sent to Elasticsearch for indexing and storage. Finally, use Kibana to connect to Elasticsearch and build dashboards to visualize key security metrics.",
+    "skillsGained": [
+      "Log Management and Analysis",
+      "ELK Stack (Elasticsearch, Logstash, Kibana)",
+      "Data Ingestion and Parsing (Logstash, Grok)",
+      "Search and Analytics (Elasticsearch)",
+      "Security Data Visualization (Kibana)",
+      "Threat Pattern Recognition",
+      "Containerization (Docker Compose)",
+      "Security Information and Event Management (SIEM) concepts"
+    ],
+    "techStack": [
+      { "name": "Elasticsearch", "type": "Search Engine / Database" },
+      { "name": "Logstash", "type": "Data Ingestion Pipeline" },
+      { "name": "Kibana", "type": "Visualization Dashboard" },
+      { "name": "Docker", "type": "Containerization" },
+      { "name": "Grok", "type": "Parsing Filter" },
+      { "name": "Nginx", "type": "Log Source" },
+      { "name": "YAML", "type": "Configuration Language" }
+    ],
+    "professionalPractices": {
+      "structuredLogging": {
+        "title": "The Power of Structured Logging",
+        "description": "Understand the critical difference between unstructured text logs and structured (JSON) logs. Learn how parsing logs into key-value pairs unlocks powerful searching, aggregation, and visualization capabilities."
+      },
+      "threatHuntingWithData": {
+        "title": "Threat Hunting with Data",
+        "description": "Move beyond simple monitoring. Learn to formulate hypotheses (e.g., 'Is someone attempting a SQL injection attack?') and use the data in your dashboard to find evidence and validate your theories."
+      },
+      "siemPipeline": {
+        "title": "SIEM Ingestion Pipeline",
+        "description": "Grasp the end-to-end flow of a typical SIEM: Data Source -> Collection -> Parsing/Enrichment -> Storage/Indexing -> Analysis/Visualization. This project builds a complete, albeit small-scale, version of this pipeline."
+      }
+    },
+    "milestones": [
+      { "id": "m1_setup", "title": "Phase 1: ELK Stack and Nginx Setup", "goal": "Use Docker Compose to launch a full ELK stack and an Nginx web server. Configure Nginx to write its access logs to a shared volume that Logstash can access.", "content": [ { "type": "paragraph", "value": "We will run all components in containers, creating a self-contained lab environment. A shared Docker volume is the key to letting the Logstash container read the logs produced by the Nginx container." }, { "type": "code", "language": "yaml", "value": "# docker-compose.yml (partial)\nservices:\n  nginx:\n    image: nginx:latest\n    ports: [\"8080:80\"]\n    volumes:\n      - nginx_logs:/var/log/nginx\n  logstash:\n    image: docker.elastic.co/logstash/logstash:8.6.1\n    volumes:\n      - ./logstash/pipeline:/usr/share/logstash/pipeline/\n      - nginx_logs:/var/log/nginx:ro # Mount as read-only\n    depends_on: [elasticsearch]\n  # ... elasticsearch and kibana services\nvolumes:\n  nginx_logs:" } ] },
+      { "id": "m2_logstash_ingest", "title": "Phase 2: Basic Log Ingestion", "goal": "Create a basic Logstash configuration pipeline that uses a 'file' input to read the Nginx access log and an 'elasticsearch' output to send it.", "content": [ { "type": "paragraph", "value": "This first pipeline will get the raw, unstructured log lines into Elasticsearch. We are not parsing them yet, just establishing the connection." }, { "type": "code", "language": "ruby", "value": "# logstash/pipeline/nginx.conf\ninput {\n  file {\n    path => \"/var/log/nginx/access.log\"\n    start_position => \"beginning\"\n    sincedb_path => \"/dev/null\" # Reread file on restart for testing\n  }\n}\n\noutput {\n  elasticsearch {\n    hosts => [\"http://elasticsearch:9200\"]\n    index => \"nginx-logs-%{+YYYY.MM.dd}\"\n  }\n}" }, { "type": "paragraph", "value": "After starting the stack, generate traffic to Nginx (`curl localhost:8080`) and then go to Kibana > Discover to see the raw log messages arriving." } ] },
+      { "id": "m3_parsing", "title": "Phase 3: Parsing Logs with Grok", "goal": "Add a 'filter' section to the Logstash pipeline. Use the Grok filter to parse the unstructured Nginx log line into distinct fields like `clientip`, `verb`, `request`, and `response`.", "content": [ { "type": "paragraph", "value": "This is the most critical transformation step. Grok uses patterns to extract structure from text. This turns a single `message` field into many useful, searchable fields." }, { "type": "code", "language": "ruby", "value": "# Add this section to nginx.conf between input {} and output {}\nfilter {\n  grok {\n    match => { \"message\" => \"%{COMBINEDAPACHELOG}\" }\n  }\n  # Also helpful to add a date filter to use the log's timestamp\n  date {\n    match => [ \"timestamp\", \"dd/MMM/yyyy:HH:mm:ss Z\" ]\n  }\n}" }, { "type": "paragraph", "value": "Restart Logstash. New logs will now be enriched with many new fields. You can see these new fields in Kibana's Discover view." } ] },
+      { "id": "m4_geoip", "title": "Phase 4: Enriching Data with GeoIP", "goal": "Add a 'geoip' filter to the Logstash pipeline to translate the parsed `clientip` field into geographical location data (city, country).", "content": [ { "type": "paragraph", "value": "Enrichment adds valuable context. Knowing *where* requests are coming from is crucial for security analysis. The GeoIP filter uses a built-in database to do this lookup." }, { "type": "code", "language": "ruby", "value": "# Add this to the filter {} block in nginx.conf, after grok\ngeoip {\n  source => \"clientip\"\n}" }, { "type": "callout", "style": "info", "value": "After this, new logs will contain a `geoip` object with fields like `country_name` and `location` (lat/lon), enabling map visualizations." } ] },
+      { "id": "m5_kibana_dashboard", "title": "Phase 5: Building a Security Dashboard in Kibana", "goal": "In Kibana, create several visualizations and combine them into a single threat intelligence dashboard.", "content": [ { "type": "paragraph", "value": "This is where we reap the rewards of our pipeline. We will build a dashboard to quickly identify suspicious activity." }, { "type": "subheader", "value": "1. Create Visualizations" }, { "type": "paragraph", "value": "Go to Kibana > Visualize Library and create: \n- A **Map** showing the location of requests from the `geoip.location` field.\n- A **Pie Chart** of the `response` field to see the distribution of 200, 404, 500 status codes.\n- A **Data Table** showing the Top 10 `clientip` addresses with the highest request counts.\n- A **Bar Chart** showing requests over time." }, { "type": "subheader", "value": "2. Assemble Dashboard" }, { "type": "paragraph", "value": "Go to Kibana > Dashboard, create a new dashboard, and add all the visualizations you just created. Now you can see, for example, a spike in 404 errors on the bar chart, identify the IP address in the data table, and see its location on the map." } ] }
+    ]
   }
 ]
