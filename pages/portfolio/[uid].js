@@ -1,11 +1,14 @@
+// pages/portfolio/[uid].js
+
 import { useState } from 'react';
 import { db } from '../../firebase/config';
 import { collection, doc, getDoc, query, where, getDocs } from 'firebase/firestore';
-import { promises as fs } from 'fs';
-import path from 'path';
 import Link from 'next/link';
 import Head from 'next/head';
 import Navbar from '../../components/Navbar';
+
+// --- FIX: Import the JSON data directly. It will be bundled with the code.
+import allProjects from '../../data/projects.json';
 
 // Server-side data fetching
 export async function getServerSideProps(context) {
@@ -17,9 +20,8 @@ export async function getServerSideProps(context) {
     const userDocSnap = await getDoc(userDocRef);
     const userProfile = userDocSnap.exists() ? userDocSnap.data() : null;
 
-    const projectsFilePath = path.join(process.cwd(), 'data', 'projects.json');
-    const jsonData = await fs.readFile(projectsFilePath, 'utf8');
-    const allProjects = JSON.parse(jsonData);
+    // --- FIX: The file system reading logic has been removed. ---
+    // The 'allProjects' variable is now available from the import above.
 
     const q = query(collection(db, 'userProgress'), where('userId', '==', uid), where('isCompleted', '==', true));
     const querySnapshot = await getDocs(q);
@@ -850,6 +852,8 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
                     .stat-number {
                         font-size: 2rem;
                     }
+
+
 
                     .section-title {
                         font-size: 2rem;

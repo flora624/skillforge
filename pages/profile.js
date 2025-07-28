@@ -1,3 +1,5 @@
+// pages/profile.js
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -7,13 +9,11 @@ import { collection, doc, getDoc, setDoc, query, where, getDocs } from 'firebase
 import Navbar from '../components/Navbar';
 import ProjectCard from '../components/ProjectCard';
 
-// This function correctly fetches all projects from your JSON file at build time. No changes needed here.
+// --- FIX: Import JSON directly.
+import allProjects from '../data/projects.json';
+
+// This function correctly fetches all projects at build time using the imported data.
 export async function getStaticProps() {
-  const path = require('path');
-  const fs = require('fs');
-  const filePath = path.join(process.cwd(), 'data', 'projects.json');
-  const jsonData = await fs.readFileSync(filePath);
-  const allProjects = JSON.parse(jsonData);
   return { props: { allProjects } };
 }
 
