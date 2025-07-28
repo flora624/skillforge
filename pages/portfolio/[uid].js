@@ -70,7 +70,7 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
 
     const displayName = userProfile?.displayName || 'Developer';
     const bio = userProfile?.bio || 'A Software Engineer who has developed countless innovative solutions.';
-    const projectCount = completedProjects.length;
+    const projectCount = Array.isArray(completedProjects) ? completedProjects.length : 0;
     // Calculate experience more accurately, supporting months
     let experienceYears;
     if (userProfile?.experienceYears) {
@@ -153,10 +153,10 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
             <section className="skills-section">
                 <h2 className="section-title"><span>MY SKILLS</span></h2>
                 <div className="skills-grid">
-                    {userProfile?.skills && userProfile.skills.length > 0 ? (
+                    {userProfile?.skills && Array.isArray(userProfile.skills) && userProfile.skills.length > 0 ? (
                         userProfile.skills.map((skill, index) => (
                             <div key={index} className="skill-box">
-                                {skill.trim()}
+                                {skill?.trim() || skill}
                             </div>
                         ))
                     ) : (
@@ -177,21 +177,27 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
             <section id="projects" className="projects-section">
                 <h2 className="section-title"><span>RECENT PROJECTS</span></h2>
                 <div className="projects-grid">
-                    {completedProjects.slice(0, 6).map((project, index) => (
-                        <div key={project.projectId} className="project-card">
-                            <div className="project-image">
-                                {project.screenshots?.milestone_0 ? (
-                                    <img src={project.screenshots.milestone_0} alt={project.project.title} />
-                                ) : (
-                                    <div className="project-placeholder">
-                                        <i className="fas fa-code"></i>
-                                    </div>
-                                )}
+                    {Array.isArray(completedProjects) && completedProjects.length > 0 ? (
+                        completedProjects.slice(0, 6).map((project, index) => (
+                            <div key={project.projectId} className="project-card">
+                                <div className="project-image">
+                                    {project.screenshots?.milestone_0 ? (
+                                        <img src={project.screenshots.milestone_0} alt={project.project.title} />
+                                    ) : (
+                                        <div className="project-placeholder">
+                                            <i className="fas fa-code"></i>
+                                        </div>
+                                    )}
+                                </div>
+                                <h3>{project.project.title}</h3>
+                                <p>{project.project.domain}</p>
                             </div>
-                            <h3>{project.project.title}</h3>
-                            <p>{project.project.domain}</p>
+                        ))
+                    ) : (
+                        <div style={{ textAlign: 'center', color: '#666', padding: '2rem' }}>
+                            <p>No completed projects yet.</p>
                         </div>
-                    ))}
+                    )}
                 </div>
             </section>
 
@@ -205,7 +211,7 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
                 </h2>
                 <div className="experience-list">
                     {/* Display detailed experience entries if available */}
-                    {userProfile?.experiences && userProfile.experiences.length > 0 ? (
+                    {userProfile?.experiences && Array.isArray(userProfile.experiences) && userProfile.experiences.length > 0 ? (
                         userProfile.experiences.map((experience, index) => (
                             <div key={experience.id || index} className="experience-item">
                                 <div className="experience-header">
@@ -277,7 +283,7 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
             <section id="tools" className="tools-section">
                 <h2 className="section-title"><span>TOOLS</span></h2>
                 <div className="tools-grid">
-                    {userProfile?.primaryTools && userProfile.primaryTools.length > 0 ? (
+                    {userProfile?.primaryTools && Array.isArray(userProfile.primaryTools) && userProfile.primaryTools.length > 0 ? (
                         userProfile.primaryTools.map((tool, index) => (
                             <div key={index} className="tool-card">
                                 <div className="tool-icon">
