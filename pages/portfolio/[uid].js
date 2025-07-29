@@ -153,8 +153,8 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
             {/* Main Website Navigation */}
             <Navbar />
 
-            {/* Temporary Debug Section - Remove after fixing */}
-            {process.env.NODE_ENV === 'development' && debugInfo && (
+            {/* Debug Section - Shows in production to help diagnose issues */}
+            {debugInfo && (
                 <div style={{ 
                     position: 'fixed', 
                     top: '80px', 
@@ -166,14 +166,16 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
                     fontSize: '0.8rem', 
                     maxWidth: '300px', 
                     zIndex: 1000,
-                    border: '1px solid #444'
+                    border: '1px solid #444',
+                    opacity: 0.9
                 }}>
-                    <h4>Debug Info:</h4>
-                    <p>UID: {uid}</p>
-                    <p>Has Profile: {debugInfo.hasUserProfile ? 'Yes' : 'No'}</p>
-                    <p>Profile Keys: {debugInfo.userProfileKeys.join(', ')}</p>
-                    <p>Projects: {debugInfo.projectCount}</p>
-                    <p>Time: {new Date(debugInfo.timestamp).toLocaleTimeString()}</p>
+                    <h4 style={{ margin: '0 0 0.5rem 0', color: '#fff' }}>Debug Info:</h4>
+                    <p style={{ margin: '0.2rem 0', color: '#ccc' }}>UID: {uid}</p>
+                    <p style={{ margin: '0.2rem 0', color: '#ccc' }}>Has Profile: {debugInfo.hasUserProfile ? 'Yes' : 'No'}</p>
+                    <p style={{ margin: '0.2rem 0', color: '#ccc' }}>Profile Keys: {debugInfo.userProfileKeys.length > 0 ? debugInfo.userProfileKeys.join(', ') : 'None'}</p>
+                    <p style={{ margin: '0.2rem 0', color: '#ccc' }}>Projects: {debugInfo.projectCount}</p>
+                    <p style={{ margin: '0.2rem 0', color: '#ccc' }}>Time: {new Date(debugInfo.timestamp).toLocaleTimeString()}</p>
+                    <p style={{ margin: '0.2rem 0', color: '#ccc' }}>Env: {process.env.NODE_ENV || 'unknown'}</p>
                 </div>
             )}
 
