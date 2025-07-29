@@ -1192,6 +1192,20 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
                     .experience-company h4 {
                         font-size: 1.1rem;
                     }
+
+                    /* Added styles for skills section mobile responsiveness */
+                    .skills-grid {
+                        flex-direction: column;
+                        gap: 0.5rem;
+                    }
+
+                    .skill-box {
+                        white-space: normal;
+                        padding: 8px 16px;
+                        font-size: 0.85rem;
+                        max-width: 100%;
+                        text-align: center;
+                    }
                 }
             `}</style>
         </>
