@@ -9,7 +9,7 @@ import { collection, doc, getDoc, setDoc, query, where, getDocs } from 'firebase
 import Navbar from '../components/Navbar';
 import ProjectCard from '../components/ProjectCard';
 
-// Import JSON directly.
+// --- FIX: Import JSON directly.
 import allProjects from '../data/projects.json';
 
 // This function correctly fetches all projects at build time using the imported data.
@@ -252,13 +252,42 @@ const ExperienceManager = ({ profile, setProfile, inputStyle, labelStyle, handle
 // --- ENHANCED PORTFOLIO CUSTOMIZATION COMPONENT ---
 const PortfolioCustomizer = ({ user }) => {
     const [profile, setProfile] = useState({
-        displayName: '', bio: '', email: '',
-        skills: '', primaryTools: '',
-        githubUrl: '', linkedinUrl: '', portfolioUrl: '', twitterUrl: '',
-        portfolioTitle: '', portfolioSubtitle: '', aboutDescription: '',
-        currentPosition: '', company: '', experienceYears: '', experienceMonths: '', experiences: [],
-        location: '', availability: '',
-        showEmail: true, showLocation: true, showExperience: true, portfolioTheme: 'dark'
+        // Basic Info
+        displayName: '',
+        bio: '',
+        email: '',
+        
+        // Skills & Tools
+        skills: '',
+        primaryTools: '',
+        
+        // Social Links
+        githubUrl: '',
+        linkedinUrl: '',
+        portfolioUrl: '',
+        twitterUrl: '',
+        
+        // Portfolio Content
+        portfolioTitle: '',
+        portfolioSubtitle: '',
+        aboutDescription: '',
+        
+        // Experience
+        currentPosition: '',
+        company: '',
+        experienceYears: '',
+        experienceMonths: '',
+        experiences: [],
+        
+        // Contact Info
+        location: '',
+        availability: '',
+        
+        // Portfolio Settings
+        showEmail: true,
+        showLocation: true,
+        showExperience: true,
+        portfolioTheme: 'dark'
     });
     
     const [status, setStatus] = useState('');
@@ -314,9 +343,34 @@ const PortfolioCustomizer = ({ user }) => {
         }
     };
 
-    const inputStyle = { width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d1d5db', boxSizing: 'border-box', fontSize: '14px', transition: 'border-color 0.2s ease' };
-    const labelStyle = { display: 'block', marginBottom: '6px', fontWeight: '600', color: '#374151', fontSize: '14px' };
-    const tabStyle = (isActive) => ({ padding: '12px 24px', border: 'none', background: isActive ? '#6366f1' : '#f3f4f6', color: isActive ? 'white' : '#6b7280', borderRadius: '8px', cursor: 'pointer', fontWeight: '500', transition: 'all 0.2s ease' });
+    const inputStyle = { 
+        width: '100%', 
+        padding: '12px', 
+        borderRadius: '8px', 
+        border: '1px solid #d1d5db', 
+        boxSizing: 'border-box',
+        fontSize: '14px',
+        transition: 'border-color 0.2s ease'
+    };
+    
+    const labelStyle = { 
+        display: 'block', 
+        marginBottom: '6px', 
+        fontWeight: '600',
+        color: '#374151',
+        fontSize: '14px'
+    };
+
+    const tabStyle = (isActive) => ({
+        padding: '12px 24px',
+        border: 'none',
+        background: isActive ? '#6366f1' : '#f3f4f6',
+        color: isActive ? 'white' : '#6b7280',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        fontWeight: '500',
+        transition: 'all 0.2s ease'
+    });
 
     return (
         <section className="dashboard-content">
@@ -324,32 +378,73 @@ const PortfolioCustomizer = ({ user }) => {
             <p style={{ color: '#6b7280', marginBottom: '24px' }}>
                 Customize how your portfolio appears to visitors. Changes will be reflected on your public portfolio page.
             </p>
+            
+            {/* Tab Navigation */}
             <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap' }}>
-                <button type="button" style={tabStyle(activeTab === 'basic')} onClick={() => setActiveTab('basic')}>Basic Info</button>
-                <button type="button" style={tabStyle(activeTab === 'skills')} onClick={() => setActiveTab('skills')}>Skills & Tools</button>
-                <button type="button" style={tabStyle(activeTab === 'social')} onClick={() => setActiveTab('social')}>Social Links</button>
-                <button type="button" style={tabStyle(activeTab === 'content')} onClick={() => setActiveTab('content')}>Portfolio Content</button>
-                <button type="button" style={tabStyle(activeTab === 'experience')} onClick={() => setActiveTab('experience')}>Experience</button>
-                <button type="button" style={tabStyle(activeTab === 'settings')} onClick={() => setActiveTab('settings')}>Settings</button>
+                <button type="button" style={tabStyle(activeTab === 'basic')} onClick={() => setActiveTab('basic')}>
+                    Basic Info
+                </button>
+                <button type="button" style={tabStyle(activeTab === 'skills')} onClick={() => setActiveTab('skills')}>
+                    Skills & Tools
+                </button>
+                <button type="button" style={tabStyle(activeTab === 'social')} onClick={() => setActiveTab('social')}>
+                    Social Links
+                </button>
+                <button type="button" style={tabStyle(activeTab === 'content')} onClick={() => setActiveTab('content')}>
+                    Portfolio Content
+                </button>
+                <button type="button" style={tabStyle(activeTab === 'experience')} onClick={() => setActiveTab('experience')}>
+                    Experience
+                </button>
+                <button type="button" style={tabStyle(activeTab === 'settings')} onClick={() => setActiveTab('settings')}>
+                    Settings
+                </button>
             </div>
-            <form onSubmit={handleSave} style={{ background: '#fff', padding: '32px', borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
+
+            <form onSubmit={handleSave} style={{ 
+                background: '#fff', 
+                padding: '32px', 
+                borderRadius: '12px', 
+                border: '1px solid #e5e7eb',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+            }}>
+                
+                {/* Basic Info Tab */}
                 {activeTab === 'basic' && (
                     <div>
                         <h3 style={{ marginBottom: '20px', color: '#1f2937' }}>Basic Information</h3>
                         <div style={{ display: 'grid', gap: '20px', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
-                            <div><label style={labelStyle}>Display Name *</label><input style={inputStyle} type="text" name="displayName" value={profile.displayName || ''} onChange={handleChange} placeholder="John Doe" required /></div>
-                            <div><label style={labelStyle}>Email</label><input style={inputStyle} type="email" name="email" value={profile.email || ''} onChange={handleChange} placeholder="john@example.com" /></div>
-                            <div style={{ gridColumn: '1 / -1' }}><label style={labelStyle}>Bio / Tagline</label><input style={inputStyle} type="text" name="bio" value={profile.bio || ''} onChange={handleChange} placeholder="A Software Engineer who has developed countless innovative solutions." /></div>
-                            <div><label style={labelStyle}>Location</label><input style_={inputStyle} type="text" name="location" value={profile.location || ''} onChange={handleChange} placeholder="San Francisco, CA" /></div>
+                            <div>
+                                <label style={labelStyle}>Display Name *</label>
+                                <input style={inputStyle} type="text" name="displayName" value={profile.displayName || ''} onChange={handleChange} placeholder="John Doe" required />
+                            </div>
+                            <div>
+                                <label style={labelStyle}>Email</label>
+                                <input style={inputStyle} type="email" name="email" value={profile.email || ''} onChange={handleChange} placeholder="john@example.com" />
+                            </div>
+                            <div style={{ gridColumn: '1 / -1' }}>
+                                <label style={labelStyle}>Bio / Tagline</label>
+                                <input style={inputStyle} type="text" name="bio" value={profile.bio || ''} onChange={handleChange} placeholder="A Software Engineer who has developed countless innovative solutions." />
+                            </div>
+                            <div>
+                                <label style={labelStyle}>Location</label>
+                                <input style={inputStyle} type="text" name="location" value={profile.location || ''} onChange={handleChange} placeholder="San Francisco, CA" />
+                            </div>
                             <div>
                                 <label style={labelStyle}>Availability</label>
                                 <select style={inputStyle} name="availability" value={profile.availability || ''} onChange={handleChange}>
-                                    <option value="">Select availability</option><option value="available">Available for work</option><option value="open">Open to opportunities</option><option value="busy">Currently busy</option><option value="not-looking">Not looking</option>
+                                    <option value="">Select availability</option>
+                                    <option value="available">Available for work</option>
+                                    <option value="open">Open to opportunities</option>
+                                    <option value="busy">Currently busy</option>
+                                    <option value="not-looking">Not looking</option>
                                 </select>
                             </div>
                         </div>
                     </div>
                 )}
+
+                {/* Skills & Tools Tab */}
                 {activeTab === 'skills' && (
                     <div>
                         <h3 style={{ marginBottom: '20px', color: '#1f2937' }}>Skills & Tools</h3>
@@ -367,17 +462,33 @@ const PortfolioCustomizer = ({ user }) => {
                         </div>
                     </div>
                 )}
+
+                {/* Social Links Tab */}
                 {activeTab === 'social' && (
                     <div>
                         <h3 style={{ marginBottom: '20px', color: '#1f2937' }}>Social Links</h3>
                         <div style={{ display: 'grid', gap: '20px', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
-                            <div><label style={labelStyle}>GitHub URL</label><input style={inputStyle} type="url" name="githubUrl" value={profile.githubUrl || ''} onChange={handleChange} placeholder="https://github.com/your-username" /></div>
-                            <div><label style={labelStyle}>LinkedIn URL</label><input style={inputStyle} type="url" name="linkedinUrl" value={profile.linkedinUrl || ''} onChange={handleChange} placeholder="https://linkedin.com/in/your-username" /></div>
-                            <div><label style={labelStyle}>Personal Website</label><input style={inputStyle} type="url" name="portfolioUrl" value={profile.portfolioUrl || ''} onChange={handleChange} placeholder="https://yourwebsite.com" /></div>
-                            <div><label style={labelStyle}>Twitter URL</label><input style={inputStyle} type="url" name="twitterUrl" value={profile.twitterUrl || ''} onChange={handleChange} placeholder="https://twitter.com/your-username" /></div>
+                            <div>
+                                <label style={labelStyle}>GitHub URL</label>
+                                <input style={inputStyle} type="url" name="githubUrl" value={profile.githubUrl || ''} onChange={handleChange} placeholder="https://github.com/your-username" />
+                            </div>
+                            <div>
+                                <label style={labelStyle}>LinkedIn URL</label>
+                                <input style={inputStyle} type="url" name="linkedinUrl" value={profile.linkedinUrl || ''} onChange={handleChange} placeholder="https://linkedin.com/in/your-username" />
+                            </div>
+                            <div>
+                                <label style={labelStyle}>Personal Website</label>
+                                <input style={inputStyle} type="url" name="portfolioUrl" value={profile.portfolioUrl || ''} onChange={handleChange} placeholder="https://yourwebsite.com" />
+                            </div>
+                            <div>
+                                <label style={labelStyle}>Twitter URL</label>
+                                <input style={inputStyle} type="url" name="twitterUrl" value={profile.twitterUrl || ''} onChange={handleChange} placeholder="https://twitter.com/your-username" />
+                            </div>
                         </div>
                     </div>
                 )}
+
+                {/* Portfolio Content Tab */}
                 {activeTab === 'content' && (
                     <div>
                         <h3 style={{ marginBottom: '20px', color: '#1f2937' }}>Portfolio Content</h3>
@@ -387,12 +498,36 @@ const PortfolioCustomizer = ({ user }) => {
                                 <input style={inputStyle} type="text" name="portfolioTitle" value={profile.portfolioTitle || ''} onChange={handleChange} placeholder="SOFTWARE ENGINEER" />
                                 <small style={{ color: '#6b7280', fontSize: '12px' }}>Large title displayed prominently on your portfolio</small>
                             </div>
-                            <div><label style={labelStyle}>Portfolio Subtitle</label><input style={inputStyle} type="text" name="portfolioSubtitle" value={profile.portfolioSubtitle || ''} onChange={handleChange} placeholder="Passionate about creating intuitive and engaging user experiences." /></div>
-                            <div><label style={labelStyle}>About Description</label><textarea style={{...inputStyle, minHeight: '100px', resize: 'vertical'}} name="aboutDescription" value={profile.aboutDescription || ''} onChange={handleChange} placeholder="Tell visitors about yourself, your passion, and what drives you as a developer..." /></div>
+                            <div>
+                                <label style={labelStyle}>Portfolio Subtitle</label>
+                                <input style={inputStyle} type="text" name="portfolioSubtitle" value={profile.portfolioSubtitle || ''} onChange={handleChange} placeholder="Passionate about creating intuitive and engaging user experiences." />
+                            </div>
+                            <div>
+                                <label style={labelStyle}>About Description</label>
+                                <textarea 
+                                    style={{...inputStyle, minHeight: '100px', resize: 'vertical'}} 
+                                    name="aboutDescription" 
+                                    value={profile.aboutDescription || ''} 
+                                    onChange={handleChange} 
+                                    placeholder="Tell visitors about yourself, your passion, and what drives you as a developer..."
+                                />
+                            </div>
                         </div>
                     </div>
                 )}
-                {activeTab === 'experience' && <ExperienceManager profile={profile} setProfile={setProfile} inputStyle={inputStyle} labelStyle={labelStyle} handleChange={handleChange} />}
+
+                {/* Experience Tab */}
+                {activeTab === 'experience' && (
+                    <ExperienceManager 
+                        profile={profile} 
+                        setProfile={setProfile} 
+                        inputStyle={inputStyle} 
+                        labelStyle={labelStyle} 
+                        handleChange={handleChange}
+                    />
+                )}
+
+                {/* Settings Tab */}
                 {activeTab === 'settings' && (
                     <div>
                         <h3 style={{ marginBottom: '20px', color: '#1f2937' }}>Portfolio Settings</h3>
@@ -400,29 +535,47 @@ const PortfolioCustomizer = ({ user }) => {
                             <div>
                                 <label style={labelStyle}>Portfolio Theme</label>
                                 <select style={inputStyle} name="portfolioTheme" value={profile.portfolioTheme || 'dark'} onChange={handleChange}>
-                                    <option value="dark">Dark Theme</option><option value="light">Light Theme</option>
+                                    <option value="dark">Dark Theme</option>
+                                    <option value="light">Light Theme</option>
                                 </select>
                             </div>
                             <div>
                                 <h4 style={{ marginBottom: '12px', color: '#374151' }}>Visibility Settings</h4>
                                 <div style={{ display: 'grid', gap: '12px' }}>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}><input type="checkbox" name="showEmail" checked={profile.showEmail} onChange={handleChange} /><span>Show email address on portfolio</span></label>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}><input type="checkbox" name="showLocation" checked={profile.showLocation} onChange={handleChange} /><span>Show location on portfolio</span></label>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}><input type="checkbox" name="showExperience" checked={profile.showExperience} onChange={handleChange} /><span>Show experience section</span></label>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                                        <input type="checkbox" name="showEmail" checked={profile.showEmail} onChange={handleChange} />
+                                        <span>Show email address on portfolio</span>
+                                    </label>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                                        <input type="checkbox" name="showLocation" checked={profile.showLocation} onChange={handleChange} />
+                                        <span>Show location on portfolio</span>
+                                    </label>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                                        <input type="checkbox" name="showExperience" checked={profile.showExperience} onChange={handleChange} />
+                                        <span>Show experience section</span>
+                                    </label>
                                 </div>
                             </div>
                         </div>
                     </div>
                 )}
+
                 <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid #e5e7eb', display: 'flex', gap: '12px', alignItems: 'center' }}>
-                    <button type="submit" className="btn btn-primary" style={{ padding: '12px 24px' }}>💾 Save Portfolio Settings</button>
-                    <Link href={`/portfolio/${user?.uid}`}><a className="btn btn-outline" style={{ padding: '12px 24px' }}>👁️ Preview Portfolio</a></Link>
+                    <button type="submit" className="btn btn-primary" style={{ padding: '12px 24px' }}>
+                        💾 Save Portfolio Settings
+                    </button>
+                    <Link href={`/portfolio/${user?.uid}`}>
+                        <a className="btn btn-outline" style={{ padding: '12px 24px' }}>
+                            👁️ Preview Portfolio
+                        </a>
+                    </Link>
                     {status && <p style={{ color: status.includes('success') ? '#10b981' : '#ef4444', fontWeight: '500' }}>{status}</p>}
                 </div>
             </form>
         </section>
     );
 };
+
 
 export default function Profile({ allProjects }) {
   const { user, loading } = useAuth();
@@ -432,78 +585,51 @@ export default function Profile({ allProjects }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const handleLogout = async () => {
-    try {
-      await auth.signOut();
-      router.push('/login');
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
+    try { await auth.signOut(); router.push('/login'); } 
+    catch (error) { console.error('Logout failed:', error); }
   };
 
-  // --- THIS IS THE CORRECTED USEEFFECT HOOK ---
-  // It now safely checks the URL path before attempting to redirect,
-  // fixing the bug where public pages were being redirected.
   useEffect(() => {
-    // Phase 1: Authentication Check (This now ONLY runs for the /profile page)
-    if (router.pathname === '/profile') {
-      if (loading) {
-        // Still loading auth state, do nothing yet.
-        return;
-      }
-      if (!user) {
-        // If we are definitely on the /profile page and the user is not logged in, redirect.
-        router.push('/login');
-        return; // Stop execution for this render
-      }
-    }
+    if (loading) return;
+    if (!user) { router.push('/login'); return; }
 
-    // Phase 2: Data Fetching (This only runs if the user object exists)
-    if (user) {
-      const fetchUserProjects = async () => {
-        try {
-          setIsLoading(true);
-          const q = query(collection(db, 'userProgress'), where('userId', '==', user.uid));
-          const querySnapshot = await getDocs(q);
-          const inProgressList = [];
-          const completedList = [];
+    const fetchUserProjects = async () => {
+      try {
+        setIsLoading(true);
+        const q = query(collection(db, 'userProgress'), where('userId', '==', user.uid));
+        const querySnapshot = await getDocs(q);
+        const inProgressList = [];
+        const completedList = [];
 
-          querySnapshot.forEach(doc => {
-            const progressData = doc.data();
-            const projectDetails = allProjects.find(p => p.id === progressData.projectId);
-            if (projectDetails) {
-              if (progressData.isCompleted) {
-                completedList.push({ ...projectDetails, submissionUrl: progressData.submissionUrl });
-              } else {
-                inProgressList.push(projectDetails);
-              }
+        querySnapshot.forEach(doc => {
+          const progressData = doc.data();
+          const projectDetails = allProjects.find(p => p.id === progressData.projectId);
+          if (projectDetails) {
+            if (progressData.isCompleted) {
+              completedList.push({ ...projectDetails, submissionUrl: progressData.submissionUrl });
+            } else {
+              inProgressList.push(projectDetails);
             }
-          });
-          setInProgressProjects(inProgressList);
-          setCompletedProjects(completedList);
-        } catch (error) {
-          console.error('Error fetching user projects:', error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      fetchUserProjects();
-    } else {
-      // If there's no user, ensure the loading state is turned off.
-      setIsLoading(false);
-    }
+          }
+        });
+        setInProgressProjects(inProgressList);
+        setCompletedProjects(completedList);
+      } catch (error) {
+        console.error('Error fetching user projects:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchUserProjects();
   }, [user, loading, router, allProjects]);
 
   if (loading || isLoading) {
     return <div className="loading-screen">Loading Dashboard...</div>;
   }
-  
-  if (!user && router.pathname === '/profile') {
-    return <div className="loading-screen">Redirecting to login...</div>;
-  }
 
-  // Prevent rendering the full page if there's no user. This is a safeguard.
-  if (!user) {
-      return null;
+  // If not loading but no user, the redirect will happen in the useEffect
+  if (!loading && !user) {
+    return <div className="loading-screen">Redirecting...</div>;
   }
 
   return (
@@ -512,8 +638,8 @@ export default function Profile({ allProjects }) {
       <main className="container">
         <section className="dashboard-header">
           <h1>My Dashboard</h1>
-          <p>Welcome back, <strong>{user.email || ''}</strong>!</p>
-          <Link href={`/portfolio/${user.uid}`}><a className="btn btn-primary">View My Public Portfolio</a></Link>
+          <p>Welcome back, <strong>{user?.email || ''}</strong>!</p>
+          <Link href={`/portfolio/${user?.uid}`}><a className="btn btn-primary">View My Public Portfolio</a></Link>
           <button onClick={handleLogout} className="btn btn-logout" style={{marginTop: '10px'}}>Logout</button>
         </section>
 
@@ -528,17 +654,6 @@ export default function Profile({ allProjects }) {
               ))}
             </div>
           ) : ( <p className="no-projects-message">No projects in progress. <Link href="/#projects"><a>Find a new challenge!</a></Link></p> )}
-        </section>
-
-        <section className="dashboard-content">
-            <h2>Completed Projects</h2>
-            {completedProjects.length > 0 ? (
-                <div className="dashboard-grid">
-                {completedProjects.map((project) => (
-                    <ProjectCard key={project.id} project={project} actionButtons={[{ label: 'View Submission', onClick: () => window.open(project.submissionUrl, '_blank'), className: 'btn-secondary' }]} />
-                ))}
-                </div>
-            ) : ( <p className="no-projects-message">You haven't completed any projects yet. Keep going!</p> )}
         </section>
       </main>
     </>
