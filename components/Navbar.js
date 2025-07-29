@@ -166,12 +166,19 @@ export default function EnhancedNavbar() {
         {/* Mobile Navigation */}
         <nav className={`mobile-nav ${mobileMenuOpen ? 'active' : ''}`}>
           <ul className="mobile-nav-links">
-            {/* FIX: onClick is moved to the <a> tag */}
             <li>
-              <Link href="/projects">
+              <Link href="/explore">
                 <a className="mobile-nav-link" onClick={closeMobileMenu}>
                   <i className="fas fa-project-diagram"></i>
                   Projects
+                </a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/community">
+                <a className="mobile-nav-link" onClick={closeMobileMenu}>
+                  <i className="fas fa-handshake"></i>
+                  Community
                 </a>
               </Link>
             </li>
@@ -195,8 +202,17 @@ export default function EnhancedNavbar() {
                   </Link>
                 </li>
                 <li>
-                  {/* FIX: Logout is a button that handles its own click */}
-                  <button onClick={handleLogout} className="mobile-nav-link logout-button">
+                  <button 
+                    onClick={handleLogout} 
+                    className="mobile-nav-link logout-button"
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      width: '100%',
+                      textAlign: 'left',
+                      cursor: 'pointer'
+                    }}
+                  >
                     <i className="fas fa-sign-out-alt"></i> Logout
                   </button>
                 </li>

@@ -427,10 +427,12 @@ section h2 {
 
 .btn-primary9 {
     background: var(--gradient-primary);
-    margin-left: 42%;
-    margin-top: 5%;
+    margin: 5% auto 0 auto;
+    display: block;
+    text-align: center;
     color: white;
     box-shadow: var(--shadow-medium);
+    width: fit-content;
 }
 
 .btn-primary:hover {
@@ -555,7 +557,6 @@ section h2 {
 .logo-content {
     display: flex;
     align-items: center;
-    margin-left: -320px;
     gap: 0.5rem;
 }
 
@@ -2617,6 +2618,157 @@ body {
     width: 100%;
     padding: 10px;
     font-weight: 700;
-    margin-left: 32%;
+    text-align: center;
 }
 
+@media (max-width: 768px) {
+    .google-signin-btn9 {
+        margin-left: 0;
+        text-align: center;
+    }
+    
+    /* Mobile-specific improvements */
+    .container {
+        padding: 0 0.5rem;
+    }
+    
+    .hero-content {
+        padding: 0 1rem;
+    }
+    
+    .hero-content p {
+        margin-left: 0 !important;
+        margin-right: 0;
+        text-align: center;
+    }
+    
+    .btn-primary9 {
+        margin: 2rem auto 0 auto;
+        padding: 0.75rem 1.5rem;
+    }
+    
+    /* Fix mobile navigation logout button */
+    .logout-button {
+        color: var(--text-color) !important;
+        font-weight: 500 !important;
+        padding: 0.75rem 1.5rem !important;
+        transition: var(--transition-normal) !important;
+    }
+    
+    .logout-button:hover {
+        background: var(--bg-secondary) !important;
+        color: var(--primary-color) !important;
+    }
+    
+    /* Improve mobile card spacing */
+    .features-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem;
+        padding: 0 0.5rem;
+    }
+    
+    .feature-card {
+        padding: 1.5rem;
+    }
+    
+    /* Better mobile project cards */
+    .projects-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem;
+        padding: 0 0.5rem;
+    }
+    
+    .project-card {
+        padding: 1.25rem;
+    }
+    
+    /* Mobile stats improvements */
+    .hero-stats {
+        gap: 1.5rem;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .hero-stats .stat-item {
+        min-width: 120px;
+    }
+    
+    /* Mobile community section */
+    .community-stats {
+        padding: 0 0.5rem;
+    }
+    
+    .stat-card {
+        padding: 1.5rem;
+    }
+    
+    /* Mobile footer improvements */
+    .footer-content {
+        padding: 0 1rem;
+    }
+    
+    .footer-links {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Extra small mobile devices */
+    .hero-content h1 {
+        font-size: 2rem !important;
+        line-height: 1.2;
+    }
+    
+    .hero-content p {
+        font-size: 1rem !important;
+        padding: 0 0.5rem;
+    }
+    
+    .hero-buttons {
+        padding: 0 1rem;
+    }
+    
+    .btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .feature-card {
+        padding: 1rem;
+    }
+    
+    .feature-card i {
+        font-size: 2rem !important;
+    }
+    
+    .project-card {
+        padding: 1rem;
+    }
+    
+    .navbar-container {
+        padding: 0 0.5rem;
+    }
+    
+    .mobile-nav-link {
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1rem;
+        padding: 0 1rem;
+    }
+    
+    section h2 {
+        font-size: 1.75rem !important;
+        padding: 0 1rem;
+    }
+}
+
+
+@media(max-width:768px){
+    .hero-sectionp {
+        background: linear-gradient(180deg, transparent 0%, #d7bfff 15%, transparent 45%) !important;
+    }
+}
