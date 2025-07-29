@@ -11,19 +11,11 @@ import Navbar from '../../components/Navbar';
 // --- FIX: Import the JSON data directly. It will be bundled with the code.
 import allProjects from '../../data/projects.json';
 
-// Use getStaticProps instead of getServerSideProps for better Vercel compatibility
-export async function getStaticPaths() {
-  // Return empty paths to generate pages on-demand
-  return {
-    paths: [],
-    fallback: 'blocking'
-  };
-}
-
-export async function getStaticProps({ params }) {
+// Use getServerSideProps for direct link compatibility
+export async function getServerSideProps({ params }) {
   const { uid } = params;
   
-  console.log('getStaticProps called with UID:', uid);
+  console.log('getServerSideProps called with UID:', uid);
   
   // Initialize return data with safe defaults - NEVER return notFound
   let userProfile = {};
@@ -38,7 +30,7 @@ export async function getStaticProps({ params }) {
     hasFirebaseConfig: false,
     firebaseError: null,
     serverError: null,
-    method: 'getStaticProps',
+    method: 'getServerSideProps',
     uidReceived: uid || 'MISSING'
   };
 
@@ -54,10 +46,10 @@ export async function getStaticProps({ params }) {
       
       debugInfo.hasFirebaseConfig = hasFirebaseConfig;
       
-      console.log('Portfolio Static - UID:', uid);
-      console.log('Portfolio Static - Environment:', process.env.NODE_ENV);
-      console.log('Portfolio Static - Vercel Env:', process.env.VERCEL_ENV);
-      console.log('Portfolio Static - Has Firebase Config:', hasFirebaseConfig);
+      console.log('Portfolio SSR - UID:', uid);
+      console.log('Portfolio SSR - Environment:', process.env.NODE_ENV);
+      console.log('Portfolio SSR - Vercel Env:', process.env.VERCEL_ENV);
+      console.log('Portfolio SSR - Has Firebase Config:', hasFirebaseConfig);
 
       if (hasFirebaseConfig) {
         try {
@@ -70,12 +62,12 @@ export async function getStaticProps({ params }) {
             userProfile = userData || {};
             debugInfo.hasUserProfile = true;
             debugInfo.userProfileKeys = Object.keys(userProfile);
-            console.log('Portfolio Static - User profile found with keys:', debugInfo.userProfileKeys);
+            console.log('Portfolio SSR - User profile found with keys:', debugInfo.userProfileKeys);
           } else {
-            console.log('Portfolio Static - User document not found for UID:', uid);
+            console.log('Portfolio SSR - User document not found for UID:', uid);
           }
         } catch (userError) {
-          console.error('Portfolio Static - User fetch error:', userError);
+          console.error('Portfolio SSR - User fetch error:', userError);
           debugInfo.firebaseError = userError.message;
         }
 
@@ -112,22 +104,22 @@ export async function getStaticProps({ params }) {
           
           completedProjects = projects;
           debugInfo.projectCount = projects.length;
-          console.log('Portfolio Static - Projects found:', projects.length);
+          console.log('Portfolio SSR - Projects found:', projects.length);
         } catch (projectsError) {
-          console.error('Portfolio Static - Projects fetch error:', projectsError);
+          console.error('Portfolio SSR - Projects fetch error:', projectsError);
           debugInfo.firebaseError = projectsError.message;
         }
       } else {
-        console.log('Portfolio Static - Firebase config missing');
+        console.log('Portfolio SSR - Firebase config missing');
         debugInfo.firebaseError = 'Firebase configuration missing';
       }
 
     } catch (criticalError) {
-      console.error('Portfolio Static - Critical error:', criticalError);
+      console.error('Portfolio SSR - Critical error:', criticalError);
       debugInfo.serverError = criticalError.message;
     }
   } else {
-    console.log('Portfolio Static - Invalid or missing UID, will rely on client-side fetch');
+    console.log('Portfolio SSR - Invalid or missing UID, will rely on client-side fetch');
     debugInfo.serverError = 'Invalid or missing UID';
   }
 
@@ -138,8 +130,7 @@ export async function getStaticProps({ params }) {
       completedProjects,
       uid: uid || null,
       debugInfo
-    },
-    revalidate: 60 // Revalidate every 60 seconds
+    }
   };
 }
 
@@ -170,36 +161,79 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
         });
 
         // If server-side data is missing and we have a UID, try client-side fetch
-        if (currentUid && (!userProfile || Object.keys(userProfile).length === 0)) {
-            console.log('Client-side fallback: Attempting to fetch user data for UID:', currentUid);
+        if (currentUid && router.isReady) {
+            const needsUserProfile = !userProfile || Object.keys(userProfile).length === 0;
+            const needsProjects = !Array.isArray(completedProjects) || completedProjects.length === 0;
             
-            // Client-side Firebase fetch as fallback
-            const fetchClientData = async () => {
-                try {
-                    const userDocRef = doc(db, 'users', currentUid);
-                    const userDocSnap = await getDoc(userDocRef);
-                    
-                    if (userDocSnap.exists()) {
-                        const userData = userDocSnap.data();
-                        setClientData(prev => ({ ...prev, userProfile: userData }));
-                        console.log('Client-side: User profile fetched successfully');
-                    }
-                } catch (error) {
-                    console.error('Client-side: Error fetching user profile:', error);
-                }
-            };
+            if (needsUserProfile || needsProjects) {
+                console.log('Client-side fallback: Attempting to fetch data for UID:', currentUid);
+                
+                // Client-side Firebase fetch as fallback
+                const fetchClientData = async () => {
+                    try {
+                        // Fetch user profile if needed
+                        if (needsUserProfile) {
+                            const userDocRef = doc(db, 'users', currentUid);
+                            const userDocSnap = await getDoc(userDocRef);
+                            
+                            if (userDocSnap.exists()) {
+                                const userData = userDocSnap.data();
+                                setClientData(prev => ({ ...prev, userProfile: userData }));
+                                console.log('Client-side: User profile fetched successfully');
+                            }
+                        }
 
-            fetchClientData();
+                        // Fetch completed projects if needed
+                        if (needsProjects) {
+                            const q = query(
+                                collection(db, 'userProgress'), 
+                                where('userId', '==', currentUid), 
+                                where('isCompleted', '==', true)
+                            );
+                            const querySnapshot = await getDocs(q);
+
+                            const projects = [];
+                            querySnapshot.forEach(docSnap => {
+                                const progressData = docSnap.data();
+                                const projectDetails = allProjects.find(p => p.id === progressData.projectId);
+                                
+                                if (projectDetails) {
+                                    const serializableProject = {
+                                        userId: progressData.userId,
+                                        projectId: progressData.projectId,
+                                        isCompleted: progressData.isCompleted,
+                                        submissionUrl: progressData.submissionUrl || null,
+                                        project: projectDetails,
+                                        completedAt: progressData.completedAt?.toDate?.()?.toISOString() || null,
+                                        startedAt: progressData.startedAt?.toDate?.()?.toISOString() || null,
+                                        lastUpdated: progressData.lastUpdated?.toDate?.()?.toISOString() || null,
+                                        screenshots: progressData.screenshots || null,
+                                    };
+                                    projects.push(serializableProject);
+                                }
+                            });
+                            
+                            setClientData(prev => ({ ...prev, completedProjects: projects }));
+                            console.log('Client-side: Completed projects fetched successfully:', projects.length);
+                        }
+                    } catch (error) {
+                        console.error('Client-side: Error fetching data:', error);
+                    }
+                };
+
+                fetchClientData();
+            }
         }
     }, [router.isReady, router.query, uid, userProfile, completedProjects, debugInfo]);
 
     // Use client data if server data is missing
     const effectiveUserProfile = (userProfile && Object.keys(userProfile).length > 0) ? userProfile : clientData.userProfile;
+    const effectiveCompletedProjects = (Array.isArray(completedProjects) && completedProjects.length > 0) ? completedProjects : clientData.completedProjects;
     const effectiveUid = uid || router.query.uid;
 
     const displayName = effectiveUserProfile?.displayName || 'Developer';
     const bio = effectiveUserProfile?.bio || 'A Software Engineer who has developed countless innovative solutions.';
-    const projectCount = Array.isArray(completedProjects) ? completedProjects.length : 0;
+    const projectCount = Array.isArray(effectiveCompletedProjects) ? effectiveCompletedProjects.length : 0;
     
     // Calculate experience more accurately, supporting months
     let experienceYears;
@@ -385,6 +419,7 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
                             <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Current UID: {clientDebugInfo.currentUid || 'None'}</p>
                             <p style={{ margin: '0.1rem 0', color: '#ccc' }}>URL: {typeof window !== 'undefined' ? window.location.pathname : 'N/A'}</p>
                             <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Client Profile: {Object.keys(clientData.userProfile).length > 0 ? 'Yes' : 'No'}</p>
+                            <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Client Projects: {Array.isArray(clientData.completedProjects) ? clientData.completedProjects.length : 0}</p>
                         </div>
                     )}
                     <p style={{ margin: '0.5rem 0 0 0', color: '#888', fontSize: '0.7rem' }}>
@@ -475,8 +510,8 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
             <section id="projects" className="projects-section">
                 <h2 className="section-title"><span>RECENT PROJECTS</span></h2>
                 <div className="projects-grid">
-                    {Array.isArray(completedProjects) && completedProjects.length > 0 ? (
-                        completedProjects.slice(0, 6).map((project, index) => (
+                    {Array.isArray(effectiveCompletedProjects) && effectiveCompletedProjects.length > 0 ? (
+                        effectiveCompletedProjects.slice(0, 6).map((project, index) => (
                             <div key={project.projectId} className="project-card">
                                 <div className="project-image">
                                     {project.screenshots?.milestone_0 ? (
