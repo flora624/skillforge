@@ -16,7 +16,7 @@ export function middleware(request) {
   //    Based on your use of Firebase Auth, it might be a cookie managed by your server
   //    or a client-side token. If you handle auth purely client-side, this middleware
   //    might need a different strategy, but a server-set cookie is standard.
-  const hasAuthCookie = request.cookies.has('your-auth-cookie-name-here'); // <--- CHANGE THIS!
+  const hasAuthCookie = request.cookies.has('perf_dv6Tr4n'); // <--- CHANGE THIS!
 
   // If the user is on a protected route and has no auth cookie, redirect them to the homepage.
   if (!hasAuthCookie) {
