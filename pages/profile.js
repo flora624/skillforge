@@ -340,7 +340,7 @@ const PortfolioCustomizer = ({ user }) => {
                             <div><label style={labelStyle}>Display Name *</label><input style={inputStyle} type="text" name="displayName" value={profile.displayName || ''} onChange={handleChange} placeholder="John Doe" required /></div>
                             <div><label style={labelStyle}>Email</label><input style={inputStyle} type="email" name="email" value={profile.email || ''} onChange={handleChange} placeholder="john@example.com" /></div>
                             <div style={{ gridColumn: '1 / -1' }}><label style={labelStyle}>Bio / Tagline</label><input style={inputStyle} type="text" name="bio" value={profile.bio || ''} onChange={handleChange} placeholder="A Software Engineer who has developed countless innovative solutions." /></div>
-                            <div><label style={labelStyle}>Location</label><input style={inputStyle} type="text" name="location" value={profile.location || ''} onChange={handleChange} placeholder="San Francisco, CA" /></div>
+                            <div><label style={labelStyle}>Location</label><input style_={inputStyle} type="text" name="location" value={profile.location || ''} onChange={handleChange} placeholder="San Francisco, CA" /></div>
                             <div>
                                 <label style={labelStyle}>Availability</label>
                                 <select style={inputStyle} name="availability" value={profile.availability || ''} onChange={handleChange}>
@@ -441,9 +441,10 @@ export default function Profile({ allProjects }) {
   };
 
   // --- THIS IS THE CORRECTED USEEFFECT HOOK ---
+  // It now safely checks the URL path before attempting to redirect,
+  // fixing the bug where public pages were being redirected.
   useEffect(() => {
-    // Phase 1: Authentication Check (ONLY for the /profile page)
-    // This `if` block prevents the redirect from running on other pages like /portfolio
+    // Phase 1: Authentication Check (This now ONLY runs for the /profile page)
     if (router.pathname === '/profile') {
       if (loading) {
         // Still loading auth state, do nothing yet.
@@ -456,9 +457,7 @@ export default function Profile({ allProjects }) {
       }
     }
 
-    // Phase 2: Data Fetching
-    // This part of the code will only run if the user is authenticated,
-    // because `user` will be null otherwise.
+    // Phase 2: Data Fetching (This only runs if the user object exists)
     if (user) {
       const fetchUserProjects = async () => {
         try {
@@ -489,7 +488,7 @@ export default function Profile({ allProjects }) {
       };
       fetchUserProjects();
     } else {
-      // If there's no user, ensure loading state is false.
+      // If there's no user, ensure the loading state is turned off.
       setIsLoading(false);
     }
   }, [user, loading, router, allProjects]);
@@ -498,11 +497,13 @@ export default function Profile({ allProjects }) {
     return <div className="loading-screen">Loading Dashboard...</div>;
   }
   
-  // This check is important. If the redirect is about to happen,
-  // or if the page is rendered without a user (which shouldn't happen on /profile
-  // due to the redirect), we show a fallback UI instead of crashing.
-  if (!user) {
+  if (!user && router.pathname === '/profile') {
     return <div className="loading-screen">Redirecting to login...</div>;
+  }
+
+  // Prevent rendering the full page if there's no user. This is a safeguard.
+  if (!user) {
+      return null;
   }
 
   return (
@@ -527,6 +528,17 @@ export default function Profile({ allProjects }) {
               ))}
             </div>
           ) : ( <p className="no-projects-message">No projects in progress. <Link href="/#projects"><a>Find a new challenge!</a></Link></p> )}
+        </section>
+
+        <section className="dashboard-content">
+            <h2>Completed Projects</h2>
+            {completedProjects.length > 0 ? (
+                <div className="dashboard-grid">
+                {completedProjects.map((project) => (
+                    <ProjectCard key={project.id} project={project} actionButtons={[{ label: 'View Submission', onClick: () => window.open(project.submissionUrl, '_blank'), className: 'btn-secondary' }]} />
+                ))}
+                </div>
+            ) : ( <p className="no-projects-message">You haven't completed any projects yet. Keep going!</p> )}
         </section>
       </main>
     </>
