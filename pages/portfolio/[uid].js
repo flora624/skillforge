@@ -1,6 +1,6 @@
 // pages/portfolio/[uid].js
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { db } from '../../firebase/config';
 import { collection, doc, getDoc, query, where, getDocs } from 'firebase/firestore';
 import Link from 'next/link';
@@ -10,125 +10,142 @@ import Navbar from '../../components/Navbar';
 // --- FIX: Import the JSON data directly. It will be bundled with the code.
 import allProjects from '../../data/projects.json';
 
-// Server-side data fetching
+// Server-side data fetching with Vercel compatibility
 export async function getServerSideProps(context) {
   const { uid } = context.params;
-  if (!uid) return { notFound: true };
+  
+  // Basic validation
+  if (!uid || typeof uid !== 'string') {
+    return { notFound: true };
+  }
+
+  // Initialize return data with safe defaults
+  let userProfile = {};
+  let completedProjects = [];
+  let debugInfo = {
+    hasUserProfile: false,
+    userProfileKeys: [],
+    projectCount: 0,
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'unknown',
+    vercelEnv: process.env.VERCEL_ENV || 'unknown',
+    hasFirebaseConfig: false,
+    firebaseError: null,
+    serverError: null
+  };
 
   try {
-    // Add debugging for production
-    console.log('Fetching portfolio for UID:', uid);
-    console.log('Firebase config check:', {
-      hasApiKey: !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-      hasProjectId: !!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
-    });
+    // Check Firebase configuration
+    const hasFirebaseConfig = !!(
+      process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
+      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&
+      process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    );
+    
+    debugInfo.hasFirebaseConfig = hasFirebaseConfig;
+    
+    console.log('Portfolio SSR - UID:', uid);
+    console.log('Portfolio SSR - Environment:', process.env.NODE_ENV);
+    console.log('Portfolio SSR - Vercel Env:', process.env.VERCEL_ENV);
+    console.log('Portfolio SSR - Has Firebase Config:', hasFirebaseConfig);
 
-    // Initialize Firebase connection with better error handling
-    let userProfile = null;
-    let completedProjects = [];
-
-    try {
-      const userDocRef = doc(db, 'users', uid);
-      const userDocSnap = await getDoc(userDocRef);
-      
-      if (userDocSnap.exists()) {
-        userProfile = userDocSnap.data();
-        console.log('User profile found:', !!userProfile);
-        console.log('User profile keys:', userProfile ? Object.keys(userProfile) : 'none');
-      } else {
-        console.log('User document does not exist for UID:', uid);
-      }
-    } catch (userError) {
-      console.error('Error fetching user profile:', userError);
-      // Continue execution even if user profile fails
-    }
-
-    try {
-      const q = query(collection(db, 'userProgress'), where('userId', '==', uid), where('isCompleted', '==', true));
-      const querySnapshot = await getDocs(q);
-
-      querySnapshot.forEach(doc => {
-        const progressData = doc.data();
-        const projectDetails = allProjects.find(p => p.id === progressData.projectId);
+    if (hasFirebaseConfig) {
+      try {
+        // Try to fetch user profile
+        const userDocRef = doc(db, 'users', uid);
+        const userDocSnap = await getDoc(userDocRef);
         
-        if (projectDetails) {
-          const serializableProject = {
+        if (userDocSnap.exists()) {
+          const userData = userDocSnap.data();
+          userProfile = userData || {};
+          debugInfo.hasUserProfile = true;
+          debugInfo.userProfileKeys = Object.keys(userProfile);
+          console.log('Portfolio SSR - User profile found with keys:', debugInfo.userProfileKeys);
+        } else {
+          console.log('Portfolio SSR - User document not found for UID:', uid);
+        }
+      } catch (userError) {
+        console.error('Portfolio SSR - User fetch error:', userError);
+        debugInfo.firebaseError = userError.message;
+      }
+
+      try {
+        // Try to fetch completed projects
+        const q = query(
+          collection(db, 'userProgress'), 
+          where('userId', '==', uid), 
+          where('isCompleted', '==', true)
+        );
+        const querySnapshot = await getDocs(q);
+
+        const projects = [];
+        querySnapshot.forEach(docSnap => {
+          const progressData = docSnap.data();
+          const projectDetails = allProjects.find(p => p.id === progressData.projectId);
+          
+          if (projectDetails) {
+            // Safely serialize Firebase timestamps
+            const serializableProject = {
               userId: progressData.userId,
               projectId: progressData.projectId,
               isCompleted: progressData.isCompleted,
               submissionUrl: progressData.submissionUrl || null,
               project: projectDetails,
-              completedAt: progressData.completedAt ? progressData.completedAt.toDate().toISOString() : null,
-              startedAt: progressData.startedAt ? progressData.startedAt.toDate().toISOString() : null,
-              lastUpdated: progressData.lastUpdated ? progressData.lastUpdated.toDate().toISOString() : null,
+              completedAt: progressData.completedAt?.toDate?.()?.toISOString() || null,
+              startedAt: progressData.startedAt?.toDate?.()?.toISOString() || null,
+              lastUpdated: progressData.lastUpdated?.toDate?.()?.toISOString() || null,
               screenshots: progressData.screenshots || null,
-          };
-          completedProjects.push(serializableProject);
-        }
-      });
-      console.log('Completed projects found:', completedProjects.length);
-    } catch (projectsError) {
-      console.error('Error fetching user progress:', projectsError);
-      // Continue execution even if projects fail
+            };
+            projects.push(serializableProject);
+          }
+        });
+        
+        completedProjects = projects;
+        debugInfo.projectCount = projects.length;
+        console.log('Portfolio SSR - Projects found:', projects.length);
+      } catch (projectsError) {
+        console.error('Portfolio SSR - Projects fetch error:', projectsError);
+        debugInfo.firebaseError = projectsError.message;
+      }
+    } else {
+      console.log('Portfolio SSR - Firebase config missing');
+      debugInfo.firebaseError = 'Firebase configuration missing';
     }
 
-    // Return data with fallbacks
-    return { 
-        props: { 
-            userProfile: userProfile || {},
-            completedProjects: completedProjects || [],
-            uid: uid, // Pass UID for debugging
-            debugInfo: {
-              hasUserProfile: !!userProfile,
-              userProfileKeys: userProfile ? Object.keys(userProfile) : [],
-              projectCount: completedProjects.length,
-              timestamp: new Date().toISOString()
-            }
-        } 
-    };
-  } catch (error) {
-    console.error("Critical error fetching portfolio:", error);
-    
-    // Return minimal data to prevent complete failure
-    return { 
-        props: { 
-            userProfile: {},
-            completedProjects: [],
-            uid: uid,
-            error: `Failed to load portfolio: ${error.message}`,
-            debugInfo: {
-              errorType: error.name,
-              errorMessage: error.message,
-              timestamp: new Date().toISOString()
-            }
-        } 
-    };
+  } catch (criticalError) {
+    console.error('Portfolio SSR - Critical error:', criticalError);
+    debugInfo.serverError = criticalError.message;
   }
+
+  // Always return valid props
+  return {
+    props: {
+      userProfile,
+      completedProjects,
+      uid,
+      debugInfo
+    }
+  };
 }
 
 // Main Portfolio Page Component
-export default function SawadStylePortfolio({ userProfile, completedProjects, error, uid, debugInfo }) {
-    if (error) {
-        return (
-            <div className="error-container">
-                <h1>Error</h1>
-                <p>{error}</p>
-                {debugInfo && (
-                    <div style={{ marginTop: '2rem', padding: '1rem', background: '#222', borderRadius: '8px', textAlign: 'left' }}>
-                        <h3>Debug Information:</h3>
-                        <pre style={{ color: '#ccc', fontSize: '0.9rem' }}>
-                            {JSON.stringify(debugInfo, null, 2)}
-                        </pre>
-                    </div>
-                )}
-            </div>
-        );
-    }
+export default function SawadStylePortfolio({ userProfile, completedProjects, uid, debugInfo }) {
+    const [clientDebugInfo, setClientDebugInfo] = useState(null);
+
+    // Client-side fallback for additional debugging
+    useEffect(() => {
+        setClientDebugInfo({
+            isClient: true,
+            hasWindow: typeof window !== 'undefined',
+            userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
+            timestamp: new Date().toISOString()
+        });
+    }, []);
 
     const displayName = userProfile?.displayName || 'Developer';
     const bio = userProfile?.bio || 'A Software Engineer who has developed countless innovative solutions.';
     const projectCount = Array.isArray(completedProjects) ? completedProjects.length : 0;
+    
     // Calculate experience more accurately, supporting months
     let experienceYears;
     if (userProfile?.experienceYears) {
@@ -153,31 +170,51 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
             {/* Main Website Navigation */}
             <Navbar />
 
-            {/* Debug Section - Shows in production to help diagnose issues */}
-            {debugInfo && (
-                <div style={{ 
-                    position: 'fixed', 
-                    top: '80px', 
-                    right: '20px', 
-                    background: '#222', 
-                    color: '#fff', 
-                    padding: '1rem', 
-                    borderRadius: '8px', 
-                    fontSize: '0.8rem', 
-                    maxWidth: '300px', 
-                    zIndex: 1000,
-                    border: '1px solid #444',
-                    opacity: 0.9
-                }}>
-                    <h4 style={{ margin: '0 0 0.5rem 0', color: '#fff' }}>Debug Info:</h4>
-                    <p style={{ margin: '0.2rem 0', color: '#ccc' }}>UID: {uid}</p>
-                    <p style={{ margin: '0.2rem 0', color: '#ccc' }}>Has Profile: {debugInfo.hasUserProfile ? 'Yes' : 'No'}</p>
-                    <p style={{ margin: '0.2rem 0', color: '#ccc' }}>Profile Keys: {debugInfo.userProfileKeys.length > 0 ? debugInfo.userProfileKeys.join(', ') : 'None'}</p>
-                    <p style={{ margin: '0.2rem 0', color: '#ccc' }}>Projects: {debugInfo.projectCount}</p>
-                    <p style={{ margin: '0.2rem 0', color: '#ccc' }}>Time: {new Date(debugInfo.timestamp).toLocaleTimeString()}</p>
-                    <p style={{ margin: '0.2rem 0', color: '#ccc' }}>Env: {process.env.NODE_ENV || 'unknown'}</p>
+            {/* Debug Section - Shows in all environments to help diagnose issues */}
+            <div style={{ 
+                position: 'fixed', 
+                top: '80px', 
+                right: '20px', 
+                background: '#222', 
+                color: '#fff', 
+                padding: '1rem', 
+                borderRadius: '8px', 
+                fontSize: '0.75rem', 
+                maxWidth: '320px', 
+                zIndex: 1000,
+                border: '1px solid #444',
+                opacity: 0.95,
+                maxHeight: '400px',
+                overflowY: 'auto'
+            }}>
+                <h4 style={{ margin: '0 0 0.5rem 0', color: '#fff', fontSize: '0.9rem' }}>Debug Info:</h4>
+                <div style={{ marginBottom: '0.5rem' }}>
+                    <strong>Server:</strong>
+                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>UID: {uid}</p>
+                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Profile: {debugInfo?.hasUserProfile ? 'Yes' : 'No'}</p>
+                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Keys: {debugInfo?.userProfileKeys?.length > 0 ? debugInfo.userProfileKeys.join(', ') : 'None'}</p>
+                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Projects: {debugInfo?.projectCount || 0}</p>
+                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Env: {debugInfo?.environment}</p>
+                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Vercel: {debugInfo?.vercelEnv}</p>
+                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Firebase: {debugInfo?.hasFirebaseConfig ? 'Yes' : 'No'}</p>
+                    {debugInfo?.firebaseError && (
+                        <p style={{ margin: '0.1rem 0', color: '#ff6b6b', fontSize: '0.7rem' }}>FB Error: {debugInfo.firebaseError}</p>
+                    )}
+                    {debugInfo?.serverError && (
+                        <p style={{ margin: '0.1rem 0', color: '#ff6b6b', fontSize: '0.7rem' }}>Server Error: {debugInfo.serverError}</p>
+                    )}
                 </div>
-            )}
+                {clientDebugInfo && (
+                    <div>
+                        <strong>Client:</strong>
+                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Hydrated: {clientDebugInfo.isClient ? 'Yes' : 'No'}</p>
+                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Window: {clientDebugInfo.hasWindow ? 'Yes' : 'No'}</p>
+                    </div>
+                )}
+                <p style={{ margin: '0.5rem 0 0 0', color: '#888', fontSize: '0.7rem' }}>
+                    Time: {new Date(debugInfo?.timestamp || Date.now()).toLocaleTimeString()}
+                </p>
+            </div>
 
             {/* Hero Section */}
             <section className="hero-section">
@@ -469,37 +506,6 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
                     background: #000;
                     color: #fff;
                     overflow-x: hidden;
-                }
-
-                .sawad-nav {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    z-index: 1000;
-                    background: rgba(0, 0, 0, 0.9);
-                    backdrop-filter: blur(10px);
-                    padding: 1rem 0;
-                }
-
-                .nav-container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 0 2rem;
-                    display: flex;
-                    justify-content: center;
-                    gap: 3rem;
-                }
-
-                .nav-container a {
-                    color: #fff;
-                    text-decoration: none;
-                    font-weight: 500;
-                    transition: opacity 0.3s ease;
-                }
-
-                .nav-container a:hover {
-                    opacity: 0.7;
                 }
 
                 .hero-section {
@@ -803,17 +809,6 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
                     font-size: 1rem;
                 }
 
-                .experience-item p {
-                    color: #ccc;
-                    line-height: 1.6;
-                    margin-bottom: 1rem;
-                }
-
-                .experience-item span {
-                    color: #666;
-                    font-size: 0.9rem;
-                }
-
                 .tools-section {
                     padding: 6rem 2rem;
                     background: #000;
@@ -848,13 +843,6 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
                     align-items: center;
                     justify-content: center;
                     height: 60px;
-                }
-
-                .tool-icon-image {
-                    width: 48px;
-                    height: 48px;
-                    object-fit: contain;
-                    filter: brightness(1.1);
                 }
 
                 .tool-card h3 {
@@ -894,24 +882,7 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
                     opacity: 0.7;
                 }
 
-                .error-container {
-                    min-height: 100vh;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    text-align: center;
-                    padding: 2rem;
-                    background: #000;
-                    color: #fff;
-                }
-
                 @media (max-width: 768px) {
-                    .nav-container {
-                        gap: 1.5rem;
-                        padding: 0 1rem;
-                    }
-
                     .hero-name {
                         font-size: 2rem;
                     }
@@ -927,8 +898,6 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
                     .stat-number {
                         font-size: 2rem;
                     }
-
-
 
                     .section-title {
                         font-size: 2rem;
