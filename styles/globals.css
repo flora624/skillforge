@@ -2768,7 +2768,7 @@ body {
 
 
 @media(max-width:768px){
-    .hero-sectionp {
-        background: linear-gradient(180deg, transparent 0%, #d7bfff 15%, transparent 45%) !important;
+    .hero-section {
+        margin-top: 8px;
     }
 }
