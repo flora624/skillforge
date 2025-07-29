@@ -1142,7 +1142,7 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
                 @media (max-width: 768px) {
 
                 .hero-section {
-        margin-top: 25px;
+        margin-top: 60px;
     }
 
             
