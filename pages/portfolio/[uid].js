@@ -1140,6 +1140,13 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
                 }
 
                 @media (max-width: 768px) {
+
+                .hero-section {
+        margin-top: 25px;
+    }
+
+            
+
                     .hero-name {
                         font-size: 2rem;
                     }

@@ -2766,9 +2766,3 @@ body {
     }
 }
 
-
-@media(max-width:768px){
-    .hero-section {
-        margin-top: 8px;
-    }
-}
