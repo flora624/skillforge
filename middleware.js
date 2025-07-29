@@ -20,7 +20,7 @@ export function middleware(request) {
 
   // If the user is on a protected route and has no auth cookie, redirect them to the homepage.
   if (!hasAuthCookie) {
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL('/portfolio', request.url));
   }
 
   // If the cookie exists, allow the request to proceed.
