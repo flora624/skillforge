@@ -11,11 +11,19 @@ import Navbar from '../../components/Navbar';
 // --- FIX: Import the JSON data directly. It will be bundled with the code.
 import allProjects from '../../data/projects.json';
 
-// Use getServerSideProps for direct link compatibility
-export async function getServerSideProps({ params }) {
+// Use getStaticProps instead of getServerSideProps for better Vercel compatibility
+export async function getStaticPaths() {
+  // Return empty paths to generate pages on-demand
+  return {
+    paths: [],
+    fallback: 'blocking'
+  };
+}
+
+export async function getStaticProps({ params }) {
   const { uid } = params;
   
-  console.log('getServerSideProps called with UID:', uid);
+  console.log('getStaticProps called with UID:', uid);
   
   // Initialize return data with safe defaults - NEVER return notFound
   let userProfile = {};
@@ -30,7 +38,7 @@ export async function getServerSideProps({ params }) {
     hasFirebaseConfig: false,
     firebaseError: null,
     serverError: null,
-    method: 'getServerSideProps',
+    method: 'getStaticProps',
     uidReceived: uid || 'MISSING'
   };
 
@@ -46,10 +54,10 @@ export async function getServerSideProps({ params }) {
       
       debugInfo.hasFirebaseConfig = hasFirebaseConfig;
       
-      console.log('Portfolio SSR - UID:', uid);
-      console.log('Portfolio SSR - Environment:', process.env.NODE_ENV);
-      console.log('Portfolio SSR - Vercel Env:', process.env.VERCEL_ENV);
-      console.log('Portfolio SSR - Has Firebase Config:', hasFirebaseConfig);
+      console.log('Portfolio Static - UID:', uid);
+      console.log('Portfolio Static - Environment:', process.env.NODE_ENV);
+      console.log('Portfolio Static - Vercel Env:', process.env.VERCEL_ENV);
+      console.log('Portfolio Static - Has Firebase Config:', hasFirebaseConfig);
 
       if (hasFirebaseConfig) {
         try {
@@ -62,12 +70,12 @@ export async function getServerSideProps({ params }) {
             userProfile = userData || {};
             debugInfo.hasUserProfile = true;
             debugInfo.userProfileKeys = Object.keys(userProfile);
-            console.log('Portfolio SSR - User profile found with keys:', debugInfo.userProfileKeys);
+            console.log('Portfolio Static - User profile found with keys:', debugInfo.userProfileKeys);
           } else {
-            console.log('Portfolio SSR - User document not found for UID:', uid);
+            console.log('Portfolio Static - User document not found for UID:', uid);
           }
         } catch (userError) {
-          console.error('Portfolio SSR - User fetch error:', userError);
+          console.error('Portfolio Static - User fetch error:', userError);
           debugInfo.firebaseError = userError.message;
         }
 
@@ -104,22 +112,22 @@ export async function getServerSideProps({ params }) {
           
           completedProjects = projects;
           debugInfo.projectCount = projects.length;
-          console.log('Portfolio SSR - Projects found:', projects.length);
+          console.log('Portfolio Static - Projects found:', projects.length);
         } catch (projectsError) {
-          console.error('Portfolio SSR - Projects fetch error:', projectsError);
+          console.error('Portfolio Static - Projects fetch error:', projectsError);
           debugInfo.firebaseError = projectsError.message;
         }
       } else {
-        console.log('Portfolio SSR - Firebase config missing');
+        console.log('Portfolio Static - Firebase config missing');
         debugInfo.firebaseError = 'Firebase configuration missing';
       }
 
     } catch (criticalError) {
-      console.error('Portfolio SSR - Critical error:', criticalError);
+      console.error('Portfolio Static - Critical error:', criticalError);
       debugInfo.serverError = criticalError.message;
     }
   } else {
-    console.log('Portfolio SSR - Invalid or missing UID, will rely on client-side fetch');
+    console.log('Portfolio Static - Invalid or missing UID, will rely on client-side fetch');
     debugInfo.serverError = 'Invalid or missing UID';
   }
 
@@ -130,7 +138,8 @@ export async function getServerSideProps({ params }) {
       completedProjects,
       uid: uid || null,
       debugInfo
-    }
+    },
+    revalidate: 60 // Revalidate every 60 seconds
   };
 }
 
