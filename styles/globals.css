@@ -2551,6 +2551,10 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+
+    .hero-section {
+   margin-top: 25px;
+}
     .modern-project-header {
         padding: 40px 20px;
     }
