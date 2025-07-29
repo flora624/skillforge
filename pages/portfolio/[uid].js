@@ -1,6 +1,7 @@
 // pages/portfolio/[uid].js
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { db } from '../../firebase/config';
 import { collection, doc, getDoc, query, where, getDocs } from 'firebase/firestore';
 import Link from 'next/link';
@@ -10,9 +11,17 @@ import Navbar from '../../components/Navbar';
 // --- FIX: Import the JSON data directly. It will be bundled with the code.
 import allProjects from '../../data/projects.json';
 
-// Server-side data fetching with Vercel compatibility
-export async function getServerSideProps(context) {
-  const { uid } = context.params;
+// Use getStaticProps instead of getServerSideProps for better Vercel compatibility
+export async function getStaticPaths() {
+  // Return empty paths to generate pages on-demand
+  return {
+    paths: [],
+    fallback: 'blocking'
+  };
+}
+
+export async function getStaticProps({ params }) {
+  const { uid } = params;
   
   // Basic validation
   if (!uid || typeof uid !== 'string') {
@@ -31,7 +40,8 @@ export async function getServerSideProps(context) {
     vercelEnv: process.env.VERCEL_ENV || 'unknown',
     hasFirebaseConfig: false,
     firebaseError: null,
-    serverError: null
+    serverError: null,
+    method: 'getStaticProps'
   };
 
   try {
@@ -44,10 +54,10 @@ export async function getServerSideProps(context) {
     
     debugInfo.hasFirebaseConfig = hasFirebaseConfig;
     
-    console.log('Portfolio SSR - UID:', uid);
-    console.log('Portfolio SSR - Environment:', process.env.NODE_ENV);
-    console.log('Portfolio SSR - Vercel Env:', process.env.VERCEL_ENV);
-    console.log('Portfolio SSR - Has Firebase Config:', hasFirebaseConfig);
+    console.log('Portfolio Static - UID:', uid);
+    console.log('Portfolio Static - Environment:', process.env.NODE_ENV);
+    console.log('Portfolio Static - Vercel Env:', process.env.VERCEL_ENV);
+    console.log('Portfolio Static - Has Firebase Config:', hasFirebaseConfig);
 
     if (hasFirebaseConfig) {
       try {
@@ -60,12 +70,12 @@ export async function getServerSideProps(context) {
           userProfile = userData || {};
           debugInfo.hasUserProfile = true;
           debugInfo.userProfileKeys = Object.keys(userProfile);
-          console.log('Portfolio SSR - User profile found with keys:', debugInfo.userProfileKeys);
+          console.log('Portfolio Static - User profile found with keys:', debugInfo.userProfileKeys);
         } else {
-          console.log('Portfolio SSR - User document not found for UID:', uid);
+          console.log('Portfolio Static - User document not found for UID:', uid);
         }
       } catch (userError) {
-        console.error('Portfolio SSR - User fetch error:', userError);
+        console.error('Portfolio Static - User fetch error:', userError);
         debugInfo.firebaseError = userError.message;
       }
 
@@ -102,56 +112,97 @@ export async function getServerSideProps(context) {
         
         completedProjects = projects;
         debugInfo.projectCount = projects.length;
-        console.log('Portfolio SSR - Projects found:', projects.length);
+        console.log('Portfolio Static - Projects found:', projects.length);
       } catch (projectsError) {
-        console.error('Portfolio SSR - Projects fetch error:', projectsError);
+        console.error('Portfolio Static - Projects fetch error:', projectsError);
         debugInfo.firebaseError = projectsError.message;
       }
     } else {
-      console.log('Portfolio SSR - Firebase config missing');
+      console.log('Portfolio Static - Firebase config missing');
       debugInfo.firebaseError = 'Firebase configuration missing';
     }
 
   } catch (criticalError) {
-    console.error('Portfolio SSR - Critical error:', criticalError);
+    console.error('Portfolio Static - Critical error:', criticalError);
     debugInfo.serverError = criticalError.message;
   }
 
-  // Always return valid props
+  // Always return valid props with revalidation
   return {
     props: {
       userProfile,
       completedProjects,
       uid,
       debugInfo
-    }
+    },
+    revalidate: 60 // Revalidate every 60 seconds
   };
 }
 
 // Main Portfolio Page Component
-export default function SawadStylePortfolio({ userProfile, completedProjects, uid, debugInfo }) {
+export default function SawadStylePortfolio({ userProfile = {}, completedProjects = [], uid, debugInfo }) {
+    const router = useRouter();
     const [clientDebugInfo, setClientDebugInfo] = useState(null);
+    const [clientData, setClientData] = useState({ userProfile: {}, completedProjects: [] });
 
-    // Client-side fallback for additional debugging
+    // Client-side fallback for additional debugging and data fetching
     useEffect(() => {
+        const currentUid = uid || router.query.uid;
+        
         setClientDebugInfo({
             isClient: true,
             hasWindow: typeof window !== 'undefined',
             userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            routerReady: router.isReady,
+            routerQuery: router.query,
+            currentUid: currentUid,
+            propsReceived: {
+                hasUserProfile: !!userProfile && Object.keys(userProfile).length > 0,
+                hasCompletedProjects: Array.isArray(completedProjects) && completedProjects.length > 0,
+                hasUid: !!uid,
+                hasDebugInfo: !!debugInfo
+            }
         });
-    }, []);
 
-    const displayName = userProfile?.displayName || 'Developer';
-    const bio = userProfile?.bio || 'A Software Engineer who has developed countless innovative solutions.';
+        // If server-side data is missing and we have a UID, try client-side fetch
+        if (currentUid && (!userProfile || Object.keys(userProfile).length === 0)) {
+            console.log('Client-side fallback: Attempting to fetch user data for UID:', currentUid);
+            
+            // Client-side Firebase fetch as fallback
+            const fetchClientData = async () => {
+                try {
+                    const userDocRef = doc(db, 'users', currentUid);
+                    const userDocSnap = await getDoc(userDocRef);
+                    
+                    if (userDocSnap.exists()) {
+                        const userData = userDocSnap.data();
+                        setClientData(prev => ({ ...prev, userProfile: userData }));
+                        console.log('Client-side: User profile fetched successfully');
+                    }
+                } catch (error) {
+                    console.error('Client-side: Error fetching user profile:', error);
+                }
+            };
+
+            fetchClientData();
+        }
+    }, [router.isReady, router.query, uid, userProfile, completedProjects, debugInfo]);
+
+    // Use client data if server data is missing
+    const effectiveUserProfile = (userProfile && Object.keys(userProfile).length > 0) ? userProfile : clientData.userProfile;
+    const effectiveUid = uid || router.query.uid;
+
+    const displayName = effectiveUserProfile?.displayName || 'Developer';
+    const bio = effectiveUserProfile?.bio || 'A Software Engineer who has developed countless innovative solutions.';
     const projectCount = Array.isArray(completedProjects) ? completedProjects.length : 0;
     
     // Calculate experience more accurately, supporting months
     let experienceYears;
-    if (userProfile?.experienceYears) {
-        experienceYears = userProfile.experienceYears;
-    } else if (userProfile?.experienceMonths) {
-        experienceYears = Math.round((userProfile.experienceMonths / 12) * 10) / 10; // Round to 1 decimal
+    if (effectiveUserProfile?.experienceYears) {
+        experienceYears = effectiveUserProfile.experienceYears;
+    } else if (effectiveUserProfile?.experienceMonths) {
+        experienceYears = Math.round((effectiveUserProfile.experienceMonths / 12) * 10) / 10; // Round to 1 decimal
     } else {
         experienceYears = Math.max(1, Math.floor(projectCount / 4)); // Fallback estimate
     }
@@ -189,13 +240,13 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, ui
             }}>
                 <h4 style={{ margin: '0 0 0.5rem 0', color: '#fff', fontSize: '0.9rem' }}>Debug Info:</h4>
                 <div style={{ marginBottom: '0.5rem' }}>
-                    <strong>Server:</strong>
-                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>UID: {uid}</p>
+                    <strong>Server ({debugInfo?.method || 'unknown'}):</strong>
+                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>UID: {uid || 'MISSING'}</p>
                     <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Profile: {debugInfo?.hasUserProfile ? 'Yes' : 'No'}</p>
                     <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Keys: {debugInfo?.userProfileKeys?.length > 0 ? debugInfo.userProfileKeys.join(', ') : 'None'}</p>
                     <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Projects: {debugInfo?.projectCount || 0}</p>
-                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Env: {debugInfo?.environment}</p>
-                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Vercel: {debugInfo?.vercelEnv}</p>
+                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Env: {debugInfo?.environment || 'MISSING'}</p>
+                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Vercel: {debugInfo?.vercelEnv || 'MISSING'}</p>
                     <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Firebase: {debugInfo?.hasFirebaseConfig ? 'Yes' : 'No'}</p>
                     {debugInfo?.firebaseError && (
                         <p style={{ margin: '0.1rem 0', color: '#ff6b6b', fontSize: '0.7rem' }}>FB Error: {debugInfo.firebaseError}</p>
@@ -209,6 +260,10 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, ui
                         <strong>Client:</strong>
                         <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Hydrated: {clientDebugInfo.isClient ? 'Yes' : 'No'}</p>
                         <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Window: {clientDebugInfo.hasWindow ? 'Yes' : 'No'}</p>
+                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Router Ready: {clientDebugInfo.routerReady ? 'Yes' : 'No'}</p>
+                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Current UID: {clientDebugInfo.currentUid || 'None'}</p>
+                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>URL: {typeof window !== 'undefined' ? window.location.pathname : 'N/A'}</p>
+                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Client Profile: {Object.keys(clientData.userProfile).length > 0 ? 'Yes' : 'No'}</p>
                     </div>
                 )}
                 <p style={{ margin: '0.5rem 0 0 0', color: '#888', fontSize: '0.7rem' }}>
@@ -220,8 +275,8 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, ui
             <section className="hero-section">
                 <div className="hero-content">
                     <div className="profile-image">
-                        {userProfile?.photoURL ? (
-                            <img src={userProfile.photoURL} alt={displayName} />
+                        {effectiveUserProfile?.photoURL ? (
+                            <img src={effectiveUserProfile.photoURL} alt={displayName} />
                         ) : (
                             <div className="default-avatar">
                                 <i className="fas fa-user"></i>
@@ -232,10 +287,10 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, ui
                     <p className="hero-description">{bio}</p>
                     
                     {/* About Me Section */}
-                    {userProfile?.aboutDescription && (
+                    {effectiveUserProfile?.aboutDescription && (
                         <div className="about-me-section">
                             <h3 className="about-me-title">About Me</h3>
-                            <p className="about-me-content">{userProfile.aboutDescription}</p>
+                            <p className="about-me-content">{effectiveUserProfile.aboutDescription}</p>
                         </div>
                     )}
                 </div>
@@ -243,9 +298,9 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, ui
 
             {/* Large Title Section */}
             <section className="large-title-section">
-                <h2 className="large-title">{userProfile?.portfolioTitle || 'SOFTWARE ENGINEER'}</h2>
+                <h2 className="large-title">{effectiveUserProfile?.portfolioTitle || 'SOFTWARE ENGINEER'}</h2>
                 <p className="large-subtitle">
-                    {userProfile?.portfolioSubtitle || userProfile?.aboutDescription || 
+                    {effectiveUserProfile?.portfolioSubtitle || effectiveUserProfile?.aboutDescription || 
                      'Passionate about creating intuitive and engaging user experiences. Specialize in transforming ideas into beautifully crafted products.'}
                 </p>
             </section>
@@ -255,7 +310,7 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, ui
                 <div className="stat-item">
                     <span className="stat-number">
                         +{experienceYears < 1 ? 
-                            (userProfile?.experienceMonths || Math.round(experienceYears * 12)) : 
+                            (effectiveUserProfile?.experienceMonths || Math.round(experienceYears * 12)) : 
                             experienceYears
                         }
                     </span>
@@ -274,8 +329,8 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, ui
             <section className="skills-section">
                 <h2 className="section-title"><span>MY SKILLS</span></h2>
                 <div className="skills-grid">
-                    {userProfile?.skills && Array.isArray(userProfile.skills) && userProfile.skills.length > 0 ? (
-                        userProfile.skills.map((skill, index) => (
+                    {effectiveUserProfile?.skills && Array.isArray(effectiveUserProfile.skills) && effectiveUserProfile.skills.length > 0 ? (
+                        effectiveUserProfile.skills.map((skill, index) => (
                             <div key={index} className="skill-box">
                                 {skill?.trim() || skill}
                             </div>
@@ -326,14 +381,14 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, ui
             <section id="experience" className="experience-section">
                 <h2 className="section-title">
                     {experienceYears < 1 ? 
-                        `${userProfile?.experienceMonths || Math.round(experienceYears * 12)} MONTHS OF` : 
+                        `${effectiveUserProfile?.experienceMonths || Math.round(experienceYears * 12)} MONTHS OF` : 
                         `${experienceYears} YEARS OF`
                     }<span> EXPERIENCE</span>
                 </h2>
                 <div className="experience-list">
                     {/* Display detailed experience entries if available */}
-                    {userProfile?.experiences && Array.isArray(userProfile.experiences) && userProfile.experiences.length > 0 ? (
-                        userProfile.experiences.map((experience, index) => (
+                    {effectiveUserProfile?.experiences && Array.isArray(effectiveUserProfile.experiences) && effectiveUserProfile.experiences.length > 0 ? (
+                        effectiveUserProfile.experiences.map((experience, index) => (
                             <div key={experience.id || index} className="experience-item">
                                 <div className="experience-header">
                                     <h3>{experience.position}</h3>
@@ -372,14 +427,14 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, ui
                     ) : (
                         /* Fallback to basic experience display */
                         <>
-                            {userProfile?.currentPosition && userProfile?.company ? (
+                            {effectiveUserProfile?.currentPosition && effectiveUserProfile?.company ? (
                                 <div className="experience-item">
                                     <div className="experience-header">
-                                        <h3>{userProfile.currentPosition}</h3>
+                                        <h3>{effectiveUserProfile.currentPosition}</h3>
                                         <span className="experience-duration">Current Position</span>
                                     </div>
                                     <div className="experience-company">
-                                        <h4>{userProfile.company}</h4>
+                                        <h4>{effectiveUserProfile.company}</h4>
                                     </div>
                                 </div>
                             ) : null}
@@ -404,8 +459,8 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, ui
             <section id="tools" className="tools-section">
                 <h2 className="section-title"><span>TOOLS</span></h2>
                 <div className="tools-grid">
-                    {userProfile?.primaryTools && Array.isArray(userProfile.primaryTools) && userProfile.primaryTools.length > 0 ? (
-                        userProfile.primaryTools.map((tool, index) => (
+                    {effectiveUserProfile?.primaryTools && Array.isArray(effectiveUserProfile.primaryTools) && effectiveUserProfile.primaryTools.length > 0 ? (
+                        effectiveUserProfile.primaryTools.map((tool, index) => (
                             <div key={index} className="tool-card">
                                 <div className="tool-icon">
                                     <i className="fas fa-code"></i>
@@ -469,26 +524,26 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, ui
                 <h2 className="section-title">LET'S WORK<span>TOGETHER</span></h2>
                 <div className="contact-content">
                     <div className="contact-info">
-                        {userProfile?.showEmail !== false && userProfile?.email && (
-                            <p>Email: <a href={`mailto:${userProfile.email}`}>{userProfile.email}</a></p>
+                        {effectiveUserProfile?.showEmail !== false && effectiveUserProfile?.email && (
+                            <p>Email: <a href={`mailto:${effectiveUserProfile.email}`}>{effectiveUserProfile.email}</a></p>
                         )}
-                        {userProfile?.githubUrl && (
-                            <p>GitHub: <a href={userProfile.githubUrl} target="_blank" rel="noopener noreferrer">View Profile</a></p>
+                        {effectiveUserProfile?.githubUrl && (
+                            <p>GitHub: <a href={effectiveUserProfile.githubUrl} target="_blank" rel="noopener noreferrer">View Profile</a></p>
                         )}
-                        {userProfile?.linkedinUrl && (
-                            <p>LinkedIn: <a href={userProfile.linkedinUrl} target="_blank" rel="noopener noreferrer">Connect</a></p>
+                        {effectiveUserProfile?.linkedinUrl && (
+                            <p>LinkedIn: <a href={effectiveUserProfile.linkedinUrl} target="_blank" rel="noopener noreferrer">Connect</a></p>
                         )}
-                        {userProfile?.twitterUrl && (
-                            <p>Twitter: <a href={userProfile.twitterUrl} target="_blank" rel="noopener noreferrer">Follow</a></p>
+                        {effectiveUserProfile?.twitterUrl && (
+                            <p>Twitter: <a href={effectiveUserProfile.twitterUrl} target="_blank" rel="noopener noreferrer">Follow</a></p>
                         )}
-                        {userProfile?.portfolioUrl && (
-                            <p>Website: <a href={userProfile.portfolioUrl} target="_blank" rel="noopener noreferrer">Visit</a></p>
+                        {effectiveUserProfile?.portfolioUrl && (
+                            <p>Website: <a href={effectiveUserProfile.portfolioUrl} target="_blank" rel="noopener noreferrer">Visit</a></p>
                         )}
-                        {userProfile?.showLocation !== false && userProfile?.location && (
-                            <p>Location: {userProfile.location}</p>
+                        {effectiveUserProfile?.showLocation !== false && effectiveUserProfile?.location && (
+                            <p>Location: {effectiveUserProfile.location}</p>
                         )}
-                        {userProfile?.availability && (
-                            <p>Status: {userProfile.availability.charAt(0).toUpperCase() + userProfile.availability.slice(1).replace('-', ' ')}</p>
+                        {effectiveUserProfile?.availability && (
+                            <p>Status: {effectiveUserProfile.availability.charAt(0).toUpperCase() + effectiveUserProfile.availability.slice(1).replace('-', ' ')}</p>
                         )}
                     </div>
                 </div>
