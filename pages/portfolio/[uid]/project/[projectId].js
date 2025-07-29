@@ -5,41 +5,68 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import Navbar from '../../../../components/Navbar';
 
-export async function getServerSideProps(context) {
-  const { uid, projectId } = context.params;
-  if (!uid || !projectId) return { notFound: true };
+// Generate static paths for all possible combinations
+export async function getStaticPaths() {
+  // Return empty paths to generate pages on-demand
+  return {
+    paths: [],
+    fallback: 'blocking'
+  };
+}
+
+export async function getStaticProps({ params }) {
+  const { uid, projectId } = params;
+  
+  // Initialize return data with safe defaults
+  let project = null;
+  let mcq = null;
+  let approach = null;
+  let screenshots = {};
+  let userId = uid;
+
+  if (!uid || !projectId) {
+    return { notFound: true };
+  }
 
   try {
     // Get user progress for this project
     const progressRef = doc(db, 'userProgress', `${uid}_${projectId}`);
     const progressSnap = await getDoc(progressRef);
-    if (!progressSnap.exists()) return { notFound: true };
+    
+    if (!progressSnap.exists()) {
+      return { notFound: true };
+    }
+    
     const progress = progressSnap.data();
 
     // Get project details
     const projectsFilePath = path.join(process.cwd(), 'data', 'projects.json');
     const jsonData = await fs.readFile(projectsFilePath, 'utf8');
     const allProjects = JSON.parse(jsonData);
-    const project = allProjects.find(p => p.id === progress.projectId);
-    if (!project) return { notFound: true };
+    const foundProject = allProjects.find(p => p.id === progress.projectId);
+    
+    if (!foundProject) {
+      return { notFound: true };
+    }
 
-    // MCQ answers
-    const mcq = progress.mcq || null;
-    // Approach (summary or live link)
-    const approach = progress.submissionUrl || null;
+    project = foundProject;
+    mcq = progress.mcq || null;
+    approach = progress.submissionUrl || null;
+    screenshots = progress.screenshots || {};
 
-    // Screenshots
-    const screenshots = progress.screenshots || {};
     return {
       props: {
         project,
         mcq,
         approach,
         screenshots,
-        userId: uid
-      }
+        userId
+      },
+      // Revalidate every 60 seconds to keep data fresh
+      revalidate: 60
     };
-  } catch (e) {
+  } catch (error) {
+    console.error('Error fetching project portfolio data:', error);
     return { notFound: true };
   }
 }
@@ -345,5 +372,3 @@ function MCQAnswersLineView({ project, mcq }) {
     </div>
   );
 }
-
-// (Removed duplicate getServerSideProps definition)
