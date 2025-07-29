@@ -16,63 +16,112 @@ export async function getServerSideProps(context) {
   if (!uid) return { notFound: true };
 
   try {
-    const userDocRef = doc(db, 'users', uid);
-    const userDocSnap = await getDoc(userDocRef);
-    const userProfile = userDocSnap.exists() ? userDocSnap.data() : null;
-
-    // --- FIX: The file system reading logic has been removed. ---
-    // The 'allProjects' variable is now available from the import above.
-
-    const q = query(collection(db, 'userProgress'), where('userId', '==', uid), where('isCompleted', '==', true));
-    const querySnapshot = await getDocs(q);
-
-    const completedProjects = [];
-    querySnapshot.forEach(doc => {
-      const progressData = doc.data();
-      const projectDetails = allProjects.find(p => p.id === progressData.projectId);
-      
-      if (projectDetails) {
-        const serializableProject = {
-            userId: progressData.userId,
-            projectId: progressData.projectId,
-            isCompleted: progressData.isCompleted,
-            submissionUrl: progressData.submissionUrl || null,
-            project: projectDetails,
-            completedAt: progressData.completedAt ? progressData.completedAt.toDate().toISOString() : null,
-            startedAt: progressData.startedAt ? progressData.startedAt.toDate().toISOString() : null,
-            lastUpdated: progressData.lastUpdated ? progressData.lastUpdated.toDate().toISOString() : null,
-            screenshots: progressData.screenshots || null,
-        };
-        completedProjects.push(serializableProject);
-      }
+    // Add debugging for production
+    console.log('Fetching portfolio for UID:', uid);
+    console.log('Firebase config check:', {
+      hasApiKey: !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+      hasProjectId: !!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
     });
 
-    // Ensure completedProjects is always an array
+    // Initialize Firebase connection with better error handling
+    let userProfile = null;
+    let completedProjects = [];
+
+    try {
+      const userDocRef = doc(db, 'users', uid);
+      const userDocSnap = await getDoc(userDocRef);
+      
+      if (userDocSnap.exists()) {
+        userProfile = userDocSnap.data();
+        console.log('User profile found:', !!userProfile);
+        console.log('User profile keys:', userProfile ? Object.keys(userProfile) : 'none');
+      } else {
+        console.log('User document does not exist for UID:', uid);
+      }
+    } catch (userError) {
+      console.error('Error fetching user profile:', userError);
+      // Continue execution even if user profile fails
+    }
+
+    try {
+      const q = query(collection(db, 'userProgress'), where('userId', '==', uid), where('isCompleted', '==', true));
+      const querySnapshot = await getDocs(q);
+
+      querySnapshot.forEach(doc => {
+        const progressData = doc.data();
+        const projectDetails = allProjects.find(p => p.id === progressData.projectId);
+        
+        if (projectDetails) {
+          const serializableProject = {
+              userId: progressData.userId,
+              projectId: progressData.projectId,
+              isCompleted: progressData.isCompleted,
+              submissionUrl: progressData.submissionUrl || null,
+              project: projectDetails,
+              completedAt: progressData.completedAt ? progressData.completedAt.toDate().toISOString() : null,
+              startedAt: progressData.startedAt ? progressData.startedAt.toDate().toISOString() : null,
+              lastUpdated: progressData.lastUpdated ? progressData.lastUpdated.toDate().toISOString() : null,
+              screenshots: progressData.screenshots || null,
+          };
+          completedProjects.push(serializableProject);
+        }
+      });
+      console.log('Completed projects found:', completedProjects.length);
+    } catch (projectsError) {
+      console.error('Error fetching user progress:', projectsError);
+      // Continue execution even if projects fail
+    }
+
+    // Return data with fallbacks
     return { 
         props: { 
             userProfile: userProfile || {},
-            completedProjects: completedProjects || []
+            completedProjects: completedProjects || [],
+            uid: uid, // Pass UID for debugging
+            debugInfo: {
+              hasUserProfile: !!userProfile,
+              userProfileKeys: userProfile ? Object.keys(userProfile) : [],
+              projectCount: completedProjects.length,
+              timestamp: new Date().toISOString()
+            }
         } 
     };
   } catch (error) {
-    console.error("Error fetching portfolio:", error);
+    console.error("Critical error fetching portfolio:", error);
+    
+    // Return minimal data to prevent complete failure
     return { 
         props: { 
             userProfile: {},
             completedProjects: [],
-            error: "Failed to load portfolio." 
+            uid: uid,
+            error: `Failed to load portfolio: ${error.message}`,
+            debugInfo: {
+              errorType: error.name,
+              errorMessage: error.message,
+              timestamp: new Date().toISOString()
+            }
         } 
     };
   }
 }
 
 // Main Portfolio Page Component
-export default function SawadStylePortfolio({ userProfile, completedProjects, error }) {
+export default function SawadStylePortfolio({ userProfile, completedProjects, error, uid, debugInfo }) {
     if (error) {
         return (
             <div className="error-container">
                 <h1>Error</h1>
                 <p>{error}</p>
+                {debugInfo && (
+                    <div style={{ marginTop: '2rem', padding: '1rem', background: '#222', borderRadius: '8px', textAlign: 'left' }}>
+                        <h3>Debug Information:</h3>
+                        <pre style={{ color: '#ccc', fontSize: '0.9rem' }}>
+                            {JSON.stringify(debugInfo, null, 2)}
+                        </pre>
+                    </div>
+                )}
             </div>
         );
     }
@@ -103,6 +152,30 @@ export default function SawadStylePortfolio({ userProfile, completedProjects, er
             
             {/* Main Website Navigation */}
             <Navbar />
+
+            {/* Temporary Debug Section - Remove after fixing */}
+            {process.env.NODE_ENV === 'development' && debugInfo && (
+                <div style={{ 
+                    position: 'fixed', 
+                    top: '80px', 
+                    right: '20px', 
+                    background: '#222', 
+                    color: '#fff', 
+                    padding: '1rem', 
+                    borderRadius: '8px', 
+                    fontSize: '0.8rem', 
+                    maxWidth: '300px', 
+                    zIndex: 1000,
+                    border: '1px solid #444'
+                }}>
+                    <h4>Debug Info:</h4>
+                    <p>UID: {uid}</p>
+                    <p>Has Profile: {debugInfo.hasUserProfile ? 'Yes' : 'No'}</p>
+                    <p>Profile Keys: {debugInfo.userProfileKeys.join(', ')}</p>
+                    <p>Projects: {debugInfo.projectCount}</p>
+                    <p>Time: {new Date(debugInfo.timestamp).toLocaleTimeString()}</p>
+                </div>
+            )}
 
             {/* Hero Section */}
             <section className="hero-section">
