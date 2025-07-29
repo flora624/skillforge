@@ -23,12 +23,9 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const { uid } = params;
   
-  // Basic validation
-  if (!uid || typeof uid !== 'string') {
-    return { notFound: true };
-  }
-
-  // Initialize return data with safe defaults
+  console.log('getStaticProps called with UID:', uid);
+  
+  // Initialize return data with safe defaults - NEVER return notFound
   let userProfile = {};
   let completedProjects = [];
   let debugInfo = {
@@ -41,98 +38,105 @@ export async function getStaticProps({ params }) {
     hasFirebaseConfig: false,
     firebaseError: null,
     serverError: null,
-    method: 'getStaticProps'
+    method: 'getStaticProps',
+    uidReceived: uid || 'MISSING'
   };
 
-  try {
-    // Check Firebase configuration
-    const hasFirebaseConfig = !!(
-      process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
-      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&
-      process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-    );
-    
-    debugInfo.hasFirebaseConfig = hasFirebaseConfig;
-    
-    console.log('Portfolio Static - UID:', uid);
-    console.log('Portfolio Static - Environment:', process.env.NODE_ENV);
-    console.log('Portfolio Static - Vercel Env:', process.env.VERCEL_ENV);
-    console.log('Portfolio Static - Has Firebase Config:', hasFirebaseConfig);
+  // Only try to fetch data if we have a valid UID
+  if (uid && typeof uid === 'string') {
+    try {
+      // Check Firebase configuration
+      const hasFirebaseConfig = !!(
+        process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
+        process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&
+        process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+      );
+      
+      debugInfo.hasFirebaseConfig = hasFirebaseConfig;
+      
+      console.log('Portfolio Static - UID:', uid);
+      console.log('Portfolio Static - Environment:', process.env.NODE_ENV);
+      console.log('Portfolio Static - Vercel Env:', process.env.VERCEL_ENV);
+      console.log('Portfolio Static - Has Firebase Config:', hasFirebaseConfig);
 
-    if (hasFirebaseConfig) {
-      try {
-        // Try to fetch user profile
-        const userDocRef = doc(db, 'users', uid);
-        const userDocSnap = await getDoc(userDocRef);
-        
-        if (userDocSnap.exists()) {
-          const userData = userDocSnap.data();
-          userProfile = userData || {};
-          debugInfo.hasUserProfile = true;
-          debugInfo.userProfileKeys = Object.keys(userProfile);
-          console.log('Portfolio Static - User profile found with keys:', debugInfo.userProfileKeys);
-        } else {
-          console.log('Portfolio Static - User document not found for UID:', uid);
-        }
-      } catch (userError) {
-        console.error('Portfolio Static - User fetch error:', userError);
-        debugInfo.firebaseError = userError.message;
-      }
-
-      try {
-        // Try to fetch completed projects
-        const q = query(
-          collection(db, 'userProgress'), 
-          where('userId', '==', uid), 
-          where('isCompleted', '==', true)
-        );
-        const querySnapshot = await getDocs(q);
-
-        const projects = [];
-        querySnapshot.forEach(docSnap => {
-          const progressData = docSnap.data();
-          const projectDetails = allProjects.find(p => p.id === progressData.projectId);
+      if (hasFirebaseConfig) {
+        try {
+          // Try to fetch user profile
+          const userDocRef = doc(db, 'users', uid);
+          const userDocSnap = await getDoc(userDocRef);
           
-          if (projectDetails) {
-            // Safely serialize Firebase timestamps
-            const serializableProject = {
-              userId: progressData.userId,
-              projectId: progressData.projectId,
-              isCompleted: progressData.isCompleted,
-              submissionUrl: progressData.submissionUrl || null,
-              project: projectDetails,
-              completedAt: progressData.completedAt?.toDate?.()?.toISOString() || null,
-              startedAt: progressData.startedAt?.toDate?.()?.toISOString() || null,
-              lastUpdated: progressData.lastUpdated?.toDate?.()?.toISOString() || null,
-              screenshots: progressData.screenshots || null,
-            };
-            projects.push(serializableProject);
+          if (userDocSnap.exists()) {
+            const userData = userDocSnap.data();
+            userProfile = userData || {};
+            debugInfo.hasUserProfile = true;
+            debugInfo.userProfileKeys = Object.keys(userProfile);
+            console.log('Portfolio Static - User profile found with keys:', debugInfo.userProfileKeys);
+          } else {
+            console.log('Portfolio Static - User document not found for UID:', uid);
           }
-        });
-        
-        completedProjects = projects;
-        debugInfo.projectCount = projects.length;
-        console.log('Portfolio Static - Projects found:', projects.length);
-      } catch (projectsError) {
-        console.error('Portfolio Static - Projects fetch error:', projectsError);
-        debugInfo.firebaseError = projectsError.message;
-      }
-    } else {
-      console.log('Portfolio Static - Firebase config missing');
-      debugInfo.firebaseError = 'Firebase configuration missing';
-    }
+        } catch (userError) {
+          console.error('Portfolio Static - User fetch error:', userError);
+          debugInfo.firebaseError = userError.message;
+        }
 
-  } catch (criticalError) {
-    console.error('Portfolio Static - Critical error:', criticalError);
-    debugInfo.serverError = criticalError.message;
+        try {
+          // Try to fetch completed projects
+          const q = query(
+            collection(db, 'userProgress'), 
+            where('userId', '==', uid), 
+            where('isCompleted', '==', true)
+          );
+          const querySnapshot = await getDocs(q);
+
+          const projects = [];
+          querySnapshot.forEach(docSnap => {
+            const progressData = docSnap.data();
+            const projectDetails = allProjects.find(p => p.id === progressData.projectId);
+            
+            if (projectDetails) {
+              // Safely serialize Firebase timestamps
+              const serializableProject = {
+                userId: progressData.userId,
+                projectId: progressData.projectId,
+                isCompleted: progressData.isCompleted,
+                submissionUrl: progressData.submissionUrl || null,
+                project: projectDetails,
+                completedAt: progressData.completedAt?.toDate?.()?.toISOString() || null,
+                startedAt: progressData.startedAt?.toDate?.()?.toISOString() || null,
+                lastUpdated: progressData.lastUpdated?.toDate?.()?.toISOString() || null,
+                screenshots: progressData.screenshots || null,
+              };
+              projects.push(serializableProject);
+            }
+          });
+          
+          completedProjects = projects;
+          debugInfo.projectCount = projects.length;
+          console.log('Portfolio Static - Projects found:', projects.length);
+        } catch (projectsError) {
+          console.error('Portfolio Static - Projects fetch error:', projectsError);
+          debugInfo.firebaseError = projectsError.message;
+        }
+      } else {
+        console.log('Portfolio Static - Firebase config missing');
+        debugInfo.firebaseError = 'Firebase configuration missing';
+      }
+
+    } catch (criticalError) {
+      console.error('Portfolio Static - Critical error:', criticalError);
+      debugInfo.serverError = criticalError.message;
+    }
+  } else {
+    console.log('Portfolio Static - Invalid or missing UID, will rely on client-side fetch');
+    debugInfo.serverError = 'Invalid or missing UID';
   }
 
-  // Always return valid props with revalidation
+  // ALWAYS return valid props - NEVER return notFound
   return {
     props: {
       userProfile,
       completedProjects,
-      uid,
+      uid: uid || null,
       debugInfo
     },
     revalidate: 60 // Revalidate every 60 seconds
@@ -207,69 +211,187 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
         experienceYears = Math.max(1, Math.floor(projectCount / 4)); // Fallback estimate
     }
 
+    // Share functionality
+    const handleShare = async () => {
+        const shareData = {
+            title: `${displayName} | Portfolio - SkillForge`,
+            text: `Check out ${displayName}'s professional portfolio showcasing ${projectCount} completed projects.`,
+            url: `https://skillforgeprojects.vercel.app/portfolio/${effectiveUid}`
+        };
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                console.log('Error sharing:', err);
+                // Fallback to copying URL
+                copyToClipboard(shareData.url);
+            }
+        } else {
+            // Fallback to copying URL
+            copyToClipboard(shareData.url);
+        }
+    };
+
+    const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Portfolio link copied to clipboard!');
+        }).catch(() => {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('Portfolio link copied to clipboard!');
+        });
+    };
+
     return (
         <>
             <Head>
-                <title>{displayName} | Portfolio</title>
-                <meta name="description" content={`Personal portfolio of ${displayName}. ${bio}`} />
-                <meta property="og:title" content={`${displayName} | Portfolio`} />
-                <meta property="og:description" content={`Personal portfolio of ${displayName}. ${bio}`} />
+                <title>{displayName} | Portfolio - SkillForge</title>
+                <meta name="description" content={`${displayName}'s professional portfolio showcasing ${projectCount} completed projects. ${bio}`} />
+                
+                {/* Open Graph / Facebook */}
                 <meta property="og:type" content="website" />
+                <meta property="og:url" content={`https://skillforgeprojects.vercel.app/portfolio/${effectiveUid}`} />
+                <meta property="og:title" content={`${displayName} | Portfolio - SkillForge`} />
+                <meta property="og:description" content={`${displayName}'s professional portfolio showcasing ${projectCount} completed projects. ${bio}`} />
+                <meta property="og:image" content={effectiveUserProfile?.photoURL || "https://skillforgeprojects.vercel.app/logo.png"} />
+                <meta property="og:site_name" content="SkillForge" />
+                
+                {/* Twitter */}
+                <meta property="twitter:card" content="summary_large_image" />
+                <meta property="twitter:url" content={`https://skillforgeprojects.vercel.app/portfolio/${effectiveUid}`} />
+                <meta property="twitter:title" content={`${displayName} | Portfolio - SkillForge`} />
+                <meta property="twitter:description" content={`${displayName}'s professional portfolio showcasing ${projectCount} completed projects. ${bio}`} />
+                <meta property="twitter:image" content={effectiveUserProfile?.photoURL || "https://skillforgeprojects.vercel.app/logo.png"} />
+                
+                {/* Additional SEO */}
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content={displayName} />
+                <meta name="keywords" content={`${displayName}, portfolio, developer, projects, ${effectiveUserProfile?.skills?.join(', ') || 'programming, web development'}`} />
+                <link rel="canonical" href={`https://skillforgeprojects.vercel.app/portfolio/${effectiveUid}`} />
                 <link rel="icon" href="/favicon.ico" />
+                
+                {/* Structured Data for Portfolio */}
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            "@context": "https://schema.org",
+                            "@type": "Person",
+                            "name": displayName,
+                            "description": bio,
+                            "url": `https://skillforgeprojects.vercel.app/portfolio/${effectiveUid}`,
+                            "image": effectiveUserProfile?.photoURL,
+                            "jobTitle": effectiveUserProfile?.currentPosition || "Developer",
+                            "worksFor": effectiveUserProfile?.company ? {
+                                "@type": "Organization",
+                                "name": effectiveUserProfile.company
+                            } : undefined,
+                            "knowsAbout": effectiveUserProfile?.skills || ["Programming", "Web Development"],
+                            "alumniOf": effectiveUserProfile?.education ? {
+                                "@type": "EducationalOrganization",
+                                "name": effectiveUserProfile.education
+                            } : undefined
+                        })
+                    }}
+                />
             </Head>
             
             {/* Main Website Navigation */}
             <Navbar />
 
-            {/* Debug Section - Shows in all environments to help diagnose issues */}
-            <div style={{ 
-                position: 'fixed', 
-                top: '80px', 
-                right: '20px', 
-                background: '#222', 
-                color: '#fff', 
-                padding: '1rem', 
-                borderRadius: '8px', 
-                fontSize: '0.75rem', 
-                maxWidth: '320px', 
-                zIndex: 1000,
-                border: '1px solid #444',
-                opacity: 0.95,
-                maxHeight: '400px',
-                overflowY: 'auto'
-            }}>
-                <h4 style={{ margin: '0 0 0.5rem 0', color: '#fff', fontSize: '0.9rem' }}>Debug Info:</h4>
-                <div style={{ marginBottom: '0.5rem' }}>
-                    <strong>Server ({debugInfo?.method || 'unknown'}):</strong>
-                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>UID: {uid || 'MISSING'}</p>
-                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Profile: {debugInfo?.hasUserProfile ? 'Yes' : 'No'}</p>
-                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Keys: {debugInfo?.userProfileKeys?.length > 0 ? debugInfo.userProfileKeys.join(', ') : 'None'}</p>
-                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Projects: {debugInfo?.projectCount || 0}</p>
-                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Env: {debugInfo?.environment || 'MISSING'}</p>
-                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Vercel: {debugInfo?.vercelEnv || 'MISSING'}</p>
-                    <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Firebase: {debugInfo?.hasFirebaseConfig ? 'Yes' : 'No'}</p>
-                    {debugInfo?.firebaseError && (
-                        <p style={{ margin: '0.1rem 0', color: '#ff6b6b', fontSize: '0.7rem' }}>FB Error: {debugInfo.firebaseError}</p>
-                    )}
-                    {debugInfo?.serverError && (
-                        <p style={{ margin: '0.1rem 0', color: '#ff6b6b', fontSize: '0.7rem' }}>Server Error: {debugInfo.serverError}</p>
-                    )}
-                </div>
-                {clientDebugInfo && (
-                    <div>
-                        <strong>Client:</strong>
-                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Hydrated: {clientDebugInfo.isClient ? 'Yes' : 'No'}</p>
-                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Window: {clientDebugInfo.hasWindow ? 'Yes' : 'No'}</p>
-                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Router Ready: {clientDebugInfo.routerReady ? 'Yes' : 'No'}</p>
-                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Current UID: {clientDebugInfo.currentUid || 'None'}</p>
-                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>URL: {typeof window !== 'undefined' ? window.location.pathname : 'N/A'}</p>
-                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Client Profile: {Object.keys(clientData.userProfile).length > 0 ? 'Yes' : 'No'}</p>
+            {/* Share Button - Fixed position for easy access */}
+            <button
+                onClick={handleShare}
+                style={{
+                    position: 'fixed',
+                    top: '50%',
+                    right: '20px',
+                    transform: 'translateY(-50%)',
+                    background: 'linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '60px',
+                    height: '60px',
+                    fontSize: '1.5rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)',
+                    zIndex: 1000,
+                    transition: 'all 0.3s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}
+                onMouseEnter={(e) => {
+                    e.target.style.transform = 'translateY(-50%) scale(1.1)';
+                    e.target.style.boxShadow = '0 6px 20px rgba(139, 92, 246, 0.4)';
+                }}
+                onMouseLeave={(e) => {
+                    e.target.style.transform = 'translateY(-50%) scale(1)';
+                    e.target.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.3)';
+                }}
+                title="Share this portfolio"
+            >
+                <i className="fas fa-share-alt"></i>
+            </button>
+
+            {/* Debug Section - Only show in development */}
+            {process.env.NODE_ENV === 'development' && debugInfo && (
+                <div style={{ 
+                    position: 'fixed', 
+                    top: '80px', 
+                    left: '20px', 
+                    background: '#222', 
+                    color: '#fff', 
+                    padding: '1rem', 
+                    borderRadius: '8px', 
+                    fontSize: '0.75rem', 
+                    maxWidth: '320px', 
+                    zIndex: 1000,
+                    border: '1px solid #444',
+                    opacity: 0.95,
+                    maxHeight: '400px',
+                    overflowY: 'auto'
+                }}>
+                    <h4 style={{ margin: '0 0 0.5rem 0', color: '#fff', fontSize: '0.9rem' }}>Debug Info:</h4>
+                    <div style={{ marginBottom: '0.5rem' }}>
+                        <strong>Server ({debugInfo?.method || 'unknown'}):</strong>
+                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>UID: {uid || 'MISSING'}</p>
+                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Profile: {debugInfo?.hasUserProfile ? 'Yes' : 'No'}</p>
+                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Keys: {debugInfo?.userProfileKeys?.length > 0 ? debugInfo.userProfileKeys.join(', ') : 'None'}</p>
+                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Projects: {debugInfo?.projectCount || 0}</p>
+                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Env: {debugInfo?.environment || 'MISSING'}</p>
+                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Vercel: {debugInfo?.vercelEnv || 'MISSING'}</p>
+                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Firebase: {debugInfo?.hasFirebaseConfig ? 'Yes' : 'No'}</p>
+                        {debugInfo?.firebaseError && (
+                            <p style={{ margin: '0.1rem 0', color: '#ff6b6b', fontSize: '0.7rem' }}>FB Error: {debugInfo.firebaseError}</p>
+                        )}
+                        {debugInfo?.serverError && (
+                            <p style={{ margin: '0.1rem 0', color: '#ff6b6b', fontSize: '0.7rem' }}>Server Error: {debugInfo.serverError}</p>
+                        )}
                     </div>
-                )}
-                <p style={{ margin: '0.5rem 0 0 0', color: '#888', fontSize: '0.7rem' }}>
-                    Time: {new Date(debugInfo?.timestamp || Date.now()).toLocaleTimeString()}
-                </p>
-            </div>
+                    {clientDebugInfo && (
+                        <div>
+                            <strong>Client:</strong>
+                            <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Hydrated: {clientDebugInfo.isClient ? 'Yes' : 'No'}</p>
+                            <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Window: {clientDebugInfo.hasWindow ? 'Yes' : 'No'}</p>
+                            <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Router Ready: {clientDebugInfo.routerReady ? 'Yes' : 'No'}</p>
+                            <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Current UID: {clientDebugInfo.currentUid || 'None'}</p>
+                            <p style={{ margin: '0.1rem 0', color: '#ccc' }}>URL: {typeof window !== 'undefined' ? window.location.pathname : 'N/A'}</p>
+                            <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Client Profile: {Object.keys(clientData.userProfile).length > 0 ? 'Yes' : 'No'}</p>
+                        </div>
+                    )}
+                    <p style={{ margin: '0.5rem 0 0 0', color: '#888', fontSize: '0.7rem' }}>
+                        Time: {new Date(debugInfo?.timestamp || Date.now()).toLocaleTimeString()}
+                    </p>
+                </div>
+            )}
 
             {/* Hero Section */}
             <section className="hero-section">
