@@ -545,10 +545,7 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
             {/* Experience Section */}
             <section id="experience" className="experience-section">
                 <h2 className="section-title">
-                    {experienceYears < 1 ? 
-                        `${effectiveUserProfile?.experienceMonths || Math.round(experienceYears * 12)} MONTHS OF` : 
-                        `${experienceYears} YEARS OF`
-                    }<span> EXPERIENCE</span>
+                   <span> EXPERIENCE</span>
                 </h2>
                 <div className="experience-list">
                     {/* Display detailed experience entries if available */}
@@ -686,7 +683,7 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
 
             {/* Contact Section */}
             <section id="contact" className="contact-section">
-                <h2 className="section-title">LET'S WORK<span>TOGETHER</span></h2>
+                <h2 className="section-title"><span>LET'S WORK TOGETHER</span></h2>
                 <div className="contact-content">
                     <div className="contact-info">
                         {effectiveUserProfile?.showEmail !== false && effectiveUserProfile?.email && (
