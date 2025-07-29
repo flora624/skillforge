@@ -64,8 +64,8 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {/* We wait until the initial auth check is done before rendering the app */}
-      {!loading && children}
+      {/* Always render children - let individual pages handle auth requirements */}
+      {children}
     </AuthContext.Provider>
   );
 }

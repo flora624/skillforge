@@ -627,6 +627,11 @@ export default function Profile({ allProjects }) {
     return <div className="loading-screen">Loading Dashboard...</div>;
   }
 
+  // If not loading but no user, the redirect will happen in the useEffect
+  if (!loading && !user) {
+    return <div className="loading-screen">Redirecting...</div>;
+  }
+
   return (
     <>
       <Navbar />
