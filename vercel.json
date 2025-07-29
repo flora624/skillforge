@@ -2,7 +2,6 @@
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/sitemap.xml" },
     { "source": "/robots.txt", "destination": "/robots.txt" },
-    { "source": "/sitemap-:number.xml", "destination": "/sitemap-:number.xml" },
-    { "source": "/((?!sitemap.xml|robots.txt|sitemap-\\d+\\.xml).*)", "destination": "/" }
+    { "source": "/sitemap-:number.xml", "destination": "/sitemap-:number.xml" }
   ]
 }

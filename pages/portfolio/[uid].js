@@ -512,19 +512,27 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
                 <div className="projects-grid">
                     {Array.isArray(effectiveCompletedProjects) && effectiveCompletedProjects.length > 0 ? (
                         effectiveCompletedProjects.slice(0, 6).map((project, index) => (
-                            <div key={project.projectId} className="project-card">
-                                <div className="project-image">
-                                    {project.screenshots?.milestone_0 ? (
-                                        <img src={project.screenshots.milestone_0} alt={project.project.title} />
-                                    ) : (
-                                        <div className="project-placeholder">
-                                            <i className="fas fa-code"></i>
+                            <Link key={project.projectId} href={`/showcase/${effectiveUid}/${project.projectId}`}>
+                                <a className="project-card-link">
+                                    <div className="project-card">
+                                        <div className="project-image">
+                                            {project.screenshots?.milestone_0 ? (
+                                                <img src={project.screenshots.milestone_0} alt={project.project.title} />
+                                            ) : (
+                                                <div className="project-placeholder">
+                                                    <i className="fas fa-code"></i>
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
-                                </div>
-                                <h3>{project.project.title}</h3>
-                                <p>{project.project.domain}</p>
-                            </div>
+                                        <h3>{project.project.title}</h3>
+                                        <p>{project.project.domain}</p>
+                                        <div className="project-card-overlay">
+                                            <span className="view-project-text">View Project Showcase</span>
+                                            <i className="fas fa-arrow-right"></i>
+                                        </div>
+                                    </div>
+                                </a>
+                            </Link>
                         ))
                     ) : (
                         <div style={{ textAlign: 'center', color: '#666', padding: '2rem' }}>
@@ -912,15 +920,28 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
                     margin: 0 auto;
                 }
 
+                .project-card-link {
+                    text-decoration: none;
+                    color: inherit;
+                    display: block;
+                }
+
                 .project-card {
                     background: #111;
                     border-radius: 12px;
                     overflow: hidden;
-                    transition: transform 0.3s ease;
+                    transition: all 0.3s ease;
+                    position: relative;
+                    cursor: pointer;
                 }
 
                 .project-card:hover {
                     transform: translateY(-5px);
+                    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+                }
+
+                .project-card:hover .project-card-overlay {
+                    opacity: 1;
                 }
 
                 .project-image {
@@ -954,6 +975,33 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
                     padding: 0 1rem 1rem;
                     color: #ccc;
                     font-size: 0.9rem;
+                }
+
+                .project-card-overlay {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: linear-gradient(135deg, rgba(139, 92, 246, 0.9), rgba(168, 85, 247, 0.9));
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                    color: white;
+                    text-align: center;
+                }
+
+                .view-project-text {
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                    margin-bottom: 0.5rem;
+                }
+
+                .project-card-overlay i {
+                    font-size: 1.5rem;
                 }
 
                 .experience-section {
