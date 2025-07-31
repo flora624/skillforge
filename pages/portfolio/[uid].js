@@ -282,151 +282,223 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
         });
     };
 
+    // Show only projects mode
+    if (effectiveUserProfile?.showOnlyProjects) {
+        return (
+            <>
+                <Head>
+                    <title>{displayName} | Portfolio - SkillForge</title>
+                    <meta name="description" content={`${displayName}'s professional portfolio showcasing ${projectCount} completed projects.`} />
+                </Head>
+                <Navbar />
+                <section className="hero-section">
+                    <div className="hero-content">
+                        <div className="profile-image">
+                            {effectiveUserProfile?.photoURL ? (
+                                <img src={effectiveUserProfile.photoURL} alt={displayName} />
+                            ) : (
+                                <div className="default-avatar">
+                                    <i className="fas fa-user"></i>
+                                </div>
+                            )}
+                        </div>
+                        <h1 className="hero-name">{displayName}</h1>
+                    </div>
+                </section>
+                <section id="projects" className="projects-section">
+                    <h2 className="section-title"><span>PROJECTS</span></h2>
+                    <div className="projects-grid">
+                        {Array.isArray(effectiveCompletedProjects) && effectiveCompletedProjects.length > 0 ? (
+                            effectiveCompletedProjects.slice(0, 6).map((project, index) => (
+                                <Link key={project.projectId} href={`/showcase/${effectiveUid}/${project.projectId}`}>
+                                    <a className="project-card-link">
+                                        <div className="project-card">
+                                            <div className="project-image">
+                                                {project.screenshots?.milestone_0 ? (
+                                                    <img src={project.screenshots.milestone_0} alt={project.project.title} />
+                                                ) : (
+                                                    <div className="project-placeholder">
+                                                        <i className="fas fa-code"></i>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <h3>{project.project.title}</h3>
+                                            <p>{project.project.domain}</p>
+                                            <div className="project-card-overlay">
+                                                <span className="view-project-text">View Project Showcase</span>
+                                                <i className="fas fa-arrow-right"></i>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </Link>
+                            ))
+                        ) : (
+                            <div style={{ textAlign: 'center', color: '#666', padding: '2rem' }}>
+                                <p>No completed projects yet.</p>
+                            </div>
+                        )}
+                    </div>
+                </section>
+                <style jsx>{`
+                    .hero-section {
+                        min-height: 100vh;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        text-align: center;
+                        padding: 0 2rem;
+                        background: #000;
+                        margin-top: 10px;
+                    }
+                    .hero-content {
+                        max-width: 800px;
+                        width: 100%;
+                        text-align: center;
+                    }
+                    .profile-image {
+                        width: 120px;
+                        height: 120px;
+                        border-radius: 50%;
+                        margin: 0 auto 2rem;
+                        overflow: hidden;
+                        background: #333;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    .profile-image img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                    }
+                    .default-avatar {
+                        font-size: 3rem;
+                        color: #666;
+                    }
+                    .hero-name {
+                        font-size: 3rem;
+                        font-weight: 700;
+                        margin-bottom: 1rem;
+                        color: #fff;
+                    }
+                    .projects-section {
+                        padding: 8rem 2rem;
+                        background: #000;
+                    }
+                    .section-title {
+                        font-size: 3rem;
+                        font-weight: 900;
+                        text-align: center;
+                        margin-bottom: 4rem;
+                        color: #fff;
+                    }
+                    .section-title span {
+                        color: #666;
+                    }
+                    .projects-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                        gap: 2rem;
+                        max-width: 1200px;
+                        margin: 0 auto;
+                    }
+                    .project-card-link {
+                        text-decoration: none;
+                        color: inherit;
+                        display: block;
+                    }
+                    .project-card {
+                        background: #111;
+                        border-radius: 12px;
+                        overflow: hidden;
+                        transition: all 0.3s ease;
+                        position: relative;
+                        cursor: pointer;
+                    }
+                    .project-card:hover {
+                        transform: translateY(-5px);
+                        box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+                    }
+                    .project-card:hover .project-card-overlay {
+                        opacity: 1;
+                    }
+                    .project-image {
+                        width: 100%;
+                        height: 200px;
+                        background: #222;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        overflow: hidden;
+                    }
+                    .project-image img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                    }
+                    .project-placeholder {
+                        font-size: 3rem;
+                        color: #666;
+                    }
+                    .project-card h3 {
+                        padding: 1rem 1rem 0.5rem;
+                        font-size: 1.2rem;
+                        color: #fff;
+                    }
+                    .project-card p {
+                        padding: 0 1rem 1rem;
+                        color: #ccc;
+                        font-size: 0.9rem;
+                    }
+                    .project-card-overlay {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: linear-gradient(135deg, rgba(139, 92, 246, 0.9), rgba(168, 85, 247, 0.9));
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        opacity: 0;
+                        transition: opacity 0.3s ease;
+                        color: white;
+                        text-align: center;
+                    }
+                    .view-project-text {
+                        font-size: 1.1rem;
+                        font-weight: 600;
+                        margin-bottom: 0.5rem;
+                    }
+                    .project-card-overlay i {
+                        font-size: 1.5rem;
+                    }
+                    @media (max-width: 768px) {
+                        .hero-name {
+                            font-size: 2rem;
+                        }
+                        .section-title {
+                            font-size: 2rem;
+                        }
+                        .projects-grid {
+                            grid-template-columns: 1fr;
+                        }
+                    }
+                `}</style>
+            </>
+        );
+    }
+
+    // Default: full portfolio
     return (
         <>
             <Head>
                 <title>{displayName} | Portfolio - SkillForge</title>
                 <meta name="description" content={`${displayName}'s professional portfolio showcasing ${projectCount} completed projects. ${bio}`} />
-                
-                {/* Open Graph / Facebook */}
-                <meta property="og:type" content="website" />
-                <meta property="og:url" content={`https://skillforgeprojects.vercel.app/portfolio/${effectiveUid}`} />
-                <meta property="og:title" content={`${displayName} | Portfolio - SkillForge`} />
-                <meta property="og:description" content={`${displayName}'s professional portfolio showcasing ${projectCount} completed projects. ${bio}`} />
-                <meta property="og:image" content={effectiveUserProfile?.photoURL || "https://skillforgeprojects.vercel.app/logo.png"} />
-                <meta property="og:site_name" content="SkillForge" />
-                
-                {/* Twitter */}
-                <meta property="twitter:card" content="summary_large_image" />
-                <meta property="twitter:url" content={`https://skillforgeprojects.vercel.app/portfolio/${effectiveUid}`} />
-                <meta property="twitter:title" content={`${displayName} | Portfolio - SkillForge`} />
-                <meta property="twitter:description" content={`${displayName}'s professional portfolio showcasing ${projectCount} completed projects. ${bio}`} />
-                <meta property="twitter:image" content={effectiveUserProfile?.photoURL || "https://skillforgeprojects.vercel.app/logo.png"} />
-                
-                {/* Additional SEO */}
-                <meta name="robots" content="index, follow" />
-                <meta name="author" content={displayName} />
-                <meta name="keywords" content={`${displayName}, portfolio, developer, projects, ${effectiveUserProfile?.skills?.join(', ') || 'programming, web development'}`} />
-                <link rel="canonical" href={`https://skillforgeprojects.vercel.app/portfolio/${effectiveUid}`} />
-                <link rel="icon" href="/favicon.ico" />
-                
-                {/* Structured Data for Portfolio */}
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify({
-                            "@context": "https://schema.org",
-                            "@type": "Person",
-                            "name": displayName,
-                            "description": bio,
-                            "url": `https://skillforgeprojects.vercel.app/portfolio/${effectiveUid}`,
-                            "image": effectiveUserProfile?.photoURL,
-                            "jobTitle": effectiveUserProfile?.currentPosition || "Developer",
-                            "worksFor": effectiveUserProfile?.company ? {
-                                "@type": "Organization",
-                                "name": effectiveUserProfile.company
-                            } : undefined,
-                            "knowsAbout": effectiveUserProfile?.skills || ["Programming", "Web Development"],
-                            "alumniOf": effectiveUserProfile?.education ? {
-                                "@type": "EducationalOrganization",
-                                "name": effectiveUserProfile.education
-                            } : undefined
-                        })
-                    }}
-                />
             </Head>
             
-            {/* Main Website Navigation */}
             <Navbar />
-
-            {/* Share Button - Fixed position for easy access */}
-            <button
-                onClick={handleShare}
-                style={{
-                    position: 'fixed',
-                    top: '50%',
-                    right: '20px',
-                    transform: 'translateY(-50%)',
-                    background: 'linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '50%',
-                    width: '60px',
-                    height: '60px',
-                    fontSize: '1.5rem',
-                    cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)',
-                    zIndex: 1000,
-                    transition: 'all 0.3s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}
-                onMouseEnter={(e) => {
-                    e.target.style.transform = 'translateY(-50%) scale(1.1)';
-                    e.target.style.boxShadow = '0 6px 20px rgba(139, 92, 246, 0.4)';
-                }}
-                onMouseLeave={(e) => {
-                    e.target.style.transform = 'translateY(-50%) scale(1)';
-                    e.target.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.3)';
-                }}
-                title="Share this portfolio"
-            >
-                <i className="fas fa-share-alt"></i>
-            </button>
-
-            {/* Debug Section - Only show in development */}
-            {process.env.NODE_ENV === 'development' && debugInfo && (
-                <div style={{ 
-                    position: 'fixed', 
-                    top: '80px', 
-                    left: '20px', 
-                    background: '#222', 
-                    color: '#fff', 
-                    padding: '1rem', 
-                    borderRadius: '8px', 
-                    fontSize: '0.75rem', 
-                    maxWidth: '320px', 
-                    zIndex: 1000,
-                    border: '1px solid #444',
-                    opacity: 0.95,
-                    maxHeight: '400px',
-                    overflowY: 'auto'
-                }}>
-                    <h4 style={{ margin: '0 0 0.5rem 0', color: '#fff', fontSize: '0.9rem' }}>Debug Info:</h4>
-                    <div style={{ marginBottom: '0.5rem' }}>
-                        <strong>Server ({debugInfo?.method || 'unknown'}):</strong>
-                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>UID: {uid || 'MISSING'}</p>
-                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Profile: {debugInfo?.hasUserProfile ? 'Yes' : 'No'}</p>
-                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Keys: {debugInfo?.userProfileKeys?.length > 0 ? debugInfo.userProfileKeys.join(', ') : 'None'}</p>
-                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Projects: {debugInfo?.projectCount || 0}</p>
-                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Env: {debugInfo?.environment || 'MISSING'}</p>
-                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Vercel: {debugInfo?.vercelEnv || 'MISSING'}</p>
-                        <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Firebase: {debugInfo?.hasFirebaseConfig ? 'Yes' : 'No'}</p>
-                        {debugInfo?.firebaseError && (
-                            <p style={{ margin: '0.1rem 0', color: '#ff6b6b', fontSize: '0.7rem' }}>FB Error: {debugInfo.firebaseError}</p>
-                        )}
-                        {debugInfo?.serverError && (
-                            <p style={{ margin: '0.1rem 0', color: '#ff6b6b', fontSize: '0.7rem' }}>Server Error: {debugInfo.serverError}</p>
-                        )}
-                    </div>
-                    {clientDebugInfo && (
-                        <div>
-                            <strong>Client:</strong>
-                            <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Hydrated: {clientDebugInfo.isClient ? 'Yes' : 'No'}</p>
-                            <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Window: {clientDebugInfo.hasWindow ? 'Yes' : 'No'}</p>
-                            <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Router Ready: {clientDebugInfo.routerReady ? 'Yes' : 'No'}</p>
-                            <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Current UID: {clientDebugInfo.currentUid || 'None'}</p>
-                            <p style={{ margin: '0.1rem 0', color: '#ccc' }}>URL: {typeof window !== 'undefined' ? window.location.pathname : 'N/A'}</p>
-                            <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Client Profile: {Object.keys(clientData.userProfile).length > 0 ? 'Yes' : 'No'}</p>
-                            <p style={{ margin: '0.1rem 0', color: '#ccc' }}>Client Projects: {Array.isArray(clientData.completedProjects) ? clientData.completedProjects.length : 0}</p>
-                        </div>
-                    )}
-                    <p style={{ margin: '0.5rem 0 0 0', color: '#888', fontSize: '0.7rem' }}>
-                        Time: {new Date(debugInfo?.timestamp || Date.now()).toLocaleTimeString()}
-                    </p>
-                </div>
-            )}
 
             {/* Hero Section */}
             <section className="hero-section">
@@ -479,7 +551,6 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
                     <span className="stat-number">+{projectCount}</span>
                     <span className="stat-label">PROJECTS<br/>COMPLETED</span>
                 </div>
-               
             </section>
 
             {/* Skills Section */}
@@ -493,7 +564,6 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
                             </div>
                         ))
                     ) : (
-                        /* Fallback to default skills if no custom skills are available */
                         <>
                             <div className="skill-box">React</div>
                             <div className="skill-box">JavaScript</div>
@@ -548,7 +618,6 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
                    <span> EXPERIENCE</span>
                 </h2>
                 <div className="experience-list">
-                    {/* Display detailed experience entries if available */}
                     {effectiveUserProfile?.experiences && Array.isArray(effectiveUserProfile.experiences) && effectiveUserProfile.experiences.length > 0 ? (
                         effectiveUserProfile.experiences.map((experience, index) => (
                             <div key={experience.id || index} className="experience-item">
@@ -587,32 +656,18 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
                             </div>
                         ))
                     ) : (
-                        /* Fallback to basic experience display */
-                        <>
-                            {effectiveUserProfile?.currentPosition && effectiveUserProfile?.company ? (
-                                <div className="experience-item">
-                                    <div className="experience-header">
-                                        <h3>{effectiveUserProfile.currentPosition}</h3>
-                                        <span className="experience-duration">Current Position</span>
-                                    </div>
-                                    <div className="experience-company">
-                                        <h4>{effectiveUserProfile.company}</h4>
-                                    </div>
-                                </div>
-                            ) : null}
-                            <div className="experience-item">
-                                <div className="experience-header">
-                                    <h3>SkillForge Builder</h3>
-                                    <span className="experience-duration">Jan 2020 - Present</span>
-                                </div>
-                                <div className="experience-company">
-                                    <h4>SkillForge Platform</h4>
-                                </div>
-                                <p className="experience-description">
-                                    Building real-world projects and developing innovative solutions through hands-on experience.
-                                </p>
+                        <div className="experience-item">
+                            <div className="experience-header">
+                                <h3>SkillForge Builder</h3>
+                                <span className="experience-duration">Jan 2020 - Present</span>
                             </div>
-                        </>
+                            <div className="experience-company">
+                                <h4>SkillForge Platform</h4>
+                            </div>
+                            <p className="experience-description">
+                                Building real-world projects and developing innovative solutions through hands-on experience.
+                            </p>
+                        </div>
                     )}
                 </div>
             </section>
@@ -632,7 +687,6 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
                             </div>
                         ))
                     ) : (
-                        /* Fallback to default tools if no custom tools are available */
                         <>
                             <div className="tool-card">
                                 <div className="tool-icon">
@@ -733,6 +787,7 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
                     text-align: center;
                     padding: 0 2rem;
                     background: #000;
+                    margin-top: 60px;
                 }
 
                 .hero-content {
@@ -1140,13 +1195,6 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
                 }
 
                 @media (max-width: 768px) {
-
-                .hero-section {
-        margin-top: 60px;
-    }
-
-            
-
                     .hero-name {
                         font-size: 2rem;
                     }
@@ -1193,7 +1241,6 @@ export default function SawadStylePortfolio({ userProfile = {}, completedProject
                         font-size: 1.1rem;
                     }
 
-                    /* Added styles for skills section mobile responsiveness */
                     .skills-grid {
                         flex-direction: column;
                         gap: 0.5rem;

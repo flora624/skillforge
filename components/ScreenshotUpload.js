@@ -72,7 +72,18 @@ export default function ScreenshotUpload({ userId, projectId, milestoneIndex, on
         screenshots = progressSnap.data().screenshots;
       }
       screenshots[`milestone_${milestoneIndex}`] = url;
-      await setDoc(progressRef, { screenshots }, { merge: true });
+      if (!progressSnap.exists()) {
+        // Initialize the userProgress doc with required fields
+        await setDoc(progressRef, {
+          userId,
+          projectId,
+          isCompleted: false,
+          screenshots,
+          // Add any other required fields here (e.g., activeMilestone, startedAt, etc.)
+        });
+      } else {
+        await setDoc(progressRef, { screenshots }, { merge: true });
+      }
       if (onUpload) onUpload(url);
     } catch (err) {
       setError('Upload failed. Please try again.');

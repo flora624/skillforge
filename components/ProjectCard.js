@@ -30,7 +30,7 @@ function getEstimatedDuration(difficulty) {
   return durationMap[difficulty] || '10-15 hours';
 }
 
-export default function EnhancedProjectCard({ project }) {
+export default function EnhancedProjectCard({ project, actionButtons }) {
   const { user } = useAuth();
 
   const handleMarkAsComplete = async () => {
@@ -105,10 +105,27 @@ export default function EnhancedProjectCard({ project }) {
                 Portfolio Ready
               </span>
             </div>
-            <button className="btn btn-primary">
-              <i className="fas fa-play"></i>
-              Start Building
-            </button>
+            {actionButtons && Array.isArray(actionButtons) && actionButtons.length > 0 ? (
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {actionButtons.map((btn, idx) => (
+                  <button
+                    key={idx}
+                    className={`btn ${btn.className || ''}`}
+                    onClick={e => {
+                      e.preventDefault();
+                      if (btn.onClick) btn.onClick();
+                    }}
+                  >
+                    {btn.icon && <i className={`fas fa-${btn.icon}`}></i>} {btn.label}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <button className="btn btn-primary">
+                <i className="fas fa-play"></i>
+                Start Building
+              </button>
+            )}
           </div>
         </div> 
       </a>

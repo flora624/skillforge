@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useAuth } from '../context/AuthContext';
 import { db, auth } from '../firebase/config';
-import { collection, doc, getDoc, setDoc, query, where, getDocs } from 'firebase/firestore';
+import { collection, doc, getDoc, setDoc, query, where, getDocs, deleteDoc } from 'firebase/firestore';
 import Navbar from '../components/Navbar';
 import ProjectCard from '../components/ProjectCard';
 
@@ -564,11 +564,16 @@ const PortfolioCustomizer = ({ user }) => {
                     <button type="submit" className="btn btn-primary" style={{ padding: '12px 24px' }}>
                         💾 Save Portfolio Settings
                     </button>
-                    <Link href={`/portfolio/${user?.uid}`}>
-                        <a className="btn btn-outline" style={{ padding: '12px 24px' }}>
-                            👁️ Preview Portfolio
-                        </a>
-                    </Link>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 500 }}>
+                        <input
+                            type="checkbox"
+                            name="showOnlyProjects"
+                            checked={profile.showOnlyProjects || false}
+                            onChange={handleChange}
+                            style={{ width: 18, height: 18 }}
+                        />
+                        <span>Show only projects (portfolio will only show your name and completed projects)</span>
+                    </label>
                     {status && <p style={{ color: status.includes('success') ? '#10b981' : '#ef4444', fontWeight: '500' }}>{status}</p>}
                 </div>
             </form>
@@ -649,9 +654,53 @@ export default function Profile({ allProjects }) {
           <h2>In Progress</h2>
           {inProgressProjects.length > 0 ? (
             <div className="dashboard-grid">
-              {inProgressProjects.map((project) => (
-                <ProjectCard key={project.id} project={project} actionButtons={[{ label: 'Resume Project', onClick: () => router.push(`/project/${project.id}`), className: 'btn-primary' }]}/>
-              ))}
+              {inProgressProjects.map((project) => {
+                // Handler for restarting a project
+                const handleRestart = async () => {
+                  if (!user) return;
+                  try {
+                    // Delete user progress for this project
+                    const q = query(collection(db, 'userProgress'), where('userId', '==', user.uid), where('projectId', '==', project.id));
+                    const querySnapshot = await getDocs(q);
+                    console.log('Restart project: found', querySnapshot.size, 'userProgress docs for user', user.uid, 'and project', project.id);
+                    if (querySnapshot.empty) {
+                      alert('No progress found for this project.');
+                      return;
+                    }
+                    for (const docSnap of querySnapshot.docs) {
+                      await deleteDoc(docSnap.ref);
+                    }
+                    // TODO: Delete screenshots from Firebase Storage if used
+                    // Example: await deleteObject(ref(storage, `screenshots/${user.uid}/${project.id}/`));
+                    alert('Project progress and data deleted. You can start fresh!');
+                    // Optionally refresh the page or update state
+                    setInProgressProjects(prev => prev.filter(p => p.id !== project.id));
+                  } catch (err) {
+                    console.error('Restart project error:', err);
+                    alert('Failed to restart project. See console for details.');
+                  }
+                };
+                return (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    actionButtons={[
+                      {
+                        label: 'Resume',
+                        onClick: () => router.push(`/project/${project.id}`),
+                        className: 'btn-primary',
+                        icon: 'play',
+                      },
+                      {
+                        label: 'Restart',
+                        onClick: handleRestart,
+                        className: 'btn-danger',
+                        icon: 'redo',
+                      },
+                    ]}
+                  />
+                );
+              })}
             </div>
           ) : ( <p className="no-projects-message">No projects in progress. <Link href="/#projects"><a>Find a new challenge!</a></Link></p> )}
         </section>
