@@ -48,6 +48,9 @@ function MyApp({ Component, pageProps }) {
   }}
 />
 
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6379719724029640"
+     crossorigin="anonymous"></script>
+
       </Head>
 
       {/* Add class based on route */}
